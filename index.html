@@ -9,7 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fire">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/28xRzso.png">
+    <!-- MODIFIED: Updated apple-touch-icon -->
+    <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/208152170?v=4">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,9 +36,9 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
-        /* === MODIFIED: Body padding for fixed header === */
+        /* MODIFIED: Increased top padding to add a gap below the header */
         body.logged-in {
-            padding-top: calc(50px + env(safe-area-inset-top)); 
+            padding-top: calc(50px + env(safe-area-inset-top) + 16px); 
         }
 
         .view { display: none; }
@@ -93,7 +94,8 @@
         /* --- Create Post Form --- */
         #create-post-form { 
             padding: 16px; 
-            margin: 20px 0;
+            /* MODIFIED: Removed top margin as body padding handles it now */
+            margin: 0 0 20px 0;
             border: 1px solid var(--border-color); 
             border-radius: 8px; 
             background-color: var(--secondary-bg-color); 
@@ -169,9 +171,9 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
-        /* === MODIFIED: Styles for full-width action button === */
-        .edit-profile-page .actions { margin-top: 20px; }
-        .edit-profile-page .actions button {
+        /* MODIFIED: Corrected selector to apply styles to the Save Changes button */
+        #edit-profile-view .actions { margin-top: 20px; }
+        #edit-profile-view .actions button {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -319,7 +321,9 @@
                         posts.forEach(post => {
                             const postDate = new Date(post.timestamp);
                             const isFollowed = state.currentUserFollowingList.includes(post.userId);
-                            if (isFollowed && postDate > twentyFourHoursAgo) {
+                            // MODIFIED: Include user's own posts in priority feed
+                            const isOwnPost = post.userId === state.currentUser.userId;
+                            if ((isFollowed || isOwnPost) && postDate > twentyFourHoursAgo) {
                                 priorityPosts.push(post);
                             } else {
                                 otherPosts.push(post);
