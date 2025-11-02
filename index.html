@@ -2,8 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Fire</title>
+    
+    <!-- PWA and Add to Home Screen Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Fire">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/28xRzso.png">
+    <link rel="manifest" href="data:application/manifest+json,{
+        &quot;name&quot;: &quot;Fire&quot;,
+        &quot;short_name&quot;: &quot;Fire&quot;,
+        &quot;start_url&quot;: &quot;./&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#000000&quot;,
+        &quot;theme_color&quot;: &quot;#FF5722&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;https://i.imgur.com/28xRzso.png&quot;,
+            &quot;sizes&quot;: &quot;192x192&quot;,
+            &quot;type&quot;: &quot;image/png&quot;
+        }]
+    }">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700&display=swap" rel="stylesheet">
@@ -21,6 +41,12 @@
         }
         * { box-sizing: border-box; font-family: 'Inter Tight', -apple-system, sans-serif !important; }
         body { background-color: var(--primary-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        
+        /* === MODIFIED: Body padding to account for fixed header === */
+        body.logged-in {
+            padding-top: 50px; 
+        }
+
         .view { display: none; }
         .view.active { display: block; }
         .container { max-width: 600px; margin: 0 auto; padding: 0 16px; }
@@ -50,13 +76,24 @@
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
         .warning-icon { color: var(--warning-color); width: 48px; height: 48px; margin-bottom: 16px; }
 
-        /* --- Main App Header --- */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background-color: var(--primary-bg-color); z-index: 10; height: 50px; }
+        /* === MODIFIED: Header is now fixed instead of sticky === */
+        header { 
+            display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; 
+            border-bottom: 1px solid var(--border-color); 
+            position: fixed; top: 0; left: 0; right: 0;
+            background-color: var(--primary-bg-color); z-index: 10; height: 50px; 
+        }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .header-icon { font-size: 24px; cursor: pointer; }
         
         /* --- Create Post Form --- */
-        #create-post-form { padding: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--secondary-bg-color); }
+        #create-post-form { 
+            padding: 16px; 
+            margin: 20px 0;
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            background-color: var(--secondary-bg-color); 
+        }
         #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 10px; }
         #create-post-form input[type="url"] { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; margin-bottom: 10px; }
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
@@ -114,7 +151,6 @@
         .search-result-post { padding: 8px; border-radius: 6px; font-size: 14px; color: var(--secondary-text-color); }
 
         /* --- Profile Page --- */
-        .profile-page, .edit-profile-page { padding-top: 20px; }
         .profile-header { text-align: center; margin-bottom: 20px; }
         .profile-header .pfp { margin: 0 auto 16px auto; cursor: default; }
         .profile-header .display-name { font-size: 24px; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 6px; }
@@ -123,7 +159,7 @@
         .profile-stats { display: flex; justify-content: center; gap: 24px; margin: 20px 0; }
         .stat span { font-weight: 600; }
         .profile-actions button { padding: 8px 16px; }
-        .back-btn { margin-bottom: 20px; font-weight: 600; cursor: pointer; display: inline-block; }
+        .back-btn { margin: 20px 0; font-weight: 600; cursor: pointer; display: inline-block; }
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
@@ -133,6 +169,15 @@
     </style>
 </head>
 <body>
+
+    <!-- Header is now fixed and global -->
+    <header class="hidden"><h1 class="logo">Fire</h1>
+        <div class="header-actions">
+            <div class="header-icon" id="home-btn">🏠</div>
+            <div class="header-icon" id="search-btn">🔍</div>
+            <div class="header-icon" id="settings-btn">⚙️</div>
+        </div>
+    </header>
 
     <!-- Views -->
     <div id="auth-view" class="view">
@@ -164,16 +209,15 @@
     </div>
 
     <div id="main-app-view" class="view">
-        <header><h1 class="logo">Fire</h1><div class="header-actions"><div class="header-icon" id="search-btn">🔍</div><div class="header-icon" id="settings-btn">⚙️</div></div></header>
         <div class="container"><main><section id="create-post-form"><textarea id="post-content-input" placeholder="What's on your mind?"></textarea><input type="url" id="post-image-url" placeholder="Optional: Image URL..."><div class="create-post-actions"><button id="submit-post-btn" class="primary">Post</button></div></section><section id="feed"></section></main></div>
     </div>
     
     <div id="profile-page-view" class="view">
-        <div class="container profile-page"><a class="back-btn" data-nav="feed">&larr; Back to Feed</a><div id="profile-content"></div><div id="profile-feed"></div></div>
+        <div class="container"><a class="back-btn" data-nav="feed">&larr; Back to Feed</a><div id="profile-content"></div><div id="profile-feed"></div></div>
     </div>
     
     <div id="edit-profile-view" class="view">
-        <div class="container edit-profile-page"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
+        <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
     </div>
 
     <!-- Modals -->
@@ -210,8 +254,8 @@
                 currentUserFollowingList: [], 
                 currentView: null, 
                 profileUser: null,
-                backgroundPosts: null, // For storing background-fetched posts
-                backgroundRefreshIntervalId: null // To hold the interval timer
+                backgroundPosts: null,
+                backgroundRefreshIntervalId: null
             };
             const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view') };
             const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal') };
@@ -239,6 +283,12 @@
 
             const ui = {
                 render() {
+                    const header = document.querySelector('header');
+                    const isUserLoggedIn = ['feed', 'profile', 'editProfile'].includes(state.currentView);
+                    
+                    header.classList.toggle('hidden', !isUserLoggedIn);
+                    document.body.classList.toggle('logged-in', isUserLoggedIn);
+
                     Object.values(views).forEach(v => v.classList.remove('active'));
                     views[state.currentView]?.classList.add('active');
                     if (state.currentView === 'feed') this.renderFeed(state.posts, document.getElementById('feed'), true);
@@ -440,7 +490,6 @@
                     if (!postContent && !imageUrl) return;
                     if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; }
                     
-                    // --- MODIFIED --- Optimistic UI Update
                     const tempPost = {
                         ...state.currentUser,
                         postId: `temp_${Date.now()}`,
@@ -460,7 +509,7 @@
                         await core.refreshFeed(false);
                     } catch (e) {
                         alert(`Error: ${e.message}`);
-                        state.posts.shift(); // Remove temp post on error
+                        state.posts.shift(); 
                         ui.render();
                     } finally {
                         ui.setButtonState('submit-post-btn', 'Post', false);
@@ -469,7 +518,6 @@
                 async addComment(postId, commentText) {
                     if (!commentText.trim()) return;
 
-                    // --- MODIFIED --- Optimistic UI Update
                     const tempComment = {
                         commentId: `temp_${Date.now()}`,
                         userId: state.currentUser.userId,
@@ -480,15 +528,14 @@
                     const postIndex = state.posts.findIndex(p => p.postId === postId);
                     if (postIndex > -1) {
                         state.posts[postIndex].comments.push(tempComment);
-                        ui.render(); // Re-render only the affected post for efficiency
+                        ui.render();
                     }
 
                     try {
                         await api.call('addComment', { postId, userId: state.currentUser.userId, commentText });
-                        await core.refreshFeed(false); // Sync with server
+                        await core.refreshFeed(false);
                     } catch (e) {
                         alert(`Error: ${e.message}`);
-                        // On error, remove the optimistic comment
                         const pIndex = state.posts.findIndex(p => p.postId === postId);
                         if(pIndex > -1) {
                             state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId);
@@ -524,7 +571,6 @@
 
             const core = {
                 navigateTo(view) {
-                    // --- MODIFIED --- Swap in background-refreshed posts if they exist
                     if (state.backgroundPosts) {
                         state.posts = state.backgroundPosts;
                         state.backgroundPosts = null;
@@ -549,12 +595,11 @@
                         if (state.currentView === 'feed' || state.currentView === 'profile') ui.render(); 
                     }
                 },
-                // --- NEW --- Silently refreshes feed in the background
                 async backgroundRefreshLogic() {
-                    if (!state.currentUser) return; // Don't refresh if logged out
+                    if (!state.currentUser) return;
                     try {
                         const { posts, currentUserFollowingList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET');
-                        state.backgroundPosts = posts; // Store in the background buffer
+                        state.backgroundPosts = posts;
                         state.currentUserFollowingList = currentUserFollowingList;
                         if (currentUserData) {
                            state.currentUser = currentUserData;
@@ -565,18 +610,15 @@
                         console.error("Background feed refresh failed:", e.message);
                     }
                 },
-                // --- NEW --- Starts the background refresh timer
                 startBackgroundRefresh() {
                     if (state.backgroundRefreshIntervalId) {
                         clearInterval(state.backgroundRefreshIntervalId);
                     }
-                    // Initial refresh after 1 min, then every 1 min thereafter
                     state.backgroundRefreshIntervalId = setInterval(core.backgroundRefreshLogic, 60000); 
                 },
                 logout() {
                     localStorage.removeItem('currentUser');
                     state.currentUser = null;
-                    // --- MODIFIED --- Stop background refresh on logout
                     if (state.backgroundRefreshIntervalId) {
                         clearInterval(state.backgroundRefreshIntervalId);
                         state.backgroundRefreshIntervalId = null;
@@ -587,9 +629,13 @@
                     let searchTimeout;
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
                     document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); });
-                    document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
-                    document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
+                    document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
+                    
+                    document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
+                    document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
+
+                    document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
                     document.querySelector('#search-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('search', false));
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
@@ -601,24 +647,21 @@
                     document.body.addEventListener('click', (e) => {
                         const target = e.target;
                         
-                        // --- MODIFIED --- Moved delete logic to the top to fix bug
                         const deleteBtn = target.closest('.delete-btn');
                         if (deleteBtn) {
                             if (deleteBtn.dataset.deleteType === 'post') {
                                 handlers.deletePost(target.closest('.post').dataset.postId);
-                                return; // Stop further event processing
+                                return;
                             }
                             if (deleteBtn.dataset.deleteType === 'comment') {
                                 handlers.deleteComment(target.closest('.comment').dataset.commentId);
-                                return; // Stop further event processing
+                                return;
                             }
                         }
 
                         if (target.closest('[data-nav="feed"]')) return core.navigateTo('feed');
                         const profileLink = target.closest('.post-header, .comment-author, .search-result-user');
                         if (profileLink) {
-                            // The delete check is now at the top, so this check is no longer needed here
-                            // if (target.closest('.delete-btn')) return; 
                             const userElement = profileLink.closest('[data-user-id]');
                             if (userElement && userElement.dataset.userId) {
                                 ui.toggleModal('search', false);
@@ -667,7 +710,6 @@
                         state.currentUserFollowingList = currentUserFollowingList;
                         ui.render();
                         
-                        // --- MODIFIED --- Start the background refresh timer after successful init
                         core.startBackgroundRefresh(); 
                     } catch (error) {
                         alert(`Session error: ${error.message}. Please log in again.`);
