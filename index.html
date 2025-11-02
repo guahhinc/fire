@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fire">
-    <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/208152170?v=4">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/28xRzso.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,6 @@
         :root {
             --primary-bg-color: #ffffff; --secondary-bg-color: #fafafa; --primary-text-color: #1c1c1e;
             --secondary-text-color: #8A8A8E; --border-color: #EAEAEA; 
-            /* === MODIFIED: New accent color === */
             --accent-color: #fe5721; 
             --error-color: #ed4956;
             --warning-color: #FFC107;
@@ -26,7 +25,6 @@
         [data-theme="dark"] {
             --primary-bg-color: #000000; --secondary-bg-color: #121212; --primary-text-color: #F5F5F7;
             --secondary-text-color: #8D8D92; --border-color: #2D2D2F; 
-            /* === MODIFIED: Consistent accent color in dark mode === */
             --accent-color: #fe5721;
             --shadow-color: rgba(255, 255, 255, 0.1);
             --warning-color: #FFD54F;
@@ -37,6 +35,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
+        /* === MODIFIED: Body padding for fixed header === */
         body.logged-in {
             padding-top: calc(50px + env(safe-area-inset-top)); 
         }
@@ -70,14 +69,23 @@
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
         .warning-icon { color: var(--warning-color); width: 48px; height: 48px; margin-bottom: 16px; }
 
-        /* --- Main App Header --- */
+        /* === MODIFIED: Corrected header CSS for iOS notch === */
         header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 1px solid var(--border-color); 
             position: fixed; top: 0; left: 0; right: 0;
-            background-color: var(--primary-bg-color); z-index: 10; height: 50px; 
-            padding: 8px 16px;
-            padding-top: calc(8px + env(safe-area-inset-top));
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background-color: var(--primary-bg-color); 
+            z-index: 10; 
+            border-bottom: 1px solid var(--border-color);
+            
+            /* Define content height and padding */
+            min-height: 50px; 
+            padding-left: 16px;
+            padding-right: 16px;
+            
+            /* Add space ONLY at the top for the notch/status bar */
+            padding-top: env(safe-area-inset-top);
         }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .header-icon { font-size: 24px; cursor: pointer; }
@@ -160,8 +168,14 @@
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         .form-group textarea { resize: vertical; min-height: 80px; }
-        .edit-profile-page .actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .edit-profile-page .actions button { padding: 10px 20px; font-size: 16px; }
+
+        /* === MODIFIED: Styles for full-width action button === */
+        .edit-profile-page .actions { margin-top: 20px; }
+        .edit-profile-page .actions button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -223,10 +237,9 @@
                 <h2>Settings</h2><button class="close-modal-btn">&times;</button>
             </div>
             <div class="setting-row" id="settings-user-info-row"></div>
-            <!-- === MODIFIED: Settings menu updated === -->
+            <!-- === MODIFIED: Update App button is now full-width === -->
             <div class="setting-row">
-                <span>Update App</span>
-                <button id="update-app-btn" class="secondary">Refresh</button>
+                <button id="update-app-btn" class="primary" style="width: 100%; padding: 10px;">Update App</button>
             </div>
             <div class="setting-row">
                 <span>Dark Mode</span>
@@ -547,7 +560,6 @@
                 async deleteComment(commentId) { if (!confirm("Delete this comment?")) return; try { await api.call('deleteComment', { commentId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async toggleFollow(followingId) { const isFollowing = state.currentUserFollowingList.includes(followingId); state.profileUser.followers += isFollowing ? -1 : 1; if (isFollowing) { state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId); } else { state.currentUserFollowingList.push(followingId); } ui.renderProfilePage(); try { await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); await core.refreshFeed(); }},
                 async search(query) { 
-                    // --- MODIFIED --- Show searching indicator
                     const container = document.getElementById('search-results');
                     container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>';
 
@@ -650,7 +662,6 @@
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
                     
-                    // --- MODIFIED --- New event listener for Update button
                     document.getElementById('update-app-btn').addEventListener('click', () => location.reload());
 
                     document.getElementById('theme-switch').addEventListener('change', (e) => { 
