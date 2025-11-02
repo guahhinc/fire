@@ -2,27 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Fire</title>
     
-    <!-- PWA and Add to Home Screen Meta Tags -->
+    <!-- PWA / ADD TO HOME SCREEN CONFIGURATION FOR iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fire">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/28xRzso.png">
-    <link rel="manifest" href="data:application/manifest+json,{
-        &quot;name&quot;: &quot;Fire&quot;,
-        &quot;short_name&quot;: &quot;Fire&quot;,
-        &quot;start_url&quot;: &quot;./&quot;,
-        &quot;display&quot;: &quot;standalone&quot;,
-        &quot;background_color&quot;: &quot;#000000&quot;,
-        &quot;theme_color&quot;: &quot;#FF5722&quot;,
-        &quot;icons&quot;: [{
-            &quot;src&quot;: &quot;https://i.imgur.com/28xRzso.png&quot;,
-            &quot;sizes&quot;: &quot;192x192&quot;,
-            &quot;type&quot;: &quot;image/png&quot;
-        }]
-    }">
+    <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/208152170?v=4">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,21 +17,28 @@
     <style>
         :root {
             --primary-bg-color: #ffffff; --secondary-bg-color: #fafafa; --primary-text-color: #1c1c1e;
-            --secondary-text-color: #8A8A8E; --border-color: #EAEAEA; --accent-color: #FF5722; --error-color: #ed4956;
+            --secondary-text-color: #8A8A8E; --border-color: #EAEAEA; 
+            /* === MODIFIED: New accent color === */
+            --accent-color: #fe5721; 
+            --error-color: #ed4956;
             --warning-color: #FFC107;
         }
         [data-theme="dark"] {
             --primary-bg-color: #000000; --secondary-bg-color: #121212; --primary-text-color: #F5F5F7;
-            --secondary-text-color: #8D8D92; --border-color: #2D2D2F; --accent-color: #FF8A65;
+            --secondary-text-color: #8D8D92; --border-color: #2D2D2F; 
+            /* === MODIFIED: Consistent accent color in dark mode === */
+            --accent-color: #fe5721;
             --shadow-color: rgba(255, 255, 255, 0.1);
             --warning-color: #FFD54F;
         }
         * { box-sizing: border-box; font-family: 'Inter Tight', -apple-system, sans-serif !important; }
-        body { background-color: var(--primary-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        html, body {
+            background-color: var(--primary-bg-color); color: var(--primary-text-color); margin: 0; padding: 0; 
+            transition: background-color 0.3s, color 0.3s;
+        }
         
-        /* === MODIFIED: Body padding to account for fixed header === */
         body.logged-in {
-            padding-top: 50px; 
+            padding-top: calc(50px + env(safe-area-inset-top)); 
         }
 
         .view { display: none; }
@@ -76,12 +70,14 @@
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
         .warning-icon { color: var(--warning-color); width: 48px; height: 48px; margin-bottom: 16px; }
 
-        /* === MODIFIED: Header is now fixed instead of sticky === */
+        /* --- Main App Header --- */
         header { 
-            display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; 
+            display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 1px solid var(--border-color); 
             position: fixed; top: 0; left: 0; right: 0;
             background-color: var(--primary-bg-color); z-index: 10; height: 50px; 
+            padding: 8px 16px;
+            padding-top: calc(8px + env(safe-area-inset-top));
         }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .header-icon { font-size: 24px; cursor: pointer; }
@@ -227,8 +223,10 @@
                 <h2>Settings</h2><button class="close-modal-btn">&times;</button>
             </div>
             <div class="setting-row" id="settings-user-info-row"></div>
+            <!-- === MODIFIED: Settings menu updated === -->
             <div class="setting-row">
-                <a id="settings-edit-profile-btn" style="text-decoration: none; color: inherit; flex-grow: 1; cursor: pointer;">Edit Profile</a>
+                <span>Update App</span>
+                <button id="update-app-btn" class="secondary">Refresh</button>
             </div>
             <div class="setting-row">
                 <span>Dark Mode</span>
@@ -548,7 +546,18 @@
                 async deletePost(postId) { if (!confirm("Delete this post?")) return; try { await api.call('deletePost', { postId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async deleteComment(commentId) { if (!confirm("Delete this comment?")) return; try { await api.call('deleteComment', { commentId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async toggleFollow(followingId) { const isFollowing = state.currentUserFollowingList.includes(followingId); state.profileUser.followers += isFollowing ? -1 : 1; if (isFollowing) { state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId); } else { state.currentUserFollowingList.push(followingId); } ui.renderProfilePage(); try { await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); await core.refreshFeed(); }},
-                async search(query) { try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { document.getElementById('search-results').innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
+                async search(query) { 
+                    // --- MODIFIED --- Show searching indicator
+                    const container = document.getElementById('search-results');
+                    container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>';
+
+                    try { 
+                        const results = await api.call('search', { query }, 'GET'); 
+                        ui.renderSearchResults(results); 
+                    } catch(e) { 
+                        container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; 
+                    }
+                },
                 async showProfile(userId) {
                     const userFromPosts = state.posts.find(p => p.userId === userId);
                     if (userFromPosts) {
@@ -640,7 +649,15 @@
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
-                    document.getElementById('theme-switch').addEventListener('change', (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); });
+                    
+                    // --- MODIFIED --- New event listener for Update button
+                    document.getElementById('update-app-btn').addEventListener('click', () => location.reload());
+
+                    document.getElementById('theme-switch').addEventListener('change', (e) => { 
+                        const newTheme = e.target.checked ? 'dark' : 'light'; 
+                        document.documentElement.setAttribute('data-theme', newTheme); 
+                        localStorage.setItem('theme', newTheme);
+                    });
                     document.getElementById('back-to-profile-btn').addEventListener('click', () => { core.navigateTo('profile'); });
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     
@@ -672,7 +689,6 @@
                         if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile');
                         if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId);
                         if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; }
-                        if (target.closest('#settings-edit-profile-btn')) { ui.toggleModal('settings', false); core.navigateTo('editProfile'); return; }
                         const likeBtn = target.closest('.like-btn'); if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId);
                     });
 
@@ -718,7 +734,9 @@
                 },
                 main() {
                     core.setupEventListeners();
-                    const savedTheme = localStorage.getItem('theme') || 'light'; document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('theme-switch').checked = savedTheme === 'dark';
+                    const savedTheme = localStorage.getItem('theme') || 'light'; 
+                    document.documentElement.setAttribute('data-theme', savedTheme); 
+                    document.getElementById('theme-switch').checked = savedTheme === 'dark';
                     
                     if (localStorage.getItem('currentUser')) { 
                         core.initializeApp(); 
