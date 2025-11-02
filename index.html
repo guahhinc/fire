@@ -547,9 +547,9 @@
                     try {
                         const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
                         
-                        // MODIFIED: This is the fix. We check if the user we just loaded
-                        // is still the one we are supposed to be viewing.
-                        if (state.profileUser && state.profileUser.userId === user.userId) {
+                        // MODIFIED: This is the fix. It checks if the app is still viewing the
+                        // profile that was requested, OR if no profile is loaded yet (the search case).
+                        if (!state.profileUser || state.profileUser.userId === user.userId) {
                             state.profileUser = user; 
                             ui.renderProfilePage();
                         }
