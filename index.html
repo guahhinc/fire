@@ -14,6 +14,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- MODIFIED: Updated font link to request FILL=1 by default for all icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+
     <style>
         :root {
             --primary-bg-color: #ffffff; --secondary-bg-color: #fafafa; --primary-text-color: #1c1c1e;
@@ -36,7 +39,7 @@
         }
         
         body.logged-in {
-            padding-top: calc(50px + env(safe-area-inset-top) + 20px); 
+            padding-top: calc(50px + env(safe-area-inset-top) + 30px); 
         }
 
         .view { display: none; }
@@ -49,24 +52,38 @@
         button.primary { background-color: var(--accent-color); color: white; transition: opacity 0.2s; }
         button.primary:hover:not(:disabled) { opacity: 0.85; }
         button.secondary { background-color: var(--border-color); color: var(--primary-text-color); }
-        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; opacity: 0.7; }
         a { color: var(--accent-color); cursor: pointer; font-weight: 600; }
-        .logo { font-size: 28px; font-weight: 700; color: var(--accent-color); letter-spacing: -1px; }
+        .logo { font-size: 28px; font-weight: 700; color: var(--accent-color); letter-spacing: -1px; cursor: pointer; }
         .pfp { border-radius: 50%; object-fit: cover; background-color: var(--border-color); cursor: pointer; }
         .pfp-sm { width: 36px; height: 36px; }
         .pfp-lg { width: 80px; height: 80px; }
         .verified-check { width: 1em; height: 1em; margin-left: 6px; vertical-align: middle; }
         .delete-btn { background: none; color: var(--secondary-text-color); font-size: 20px; padding: 0 5px; cursor: pointer; opacity: 0.6; }
         .delete-btn:hover { opacity: 1; color: var(--error-color); }
+        .hashtag-link { color: var(--accent-color); font-weight: normal; text-decoration: none; }
+        .hashtag-link:hover { text-decoration: underline; }
         
-        /* --- Auth, Suspended, Outage Pages --- */
+        .material-symbols-rounded {
+            font-family: 'Material Symbols Rounded' !important;
+            vertical-align: -6px;
+            font-size: inherit;
+        }
+        .header-icon .material-symbols-rounded {
+            font-size: 28px;
+            vertical-align: -8px;
+        }
+        .delete-btn .material-symbols-rounded {
+            font-size: 24px;
+        }
+        
         #auth-view, #suspended-view, #outage-view { padding-top: 10vh; text-align: center; }
         #auth-container { max-width: 350px; margin: 20px auto; padding: 30px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--secondary-bg-color); }
         #auth-container input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         #auth-container button { width: 100%; padding: 12px; font-size: 16px; }
         #suspended-view p, #outage-view p { max-width: 350px; margin: 20px auto; line-height: 1.5; }
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
-        .warning-icon { color: var(--warning-color); width: 48px; height: 48px; margin-bottom: 16px; }
+        .warning-icon { color: var(--warning-color); font-size: 48px; margin-bottom: 16px; display: inline-block; }
 
         header { 
             position: fixed; top: 0; left: 0; right: 0;
@@ -104,8 +121,11 @@
         .post-content { padding: 0 16px 12px; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; }
         .post-content img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
         .post-actions { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
-        .like-btn { font-size: 26px; background: none; color: var(--primary-text-color); padding: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .like-btn.liked { color: var(--error-color); transform: scale(1.1); }
+        .like-btn { font-size: 26px; background: none; color: var(--primary-text-color); padding: 0; transition: color 0.2s; }
+        /* MODIFIED: Removed transform:scale(1.1) to stop growth animation */
+        .like-btn.liked { 
+            color: var(--accent-color); 
+        }
         .like-count { font-weight: 600; color: var(--secondary-text-color); }
         .comments-section { padding: 12px 16px; border-top: 1px solid var(--border-color); }
         .comment { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; font-size: 14px; gap: 8px; }
@@ -168,26 +188,22 @@
 </head>
 <body>
 
-    <!-- Header is now fixed and global -->
-    <header class="hidden"><h1 class="logo">Fire</h1>
+    <header class="hidden">
+        <h1 class="logo" id="logo-btn">Fire</h1>
         <div class="header-actions">
-            <div class="header-icon" id="home-btn">🏠</div>
-            <div class="header-icon" id="search-btn">🔍</div>
-            <div class="header-icon" id="settings-btn">⚙️</div>
+            <div class="header-icon" id="home-btn"><span class="material-symbols-rounded">home</span></div>
+            <div class="header-icon" id="search-btn"><span class="material-symbols-rounded">search</span></div>
+            <div class="header-icon" id="settings-btn"><span class="material-symbols-rounded">settings</span></div>
         </div>
     </header>
 
-    <!-- Views -->
     <div id="auth-view" class="view">
         <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
     <div id="suspended-view" class="view">
         <div class="container">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="warning-icon">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
+            <span class="material-symbols-rounded warning-icon">warning</span>
             <h2>Account Suspended</h2>
             <p>Contact support for more info and to appeal.</p>
             <button id="suspended-logout-btn" class="secondary">Log Out</button>
@@ -196,10 +212,7 @@
 
     <div id="outage-view" class="view">
         <div class="container">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="warning-icon">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
+            <span class="material-symbols-rounded warning-icon">warning</span>
             <h2>Server Maintenance</h2>
             <p>The server is currently undergoing maintenance, we'll be back soon.</p>
             <button id="outage-logout-btn" class="secondary">Log Out</button>
@@ -214,20 +227,24 @@
         <div class="container"><a class="back-btn" data-nav="feed">&larr; Back to Feed</a><div id="profile-content"></div><div id="profile-feed"></div></div>
     </div>
     
+    <div id="hashtag-feed-view" class="view">
+        <div class="container">
+            <a class="back-btn" data-nav="feed">&larr; Back to Feed</a>
+            <h2 id="hashtag-title" style="margin-top: 20px;"></h2>
+            <section id="hashtag-feed"></section>
+        </div>
+    </div>
+
     <div id="edit-profile-view" class="view">
         <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
     </div>
 
-    <!-- Modals -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Settings</h2><button class="close-modal-btn">&times;</button>
+                <h2>Settings</h2><button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
             <div class="setting-row" id="settings-user-info-row"></div>
-            <div class="setting-row">
-                <button id="update-app-btn" class="primary" style="width: 100%; padding: 10px;">Update App</button>
-            </div>
             <div class="setting-row">
                 <span>Who can see your posts</span>
                 <select id="post-visibility-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color);">
@@ -247,7 +264,7 @@
     </div>
 
     <div id="search-modal" class="modal hidden">
-        <div class="modal-content"><div class="modal-header"><h2>Search</h2><button class="close-modal-btn">&times;</button></div><input type="search" id="search-input" placeholder="Search for users or posts..."><div id="search-results"></div></div>
+        <div class="modal-content"><div class="modal-header"><h2>Search</h2><button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button></div><input type="search" id="search-input" placeholder="Search for users or posts..."><div id="search-results"></div></div>
     </div>
 
     <script>
@@ -264,9 +281,10 @@
                 backgroundPosts: null,
                 backgroundRefreshIntervalId: null
             };
-            const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view') };
+            const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
             const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal') };
-            const VERIFIED_SVG = `<svg class="verified-check" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11.5" fill="#1DA1F2" stroke="var(--secondary-bg-color)" stroke-width="1"/><polyline points="7 12, 10.5 15.5, 17 8.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            // MODIFIED: Added margin-left to create space
+            const VERIFIED_SVG = `<span class="material-symbols-rounded" style="color: #1DA1F2; vertical-align: -4px; margin-left: 5px;">verified</span>`;
 
             const api = {
                 async call(action, body = {}, method = 'POST') {
@@ -291,7 +309,7 @@
             const ui = {
                 render() {
                     const header = document.querySelector('header');
-                    const isUserLoggedIn = ['feed', 'profile', 'editProfile'].includes(state.currentView);
+                    const isUserLoggedIn = ['feed', 'profile', 'editProfile', 'hashtagFeed'].includes(state.currentView);
                     
                     header.classList.toggle('hidden', !isUserLoggedIn);
                     document.body.classList.toggle('logged-in', isUserLoggedIn);
@@ -374,6 +392,10 @@
                         </div>`;
                     this.renderFeed(state.posts.filter(p => p.userId === state.profileUser.userId), document.getElementById('profile-feed'), false);
                 },
+                formatPostContent(content) {
+                    if (!content) return '';
+                    return content.replace(/#(\w+)/g, '<a href="#" class="hashtag-link" data-hashtag="$1">#$1</a>');
+                },
                 renderEditProfilePage() {
                     document.getElementById('edit-pfp-url').value = state.currentUser.profilePictureUrl;
                     document.getElementById('edit-display-name').value = state.currentUser.displayName;
@@ -394,11 +416,11 @@
                                 <span class="post-display-name">${sanitizeHTML(post.displayName)} ${String(post.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</span>
                                 <span class="post-timestamp">${formatTimestamp(post.timestamp)}</span>
                             </div>
-                            ${isAuthor ? '<button class="delete-btn" data-delete-type="post" title="Delete Post">&times;</button>' : ''}
+                            ${isAuthor ? '<button class="delete-btn" data-delete-type="post" title="Delete Post"><span class="material-symbols-rounded">close</span></button>' : ''}
                         </div>
                         <div class="post-content"></div>
                         <div class="post-actions">
-                            <button class="like-btn ${isLiked ? 'liked' : ''}">${isLiked ? '❤️' : '🤍'}</button>
+                            <button class="like-btn ${isLiked ? 'liked' : ''}"><span class="material-symbols-rounded">local_fire_department</span></button>
                             <span class="like-count">${post.likes.length} likes</span>
                         </div>
                         <div class="comments-section">
@@ -407,7 +429,7 @@
                                 <input type="text" placeholder="Add a comment..." required><button type="submit" class="primary">Post</button>
                             </form>
                         </div>`;
-                    postDiv.querySelector('.post-content').innerHTML = post.postContent;
+                    postDiv.querySelector('.post-content').innerHTML = this.formatPostContent(post.postContent);
                     return postDiv;
                 },
                 createCommentElement(comment) {
@@ -417,7 +439,7 @@
                                     <a class="comment-author">${sanitizeHTML(comment.displayName)} ${String(comment.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</a>
                                     <span>${sanitizeHTML(comment.commentText)}</span>
                                 </div>
-                                ${isAuthor ? '<button class="delete-btn" data-delete-type="comment" title="Delete Comment">&times;</button>' : ''}
+                                ${isAuthor ? '<button class="delete-btn" data-delete-type="comment" title="Delete Comment"><span class="material-symbols-rounded">close</span></button>' : ''}
                             </div>`;
                 },
                 renderSearchResults(results) {
@@ -489,33 +511,33 @@
                 async deletePost(postId) { if (!confirm("Delete this post?")) return; try { await api.call('deletePost', { postId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async deleteComment(commentId) { if (!confirm("Delete this comment?")) return; try { await api.call('deleteComment', { commentId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async toggleFollow(followingId) {
-                    const originalRelationship = state.profileUser.relationship;
-                    const isCurrentlyFollowing = originalRelationship === 'Following' || originalRelationship === 'Friends';
-
-                    state.profileUser.followers += isCurrentlyFollowing ? -1 : 1;
-                    state.profileUser.relationship = isCurrentlyFollowing ? 'none' : 'Following';
-                    if (isCurrentlyFollowing) {
-                        state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId);
-                    } else {
-                        state.currentUserFollowingList.push(followingId);
-                    }
-                    ui.renderProfilePage();
+                    const followBtn = document.getElementById('follow-btn');
+                    if (!followBtn) return;
+                    
+                    followBtn.disabled = true;
 
                     try {
                         const result = await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId });
                         state.profileUser.relationship = result.newRelationship;
-                        await core.refreshFeed(false);
+                        
+                        const isNowFollowing = result.newRelationship === 'Following' || result.newRelationship === 'Friends';
+                        if (isNowFollowing) {
+                             if(!state.currentUserFollowingList.includes(followingId)) state.currentUserFollowingList.push(followingId);
+                             state.profileUser.followers++;
+                        } else {
+                            state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId);
+                            state.profileUser.followers--;
+                        }
+                        
+                        core.refreshFeed(false);
+
                     } catch (e) {
                         alert(`Error: ${e.message}`);
-                        state.profileUser.followers += isCurrentlyFollowing ? 1 : -1;
-                        state.profileUser.relationship = originalRelationship;
-                        await core.refreshFeed(); 
                     } finally {
                         ui.renderProfilePage();
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
-                
                 async showProfile(userId) {
                     core.navigateTo('profile');
                     const userFromCache = state.posts.find(p => p.userId === userId);
@@ -546,9 +568,6 @@
 
                     try {
                         const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
-                        
-                        // MODIFIED: This is the fix. It checks if the app is still viewing the
-                        // profile that was requested, OR if no profile is loaded yet (the search case).
                         if (!state.profileUser || state.profileUser.userId === user.userId) {
                             state.profileUser = user; 
                             ui.renderProfilePage();
@@ -560,6 +579,20 @@
                             document.getElementById('profile-feed').innerHTML = '';
                         }
                     }
+                },
+                showHashtagFeed(tag) {
+                    core.navigateTo('hashtagFeed');
+                    const titleEl = document.getElementById('hashtag-title');
+                    const feedEl = document.getElementById('hashtag-feed');
+                    const fullHashtag = `#${tag.toLowerCase()}`;
+                    
+                    titleEl.textContent = `Posts tagged with ${fullHashtag}`;
+                    
+                    const filteredPosts = state.posts.filter(post => 
+                        (post.postContent || '').toLowerCase().includes(fullHashtag)
+                    );
+                    
+                    ui.renderFeed(filteredPosts, feedEl, false);
                 },
                 async updatePostVisibility(e) {
                     const newVisibility = e.target.value;
@@ -620,6 +653,7 @@
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
                     document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); });
                     document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
+                    document.getElementById('logo-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
@@ -628,13 +662,25 @@
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
-                    document.getElementById('update-app-btn').addEventListener('click', () => location.reload());
                     document.getElementById('theme-switch').addEventListener('change', (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); });
                     document.getElementById('back-to-profile-btn').addEventListener('click', () => { handlers.showProfile(state.profileUser.userId) });
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
                     
-                    document.body.addEventListener('click', (e) => { const target = e.target; const deleteBtn = target.closest('.delete-btn'); if (deleteBtn) { if (deleteBtn.dataset.deleteType === 'post') { handlers.deletePost(target.closest('.post').dataset.postId); return; } if (deleteBtn.dataset.deleteType === 'comment') { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } } if (target.closest('[data-nav="feed"]')) return core.navigateTo('feed'); const profileLink = target.closest('.post-header, .comment-author, .search-result-user'); if (profileLink) { const userElement = profileLink.closest('[data-user-id]'); if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; } } if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile'); if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId); if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; } const likeBtn = target.closest('.like-btn'); if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId); });
+                    document.body.addEventListener('click', (e) => { 
+                        const target = e.target; 
+                        const deleteBtn = target.closest('.delete-btn'); 
+                        if (deleteBtn) { if (target.closest('.post')) { handlers.deletePost(target.closest('.post').dataset.postId); return; } if (target.closest('.comment')) { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } } 
+                        if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); } 
+                        const hashtagLink = target.closest('.hashtag-link');
+                        if (hashtagLink) { e.preventDefault(); handlers.showHashtagFeed(hashtagLink.dataset.hashtag); return; }
+                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user'); 
+                        if (profileLink) { const userElement = profileLink.closest('[data-user-id]'); if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; } } 
+                        if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile'); 
+                        if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId); 
+                        if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; } 
+                        const likeBtn = target.closest('.like-btn'); 
+                        if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId); });
                     document.body.addEventListener('submit', (e) => { const commentForm = e.target.closest('.comment-form'); if(commentForm) { e.preventDefault(); const input = commentForm.querySelector('input'); handlers.addComment(e.target.closest('.post').dataset.postId, input.value); input.value = ''; }});
                     document.getElementById('auth-view').addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const activeForm = !document.getElementById('login-form').classList.contains('hidden') ? document.getElementById('login-form') : document.getElementById('register-form'); e.preventDefault(); const inputs = [...activeForm.querySelectorAll('input')]; const currentInputIndex = inputs.findIndex(input => input === document.activeElement); if (currentInputIndex > -1 && currentInputIndex < inputs.length - 1) { inputs[currentInputIndex + 1].focus(); } else { activeForm.querySelector('button.primary').click(); } });
                 },
