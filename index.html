@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fire">
-    <!-- MODIFIED: Updated apple-touch-icon -->
     <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/208152170?v=4">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,9 +35,8 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
-        /* MODIFIED: Increased top padding to add a gap below the header */
         body.logged-in {
-            padding-top: calc(50px + env(safe-area-inset-top) + 16px); 
+            padding-top: calc(50px + env(safe-area-inset-top) + 20px); 
         }
 
         .view { display: none; }
@@ -70,7 +68,6 @@
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
         .warning-icon { color: var(--warning-color); width: 48px; height: 48px; margin-bottom: 16px; }
 
-        /* === MODIFIED: Corrected header CSS for iOS notch === */
         header { 
             position: fixed; top: 0; left: 0; right: 0;
             display: flex; 
@@ -79,22 +76,16 @@
             background-color: var(--primary-bg-color); 
             z-index: 10; 
             border-bottom: 1px solid var(--border-color);
-            
-            /* Define content height and padding */
             min-height: 50px; 
             padding-left: 16px;
             padding-right: 16px;
-            
-            /* Add space ONLY at the top for the notch/status bar */
             padding-top: env(safe-area-inset-top);
         }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .header-icon { font-size: 24px; cursor: pointer; }
         
-        /* --- Create Post Form --- */
         #create-post-form { 
             padding: 16px; 
-            /* MODIFIED: Removed top margin as body padding handles it now */
             margin: 0 0 20px 0;
             border: 1px solid var(--border-color); 
             border-radius: 8px; 
@@ -105,7 +96,6 @@
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
         .create-post-actions button { padding: 8px 16px; }
         
-        /* --- Feed & Posts --- */
         .post { border: 1px solid var(--border-color); border-radius: 8px; margin: 20px 0; background-color: var(--secondary-bg-color); box-shadow: 0 4px 12px var(--shadow-color); overflow: hidden; }
         .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; }
         .post-header-info { flex-grow: 1; }
@@ -125,7 +115,6 @@
         .comment-form input { flex-grow: 1; border: none; padding: 8px; background-color: transparent; color: var(--primary-text-color); font-size: 14px; }
         .comment-form button { border: none; background: none; color: var(--accent-color); font-weight: 600; }
 
-        /* --- Modals --- */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -148,7 +137,6 @@
         .skeleton .post-display-name { height: 20px; width: 30%; }
         .skeleton .post-content { height: 60px; }
 
-        /* --- Search Modal --- */
         #search-modal .modal-content { max-width: 500px; }
         #search-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 20px; }
         #search-results h3 { margin: 20px 0 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
@@ -156,7 +144,6 @@
         .search-result-user:hover { background-color: var(--border-color); }
         .search-result-post { padding: 8px; border-radius: 6px; font-size: 14px; color: var(--secondary-text-color); }
 
-        /* --- Profile Page --- */
         .profile-header { text-align: center; margin-bottom: 20px; }
         .profile-header .pfp { margin: 0 auto 16px auto; cursor: default; }
         .profile-header .display-name { font-size: 24px; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 6px; }
@@ -171,7 +158,6 @@
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
-        /* MODIFIED: Corrected selector to apply styles to the Save Changes button */
         #edit-profile-view .actions { margin-top: 20px; }
         #edit-profile-view .actions button {
             width: 100%;
@@ -239,9 +225,16 @@
                 <h2>Settings</h2><button class="close-modal-btn">&times;</button>
             </div>
             <div class="setting-row" id="settings-user-info-row"></div>
-            <!-- === MODIFIED: Update App button is now full-width === -->
             <div class="setting-row">
                 <button id="update-app-btn" class="primary" style="width: 100%; padding: 10px;">Update App</button>
+            </div>
+            <div class="setting-row">
+                <span>Who can see your posts</span>
+                <select id="post-visibility-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color);">
+                    <option value="Everyone">Everyone</option>
+                    <option value="Followers">Followers</option>
+                    <option value="Friends">Friends</option>
+                </select>
             </div>
             <div class="setting-row">
                 <span>Dark Mode</span>
@@ -259,12 +252,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOXEISjLYpw85Tw4XnkqPcBeU0VB4-417r0Pyrch9DJQpcG_oD6ptkmWMo0agi9921/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAA395zJMe0r8TT4DiaBRWlZTn5AvtTNFAk2Ni4czUixQCKzPqFtFYucZIEEvbJr8/exec'; 
 
             const state = { 
                 currentUser: null, 
                 posts: [], 
                 currentUserFollowingList: [], 
+                currentUserFollowersList: [],
                 currentView: null, 
                 profileUser: null,
                 backgroundPosts: null,
@@ -310,7 +304,7 @@
                 },
                 renderFeed(posts, container, isMainFeed = false) {
                     if (!posts || posts.length === 0) {
-                        container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color);">No posts yet. Be the first!</p>';
+                        container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color);">No posts to see here.</p>';
                         return;
                     }
                     let postsToRender = [...posts];
@@ -321,7 +315,6 @@
                         posts.forEach(post => {
                             const postDate = new Date(post.timestamp);
                             const isFollowed = state.currentUserFollowingList.includes(post.userId);
-                            // MODIFIED: Include user's own posts in priority feed
                             const isOwnPost = post.userId === state.currentUser.userId;
                             if ((isFollowed || isOwnPost) && postDate > twentyFourHoursAgo) {
                                 priorityPosts.push(post);
@@ -351,14 +344,22 @@
                         return;
                     }
                     const isOwnProfile = state.currentUser?.userId === state.profileUser.userId;
-                    const isFollowing = state.currentUserFollowingList.includes(state.profileUser.userId);
                     const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
+                    
                     let actionButton = '';
                     if (!isOwnProfile) {
-                        actionButton = `<button id="follow-btn" class="${isFollowing ? 'secondary' : 'primary'}">${isFollowing ? 'Unfollow' : 'Follow'}</button>`;
+                        const relationship = state.profileUser.relationship;
+                        if (relationship === 'Friends') {
+                            actionButton = `<button id="follow-btn" class="secondary">Friends</button>`;
+                        } else if (relationship === 'Following') {
+                            actionButton = `<button id="follow-btn" class="secondary">Unfollow</button>`;
+                        } else {
+                            actionButton = `<button id="follow-btn" class="primary">Follow</button>`;
+                        }
                     } else {
                         actionButton = `<button id="edit-profile-btn" class="secondary">Edit Profile</button>`;
                     }
+
                     document.getElementById('profile-content').innerHTML = `
                         <div class="profile-header">
                             <img src="${pfpUrl}" class="pfp pfp-lg">
@@ -470,6 +471,7 @@
                                     <div class="username">@${sanitizeHTML(user.username)}</div>
                                 </div>
                             </a>`;
+                        document.getElementById('post-visibility-select').value = state.currentUser.postVisibility || 'Everyone';
                     }
                 },
                 showError(elId, msg) { const el = document.getElementById(elId); el.textContent = msg; el.classList.remove('hidden'); },
@@ -478,269 +480,179 @@
             };
 
             const handlers = {
-                async login() { 
-                    ui.hideError('login-error'); 
-                    const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; 
-                    if (!username || !password) return ui.showError('login-error', 'All fields required.'); 
-                    ui.setButtonState('login-btn', 'Logging In...', true); 
-                    try { 
-                        const { user } = await api.call('login', { username, password }); 
-                        state.currentUser = user; 
-                        localStorage.setItem('currentUser', JSON.stringify(user)); 
-                        await core.initializeApp(); 
-                    } catch (e) {
-                        if (e.message === 'ACCOUNT_SUSPENDED') { core.navigateTo('suspended'); } 
-                        else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); }
-                        else { ui.showError('login-error', e.message); }
-                    } finally { 
-                        ui.setButtonState('login-btn', 'Log In', false); 
-                    }
-                },
+                async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
                 async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
-                async createPost() {
-                    const contentInput = document.getElementById('post-content-input');
-                    const imageUrlInput = document.getElementById('post-image-url');
-                    let postContent = sanitizeHTML(contentInput.value.trim());
-                    const imageUrl = imageUrlInput.value.trim();
-                    if (!postContent && !imageUrl) return;
-                    if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; }
-                    
-                    const tempPost = {
-                        ...state.currentUser,
-                        postId: `temp_${Date.now()}`,
-                        timestamp: new Date().toISOString(),
-                        postContent: postContent,
-                        likes: [],
-                        comments: []
-                    };
-                    state.posts.unshift(tempPost);
-                    ui.render();
-                    contentInput.value = '';
-                    imageUrlInput.value = '';
-                    
-                    ui.setButtonState('submit-post-btn', 'Posting...', true);
-                    try {
-                        await api.call('createPost', { userId: state.currentUser.userId, postContent: postContent });
-                        await core.refreshFeed(false);
-                    } catch (e) {
-                        alert(`Error: ${e.message}`);
-                        state.posts.shift(); 
-                        ui.render();
-                    } finally {
-                        ui.setButtonState('submit-post-btn', 'Post', false);
-                    }
-                },
-                async addComment(postId, commentText) {
-                    if (!commentText.trim()) return;
-
-                    const tempComment = {
-                        commentId: `temp_${Date.now()}`,
-                        userId: state.currentUser.userId,
-                        displayName: state.currentUser.displayName,
-                        isVerified: state.currentUser.isVerified,
-                        commentText: commentText
-                    };
-                    const postIndex = state.posts.findIndex(p => p.postId === postId);
-                    if (postIndex > -1) {
-                        state.posts[postIndex].comments.push(tempComment);
-                        ui.render();
-                    }
-
-                    try {
-                        await api.call('addComment', { postId, userId: state.currentUser.userId, commentText });
-                        await core.refreshFeed(false);
-                    } catch (e) {
-                        alert(`Error: ${e.message}`);
-                        const pIndex = state.posts.findIndex(p => p.postId === postId);
-                        if(pIndex > -1) {
-                            state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId);
-                            ui.render();
-                        }
-                    }
-                },
+                async createPost() { const contentInput = document.getElementById('post-content-input'); const imageUrlInput = document.getElementById('post-image-url'); let postContent = sanitizeHTML(contentInput.value.trim()); const imageUrl = imageUrlInput.value.trim(); if (!postContent && !imageUrl) return; if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } const tempPost = { ...state.currentUser, postId: `temp_${Date.now()}`, timestamp: new Date().toISOString(), postContent: postContent, likes: [], comments: [] }; state.posts.unshift(tempPost); ui.render(); contentInput.value = ''; imageUrlInput.value = ''; ui.setButtonState('submit-post-btn', 'Posting...', true); try { await api.call('createPost', { userId: state.currentUser.userId, postContent: postContent }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); state.posts.shift(); ui.render(); } finally { ui.setButtonState('submit-post-btn', 'Post', false); } },
+                async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
                 async toggleLike(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const likeIndex = post.likes.findIndex(l => l.userId === state.currentUser.userId); if (likeIndex > -1) post.likes.splice(likeIndex, 1); else post.likes.push({ userId: state.currentUser.userId }); ui.render(); try { await api.call('toggleLike', { postId, userId: state.currentUser.userId }); } catch (e) { if (likeIndex > -1) post.likes.push({ userId: state.currentUser.userId }); else post.likes.pop(); ui.render(); alert(`Error: ${e.message}`); }},
                 async updateProfile() { ui.hideError('edit-profile-error'); const [displayName, pfpUrl, description] = [document.getElementById('edit-display-name').value, document.getElementById('edit-pfp-url').value, document.getElementById('edit-description').value]; ui.setButtonState('save-profile-btn', 'Saving...', true); try { await api.call('updateProfile', { userId: state.currentUser.userId, displayName, profilePictureUrl: pfpUrl, description }); state.currentUser = { ...state.currentUser, displayName, profilePictureUrl: pfpUrl, description }; localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); await core.refreshFeed(false); await handlers.showProfile(state.currentUser.userId); } catch (e) { ui.showError('edit-profile-error', e.message); } finally { ui.setButtonState('save-profile-btn', 'Save Changes', false); }},
                 async deletePost(postId) { if (!confirm("Delete this post?")) return; try { await api.call('deletePost', { postId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
                 async deleteComment(commentId) { if (!confirm("Delete this comment?")) return; try { await api.call('deleteComment', { commentId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
-                async toggleFollow(followingId) { const isFollowing = state.currentUserFollowingList.includes(followingId); state.profileUser.followers += isFollowing ? -1 : 1; if (isFollowing) { state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId); } else { state.currentUserFollowingList.push(followingId); } ui.renderProfilePage(); try { await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); await core.refreshFeed(); }},
-                async search(query) { 
-                    const container = document.getElementById('search-results');
-                    container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>';
+                async toggleFollow(followingId) {
+                    const originalRelationship = state.profileUser.relationship;
+                    const isCurrentlyFollowing = originalRelationship === 'Following' || originalRelationship === 'Friends';
 
-                    try { 
-                        const results = await api.call('search', { query }, 'GET'); 
-                        ui.renderSearchResults(results); 
-                    } catch(e) { 
-                        container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; 
+                    state.profileUser.followers += isCurrentlyFollowing ? -1 : 1;
+                    state.profileUser.relationship = isCurrentlyFollowing ? 'none' : 'Following';
+                    if (isCurrentlyFollowing) {
+                        state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId);
+                    } else {
+                        state.currentUserFollowingList.push(followingId);
+                    }
+                    ui.renderProfilePage();
+
+                    try {
+                        const result = await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId });
+                        state.profileUser.relationship = result.newRelationship;
+                        await core.refreshFeed(false);
+                    } catch (e) {
+                        alert(`Error: ${e.message}`);
+                        state.profileUser.followers += isCurrentlyFollowing ? 1 : -1;
+                        state.profileUser.relationship = originalRelationship;
+                        await core.refreshFeed(); 
+                    } finally {
+                        ui.renderProfilePage();
                     }
                 },
+                async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
+                
                 async showProfile(userId) {
-                    const userFromPosts = state.posts.find(p => p.userId === userId);
-                    if (userFromPosts) {
-                        state.profileUser = userFromPosts;
-                        return core.navigateTo('profile');
-                    }
-                    state.profileUser = null; 
                     core.navigateTo('profile');
-                    ui.showProfileSkeleton(); 
+                    const userFromCache = state.posts.find(p => p.userId === userId);
+
+                    if (userFromCache) {
+                        const isFollowing = state.currentUserFollowingList.includes(userId);
+                        const isFollower = state.currentUserFollowersList.includes(userId);
+                        
+                        let preliminaryRelationship = 'none';
+                        if (isFollowing && isFollower) {
+                            preliminaryRelationship = 'Friends';
+                        } else if (isFollowing) {
+                            preliminaryRelationship = 'Following';
+                        }
+
+                        state.profileUser = {
+                            ...userFromCache,
+                            followers: userFromCache.followers || 0,
+                            following: userFromCache.following || 0,
+                            description: userFromCache.description || '',
+                            relationship: preliminaryRelationship
+                        };
+                        ui.renderProfilePage();
+                    } else {
+                        state.profileUser = null; 
+                        ui.showProfileSkeleton();
+                    }
+
                     try {
-                        const { user } = await api.call('getUserProfile', { userId }, 'GET');
-                        state.profileUser = user; 
-                        ui.renderProfilePage(); 
+                        const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
+                        
+                        // MODIFIED: This is the fix. We check if the user we just loaded
+                        // is still the one we are supposed to be viewing.
+                        if (state.profileUser && state.profileUser.userId === user.userId) {
+                            state.profileUser = user; 
+                            ui.renderProfilePage();
+                        }
                     } catch (e) {
-                        document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
-                        document.getElementById('profile-feed').innerHTML = '';
+                        console.error("Failed to refresh profile:", e);
+                        if (!userFromCache) {
+                            document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
+                            document.getElementById('profile-feed').innerHTML = '';
+                        }
+                    }
+                },
+                async updatePostVisibility(e) {
+                    const newVisibility = e.target.value;
+                    const selectElement = e.target;
+                    selectElement.disabled = true;
+                    try {
+                        await api.call('updatePostVisibility', { userId: state.currentUser.userId, visibility: newVisibility });
+                        state.currentUser.postVisibility = newVisibility;
+                        localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+                    } catch (err) {
+                        alert('Could not update setting: ' + err.message);
+                        selectElement.value = state.currentUser.postVisibility;
+                    } finally {
+                        selectElement.disabled = false;
                     }
                 }
             };
 
             const core = {
-                navigateTo(view) {
-                    if (state.backgroundPosts) {
-                        state.posts = state.backgroundPosts;
-                        state.backgroundPosts = null;
-                    }
-                    state.currentView = view;
-                    ui.render();
-                    window.scrollTo(0, 0);
-                },
+                navigateTo(view) { if (state.backgroundPosts) { state.posts = state.backgroundPosts; state.backgroundPosts = null; } state.currentView = view; ui.render(); window.scrollTo(0, 0); },
                 async refreshFeed(showLoader = true) { 
-                    if (showLoader) ui.showFeedSkeleton(document.getElementById('feed'));
+                    if (showLoader) ui.showFeedSkeleton(document.getElementById('feed')); 
                     try { 
-                        const { posts, currentUserFollowingList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET'); 
+                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET'); 
                         state.posts = posts; 
                         state.currentUserFollowingList = currentUserFollowingList;
-                        if (currentUserData) {
-                            state.currentUser = currentUserData;
-                            localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-                        }
+                        state.currentUserFollowersList = currentUserFollowersList;
+                        if (currentUserData) { 
+                            state.currentUser = currentUserData; 
+                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
+                        } 
                     } catch(e) { 
                         document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
                     } finally { 
                         if (state.currentView === 'feed' || state.currentView === 'profile') ui.render(); 
                     }
                 },
-                async backgroundRefreshLogic() {
-                    if (!state.currentUser) return;
-                    try {
-                        const { posts, currentUserFollowingList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET');
-                        state.backgroundPosts = posts;
-                        state.currentUserFollowingList = currentUserFollowingList;
-                        if (currentUserData) {
-                           state.currentUser = currentUserData;
-                           localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-                        }
-                        console.log("Background feed refresh successful.");
-                    } catch (e) {
-                        console.error("Background feed refresh failed:", e.message);
+                async backgroundRefreshLogic() { 
+                    if (!state.currentUser) return; 
+                    try { 
+                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET'); 
+                        state.backgroundPosts = posts; 
+                        state.currentUserFollowingList = currentUserFollowingList; 
+                        state.currentUserFollowersList = currentUserFollowersList;
+                        if (currentUserData) { 
+                            state.currentUser = currentUserData; 
+                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
+                        } 
+                        console.log("Background feed refresh successful."); 
+                    } catch (e) { 
+                        console.error("Background feed refresh failed:", e.message); 
                     }
                 },
-                startBackgroundRefresh() {
-                    if (state.backgroundRefreshIntervalId) {
-                        clearInterval(state.backgroundRefreshIntervalId);
-                    }
-                    state.backgroundRefreshIntervalId = setInterval(core.backgroundRefreshLogic, 60000); 
-                },
-                logout() {
-                    localStorage.removeItem('currentUser');
-                    state.currentUser = null;
-                    if (state.backgroundRefreshIntervalId) {
-                        clearInterval(state.backgroundRefreshIntervalId);
-                        state.backgroundRefreshIntervalId = null;
-                    }
-                    window.location.reload();
-                },
+                startBackgroundRefresh() { if (state.backgroundRefreshIntervalId) { clearInterval(state.backgroundRefreshIntervalId); } state.backgroundRefreshIntervalId = setInterval(core.backgroundRefreshLogic, 60000); },
+                logout() { localStorage.removeItem('currentUser'); state.currentUser = null; if (state.backgroundRefreshIntervalId) { clearInterval(state.backgroundRefreshIntervalId); state.backgroundRefreshIntervalId = null; } window.location.reload(); },
                 setupEventListeners() {
                     let searchTimeout;
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
                     document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); });
                     document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
-                    
                     document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
-
                     document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
                     document.querySelector('#search-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('search', false));
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
-                    
                     document.getElementById('update-app-btn').addEventListener('click', () => location.reload());
-
-                    document.getElementById('theme-switch').addEventListener('change', (e) => { 
-                        const newTheme = e.target.checked ? 'dark' : 'light'; 
-                        document.documentElement.setAttribute('data-theme', newTheme); 
-                        localStorage.setItem('theme', newTheme);
-                    });
-                    document.getElementById('back-to-profile-btn').addEventListener('click', () => { core.navigateTo('profile'); });
+                    document.getElementById('theme-switch').addEventListener('change', (e) => { const newTheme = e.target.checked ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme); });
+                    document.getElementById('back-to-profile-btn').addEventListener('click', () => { handlers.showProfile(state.profileUser.userId) });
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
+                    document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
                     
-                    document.body.addEventListener('click', (e) => {
-                        const target = e.target;
-                        
-                        const deleteBtn = target.closest('.delete-btn');
-                        if (deleteBtn) {
-                            if (deleteBtn.dataset.deleteType === 'post') {
-                                handlers.deletePost(target.closest('.post').dataset.postId);
-                                return;
-                            }
-                            if (deleteBtn.dataset.deleteType === 'comment') {
-                                handlers.deleteComment(target.closest('.comment').dataset.commentId);
-                                return;
-                            }
-                        }
-
-                        if (target.closest('[data-nav="feed"]')) return core.navigateTo('feed');
-                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user');
-                        if (profileLink) {
-                            const userElement = profileLink.closest('[data-user-id]');
-                            if (userElement && userElement.dataset.userId) {
-                                ui.toggleModal('search', false);
-                                handlers.showProfile(userElement.dataset.userId);
-                                return;
-                            }
-                        }
-                        if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile');
-                        if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId);
-                        if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; }
-                        const likeBtn = target.closest('.like-btn'); if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId);
-                    });
-
+                    document.body.addEventListener('click', (e) => { const target = e.target; const deleteBtn = target.closest('.delete-btn'); if (deleteBtn) { if (deleteBtn.dataset.deleteType === 'post') { handlers.deletePost(target.closest('.post').dataset.postId); return; } if (deleteBtn.dataset.deleteType === 'comment') { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } } if (target.closest('[data-nav="feed"]')) return core.navigateTo('feed'); const profileLink = target.closest('.post-header, .comment-author, .search-result-user'); if (profileLink) { const userElement = profileLink.closest('[data-user-id]'); if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; } } if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile'); if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId); if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; } const likeBtn = target.closest('.like-btn'); if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId); });
                     document.body.addEventListener('submit', (e) => { const commentForm = e.target.closest('.comment-form'); if(commentForm) { e.preventDefault(); const input = commentForm.querySelector('input'); handlers.addComment(e.target.closest('.post').dataset.postId, input.value); input.value = ''; }});
-                    
-                    document.getElementById('auth-view').addEventListener('keydown', (e) => {
-                        if (e.key !== 'Enter') return;
-                        const activeForm = !document.getElementById('login-form').classList.contains('hidden') ? document.getElementById('login-form') : document.getElementById('register-form');
-                        e.preventDefault();
-                        const inputs = [...activeForm.querySelectorAll('input')];
-                        const currentInputIndex = inputs.findIndex(input => input === document.activeElement);
-                        if (currentInputIndex > -1 && currentInputIndex < inputs.length - 1) {
-                            inputs[currentInputIndex + 1].focus();
-                        } else {
-                            activeForm.querySelector('button.primary').click();
-                        }
-                    });
+                    document.getElementById('auth-view').addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const activeForm = !document.getElementById('login-form').classList.contains('hidden') ? document.getElementById('login-form') : document.getElementById('register-form'); e.preventDefault(); const inputs = [...activeForm.querySelectorAll('input')]; const currentInputIndex = inputs.findIndex(input => input === document.activeElement); if (currentInputIndex > -1 && currentInputIndex < inputs.length - 1) { inputs[currentInputIndex + 1].focus(); } else { activeForm.querySelector('button.primary').click(); } });
                 },
                 async initializeApp() {
                     const savedUser = JSON.parse(localStorage.getItem('currentUser'));
                     if (!savedUser) return core.logout();
-                    
                     core.navigateTo('feed');
                     ui.showFeedSkeleton(document.getElementById('feed'));
-                    
                     try {
-                        const { posts, currentUserFollowingList, currentUserData } = await api.call('getPosts', { userId: savedUser.userId }, 'GET');
-                        
+                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: savedUser.userId }, 'GET');
                         if (currentUserData.isSuspended === 'OUTAGE') { return core.navigateTo('outage'); }
                         if (currentUserData.isSuspended) { core.logout(); return core.navigateTo('suspended'); }
-                        
                         state.currentUser = currentUserData;
                         localStorage.setItem('currentUser', JSON.stringify(currentUserData));
                         state.posts = posts;
                         state.currentUserFollowingList = currentUserFollowingList;
+                        state.currentUserFollowersList = currentUserFollowersList;
                         ui.render();
-                        
                         core.startBackgroundRefresh(); 
                     } catch (error) {
                         alert(`Session error: ${error.message}. Please log in again.`);
@@ -761,19 +673,7 @@
                 }
             };
             
-            const formatTimestamp = (isoString) => {
-                if (!isoString) return '';
-                const postDate = new Date(isoString);
-                const now = new Date();
-                const secondsAgo = Math.round((now - postDate) / 1000);
-                if (secondsAgo < 60) return 'just now';
-                const minutesAgo = Math.round(secondsAgo / 60);
-                if (minutesAgo < 60) return `${minutesAgo}m ago`;
-                const hoursAgo = Math.round(minutesAgo / 60);
-                if (hoursAgo < 24) return `${hoursAgo}h ago`;
-                return postDate.toLocaleDateString('en-us', { month: 'short', day: 'numeric' });
-            };
-
+            const formatTimestamp = (isoString) => { if (!isoString) return ''; const postDate = new Date(isoString); const now = new Date(); const secondsAgo = Math.round((now - postDate) / 1000); if (secondsAgo < 60) return 'just now'; const minutesAgo = Math.round(secondsAgo / 60); if (minutesAgo < 60) return `${minutesAgo}m ago`; const hoursAgo = Math.round(minutesAgo / 60); if (hoursAgo < 24) return `${hoursAgo}h ago`; return postDate.toLocaleDateString('en-us', { month: 'short', day: 'numeric' }); };
             const sanitizeHTML = (str) => { if (!str) return ''; const temp = document.createElement('div'); temp.textContent = str; return temp.innerHTML; };
             core.main();
         });
