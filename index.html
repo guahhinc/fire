@@ -38,7 +38,6 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
-        /* MODIFIED: Padding now accounts for banner height */
         body.logged-in {
             padding-top: calc(50px + env(safe-area-inset-top) + 20px + var(--banner-height)); 
             transition: padding-top 0.3s ease-in-out;
@@ -82,7 +81,6 @@
 
         header { 
             position: fixed; 
-            /* MODIFIED: Header top is now controlled by the banner height variable */
             top: calc(env(safe-area-inset-top) + var(--banner-height));
             left: 0; right: 0; display: flex; 
             justify-content: space-between; align-items: center; 
@@ -154,7 +152,7 @@
         .close-modal-btn { font-size: 24px; cursor: pointer; border: none; background: none; color: var(--primary-text-color); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
         .setting-row:last-child { border-bottom: none; }
-        .user-info .display-name { font-weight: 600; }
+        .user-info .display-name { font-weight: 600; display: inline-flex; align-items: center; }
         .user-info .username { color: var(--secondary-text-color); font-size: 14px; }
         #logout-btn { background: none; color: var(--error-color); font-size: 16px; padding: 0; }
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
@@ -207,6 +205,13 @@
             padding: 12px;
             font-size: 16px;
         }
+
+        .setting-description {
+            font-size: 13px;
+            color: var(--secondary-text-color);
+            margin-top: 4px;
+            padding-right: 15px;
+        }
     </style>
 </head>
 <body>
@@ -227,22 +232,7 @@
     <div id="global-banner" class="hidden"></div>
 
     <div id="auth-view" class="view">
-        <div class="container">
-            <h1 class="logo" style="font-size: 36px;">Fire</h1>
-            <div id="auth-container">
-                <div id="login-form">
-                    <input type="text" id="login-username" placeholder="Username" autocomplete="username">
-                    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
-                    <button id="login-btn" class="primary">Log In</button>
-                    <p id="login-error" class="error-message hidden"></p>
-                    <p>Don't have an account? <a id="show-register-link">Sign up</a></p>
-                </div>
-                <div id="register-form" class="hidden">
-                    <p>Signing up is disabled during early access. Please check back after early access is over.</p>
-                    <p>Have an account? <a id="show-login-link">Log in</a></p>
-                </div>
-            </div>
-        </div>
+        <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
     <div id="suspended-view" class="view">
@@ -309,7 +299,10 @@
             </div>
             <div class="setting-row" id="settings-user-info-row"></div>
             <div class="setting-row">
-                <span>Who can see your posts</span>
+                <div>
+                    <span>Who can see your posts</span>
+                    <p class="setting-description">Control which people can see your posts and stories</p>
+                </div>
                 <select id="post-visibility-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color);">
                     <option value="Everyone">Everyone</option>
                     <option value="Followers">Followers</option>
@@ -317,7 +310,10 @@
                 </select>
             </div>
             <div class="setting-row">
-                <span>Dark Mode</span>
+                <div>
+                    <span>Dark Mode</span>
+                    <p class="setting-description">Change the website theme</p>
+                </div>
                 <label class="switch"><input type="checkbox" id="theme-switch"><span class="slider"></span></label>
             </div>
             <div class="setting-row">
@@ -342,7 +338,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCPCHrLn8tpkiH2hAitSmtSviGzcYsiAZn5SUzaoePi30Kgd_IoWRNUwXbONSag5tA/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiI1IWKf4yj19HHTqfUjVbNZl9L5vpoQcfk_ykjVPvjyvkJNrjqAmkEOsvBfJpJD54/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -612,11 +608,15 @@
                     if (modalName === 'settings' && show) {
                         const user = state.currentUser;
                         const pfpUrl = sanitizeHTML(user.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${user.username}`;
+                        
+                        // ===== MODIFICATION FOR VERIFIED BADGE =====
+                        const isVerified = String(user.isVerified).toUpperCase() === 'TRUE';
+                        
                         document.getElementById('settings-user-info-row').innerHTML = `
                             <a id="settings-profile-link" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; flex-grow: 1; cursor: pointer;">
                                 <img src="${pfpUrl}" class="pfp pfp-sm">
                                 <div class="user-info">
-                                    <div class="display-name">${sanitizeHTML(user.displayName)}</div>
+                                    <div class="display-name">${sanitizeHTML(user.displayName)} ${isVerified ? VERIFIED_SVG : ''}</div>
                                     <div class="username">@${sanitizeHTML(user.username)}</div>
                                 </div>
                             </a>`;
@@ -630,10 +630,7 @@
 
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
-                async register() { 
-                    // This function is no longer called from the UI, but is kept to prevent errors if called elsewhere.
-                    console.log("Registration is disabled.");
-                },
+                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
                     const imageUrlInput = document.getElementById('post-image-url'); 
@@ -808,7 +805,6 @@
                         if(bannerText) {
                             banner.textContent = bannerText;
                             banner.classList.remove('hidden');
-                            // Use a timeout to ensure the element is rendered before getting its height
                             setTimeout(() => {
                                 root.style.setProperty('--banner-height', `${banner.offsetHeight}px`);
                             }, 0);
@@ -884,10 +880,7 @@
                     let searchTimeout;
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
                     document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); });
-                    // The #register-btn no longer exists, so its event listener can be removed or left as it is harmless.
-                    document.getElementById('login-btn').addEventListener('click', handlers.login);
-                    document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); 
-                    document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
+                    document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
                     document.getElementById('logo-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
