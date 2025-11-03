@@ -302,7 +302,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7CmOrpcdrsPJDkz_puo-vX5_E_hLkLfw0N2ZnCOyOKzhK8BqWw7Wjz9RY5XdeD6Xt/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypnyjRmsbtKQZ0uab_1hqFGHOYn7UQF6qBbZnViY6sB1BfAUyf3hfb1Q0MdozhLtmO/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -365,20 +365,33 @@
                     }
                     let postsToRender = [...validPosts];
                     if (isMainFeed) {
-                        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                        const now = new Date();
+                        const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                        
+                        const stories = [];
                         const priorityPosts = [];
                         const otherPosts = [];
+
                         postsToRender.forEach(post => {
-                            const postDate = new Date(post.timestamp);
                             const isFollowed = state.currentUserFollowingList.includes(post.userId);
                             const isOwnPost = post.userId === state.currentUser.userId;
-                            if ((isFollowed || isOwnPost) && !post.isStory && postDate > twentyFourHoursAgo) {
-                                priorityPosts.push(post);
+                            
+                            if (post.isStory && (isFollowed || isOwnPost)) {
+                                stories.push(post);
                             } else {
-                                otherPosts.push(post);
+                                const postDate = new Date(post.timestamp);
+                                if ((isFollowed || isOwnPost) && postDate > twentyFourHoursAgo) {
+                                    priorityPosts.push(post);
+                                } else {
+                                    otherPosts.push(post);
+                                }
                             }
                         });
-                        postsToRender = [...priorityPosts.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)), ...otherPosts];
+                        
+                        stories.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        priorityPosts.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                        postsToRender = [...stories, ...priorityPosts, ...otherPosts];
                     }
                     container.innerHTML = '';
                     postsToRender.forEach(post => container.appendChild(this.createPostElement(post)));
@@ -743,13 +756,22 @@
                         ]);
 
                         const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = postsResult;
+
+                        if (currentUserData) {
+                            if (currentUserData.isSuspended === 'OUTAGE') return core.navigateTo('outage');
+                            if (currentUserData.isSuspended === true || String(currentUserData.isSuspended).toUpperCase() === 'TRUE') {
+                                core.logout();
+                                return core.navigateTo('suspended');
+                            }
+                            state.currentUser = currentUserData; 
+                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
+                        } else {
+                            throw new Error("Could not validate user session.");
+                        }
+
                         state.posts = posts; 
                         state.currentUserFollowingList = currentUserFollowingList;
                         state.currentUserFollowersList = currentUserFollowersList;
-                        if (currentUserData) { 
-                            state.currentUser = currentUserData; 
-                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
-                        }
 
                         const { notifications } = notificationsResult;
                         state.notifications = notifications;
@@ -758,6 +780,9 @@
 
                     } catch(e) { 
                         document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
+                        if (e.message.includes("validate user session")) {
+                            setTimeout(() => core.logout(), 2000);
+                        }
                     } finally { 
                         if (['feed', 'profile', 'hashtagFeed'].includes(state.currentView)) ui.render(); 
                     }
@@ -848,16 +873,17 @@
                 },
                 async initializeApp() {
                     const savedUser = JSON.parse(localStorage.getItem('currentUser'));
-                    if (!savedUser) return core.logout();
+                    if (!savedUser) {
+                        return core.navigateTo('auth');
+                    }
+                    
+                    state.currentUser = savedUser;
+
                     core.navigateTo('feed');
                     ui.showFeedSkeleton(document.getElementById('feed'));
+
                     try {
                         await core.refreshFeed(false);
-                        
-                        if (state.currentUser.isSuspended === 'OUTAGE') { return core.navigateTo('outage'); }
-                        if (state.currentUser.isSuspended) { core.logout(); return core.navigateTo('suspended'); }
-                        
-                        ui.render();
                         core.startStoryCountdownInterval();
                     } catch (error) {
                         alert(`Session error: ${error.message}. Please log in again.`);
