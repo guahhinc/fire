@@ -216,7 +216,7 @@
         <div class="container">
             <span class="material-symbols-rounded warning-icon">warning</span>
             <h2>Server Maintenance</h2>
-            <p>The server is currently undergoing maintenance. We'll be back soon.</p>
+            <p>The server is currently undergoing maintenance, we'll be back soon.</p>
             <button id="outage-logout-btn" class="secondary">Log Out</button>
         </div>
     </div>
@@ -230,8 +230,8 @@
                     <div class="create-post-options">
                         <select id="post-type-select">
                             <option value="regular">Post</option>
-                            <option value="story-24">Story | 24h</option>
-                            <option value="story-12">Story | 12h</option>
+                            <option value="story-24">Story (24h)</option>
+                            <option value="story-12">Story (12h)</option>
                         </select>
                         <div class="create-post-actions">
                             <button id="submit-post-btn" class="primary">Post</button>
@@ -300,7 +300,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypmJHoJpCrL21dxtZ-DeunsxpKwYVc3dKfvSlKOybYj3fIkGT49N8HWGQdXHBSP3-X/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7CmOrpcdrsPJDkz_puo-vX5_E_hLkLfw0N2ZnCOyOKzhK8BqWw7Wjz9RY5XdeD6Xt/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -587,7 +587,7 @@
             };
 
             const handlers = {
-                async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
+                async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
                 async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
@@ -759,9 +759,12 @@
                         const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = postsResult;
 
                         if (currentUserData) {
-                            if (currentUserData.isSuspended === 'OUTAGE') return core.navigateTo('outage');
+                            if (currentUserData.isSuspended === 'OUTAGE') {
+                                core.logout(false);
+                                return core.navigateTo('outage');
+                            }
                             if (currentUserData.isSuspended === true || String(currentUserData.isSuspended).toUpperCase() === 'TRUE') {
-                                core.logout();
+                                core.logout(false);
                                 return core.navigateTo('suspended');
                             }
                             state.currentUser = currentUserData; 
@@ -798,17 +801,22 @@
                         document.querySelectorAll('.post-timestamp[data-is-story="true"]').forEach(el => {
                            const post = { isStory: true, expiryTimestamp: el.dataset.timestamp };
                            el.textContent = formatTimestamp(post);
+                           if (el.textContent === 'Expired') {
+                               el.closest('.post').style.display = 'none';
+                           }
                         });
                     }, 60000);
                 },
-                logout() { 
+                logout(forceReload = true) { 
                     localStorage.removeItem('currentUser'); 
                     state.currentUser = null; 
                     if (state.backgroundRefreshIntervalId) clearInterval(state.backgroundRefreshIntervalId);
                     if (state.storyUpdateIntervalId) clearInterval(state.storyUpdateIntervalId);
                     state.backgroundRefreshIntervalId = null;
                     state.storyUpdateIntervalId = null;
-                    window.location.reload(); 
+                    if(forceReload) {
+                        window.location.reload(); 
+                    }
                 },
                 setupEventListeners() {
                     let searchTimeout;
