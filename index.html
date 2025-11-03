@@ -227,7 +227,22 @@
     <div id="global-banner" class="hidden"></div>
 
     <div id="auth-view" class="view">
-        <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
+        <div class="container">
+            <h1 class="logo" style="font-size: 36px;">Fire</h1>
+            <div id="auth-container">
+                <div id="login-form">
+                    <input type="text" id="login-username" placeholder="Username" autocomplete="username">
+                    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+                    <button id="login-btn" class="primary">Log In</button>
+                    <p id="login-error" class="error-message hidden"></p>
+                    <p>Don't have an account? <a id="show-register-link">Sign up</a></p>
+                </div>
+                <div id="register-form" class="hidden">
+                    <p>Signing up is disabled during early access. Please check back after early access is over.</p>
+                    <p>Have an account? <a id="show-login-link">Log in</a></p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="suspended-view" class="view">
@@ -615,7 +630,10 @@
 
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
-                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
+                async register() { 
+                    // This function is no longer called from the UI, but is kept to prevent errors if called elsewhere.
+                    console.log("Registration is disabled.");
+                },
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
                     const imageUrlInput = document.getElementById('post-image-url'); 
@@ -866,7 +884,10 @@
                     let searchTimeout;
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
                     document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-form').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); });
-                    document.getElementById('login-btn').addEventListener('click', handlers.login); document.getElementById('register-btn').addEventListener('click', handlers.register); document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
+                    // The #register-btn no longer exists, so its event listener can be removed or left as it is harmless.
+                    document.getElementById('login-btn').addEventListener('click', handlers.login);
+                    document.getElementById('submit-post-btn').addEventListener('click', handlers.createPost); 
+                    document.getElementById('save-profile-btn').addEventListener('click', handlers.updateProfile); 
                     document.getElementById('logo-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
