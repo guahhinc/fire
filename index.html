@@ -91,6 +91,19 @@
             background-color: var(--error-color); border-radius: 50%;
             border: 2px solid var(--primary-bg-color); display: none;
         }
+        #global-banner {
+            position: fixed;
+            top: calc(50px + env(safe-area-inset-top));
+            left: 0;
+            right: 0;
+            background-color: var(--warning-color);
+            color: var(--primary-text-color);
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9;
+        }
         
         #create-post-form { 
             padding: 16px; margin: 0 0 20px 0; border: 1px solid var(--border-color); 
@@ -199,6 +212,8 @@
         </div>
     </header>
 
+    <div id="global-banner" class="hidden"></div>
+
     <div id="auth-view" class="view">
         <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
@@ -300,7 +315,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7CmOrpcdrsPJDkz_puo-vX5_E_hLkLfw0N2ZnCOyOKzhK8BqWw7Wjz9RY5XdeD6Xt/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCPCHrLn8tpkiH2hAitSmtSviGzcYsiAZn5SUzaoePi30Kgd_IoWRNUwXbONSag5tA/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -756,7 +771,15 @@
                             api.call('getNotifications', { userId: state.currentUser.userId }, 'GET')
                         ]);
 
-                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = postsResult;
+                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData, bannerText } = postsResult;
+                        
+                        const banner = document.getElementById('global-banner');
+                        if(bannerText) {
+                            banner.textContent = bannerText;
+                            banner.classList.remove('hidden');
+                        } else {
+                            banner.classList.add('hidden');
+                        }
 
                         if (currentUserData) {
                             if (currentUserData.isSuspended === 'OUTAGE') {
@@ -800,8 +823,9 @@
                     state.storyUpdateIntervalId = setInterval(() => {
                         document.querySelectorAll('.post-timestamp[data-is-story="true"]').forEach(el => {
                            const post = { isStory: true, expiryTimestamp: el.dataset.timestamp };
-                           el.textContent = formatTimestamp(post);
-                           if (el.textContent === 'Expired') {
+                           const timeLeft = formatTimestamp(post);
+                           el.textContent = timeLeft;
+                           if (timeLeft === 'Expired') {
                                el.closest('.post').style.display = 'none';
                            }
                         });
