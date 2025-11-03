@@ -97,7 +97,7 @@
             border-radius: 8px; background-color: var(--secondary-bg-color); 
         }
         .create-post-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .story-switch-label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--secondary-text-color); cursor: pointer;}
+        #post-type-select { padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; }
         #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 10px; }
         #create-post-form input[type="url"] { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; margin-bottom: 10px; }
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
@@ -207,7 +207,7 @@
         <div class="container">
             <span class="material-symbols-rounded warning-icon">warning</span>
             <h2>Account Suspended</h2>
-            <p>Contact support for more info and to appeal.</p>
+            <p>Contact guahhinc@outlook.com for more info and/or to appeal.</p>
             <button id="suspended-logout-btn" class="secondary">Log Out</button>
         </div>
     </div>
@@ -216,7 +216,7 @@
         <div class="container">
             <span class="material-symbols-rounded warning-icon">warning</span>
             <h2>Server Maintenance</h2>
-            <p>The server is currently undergoing maintenance, we'll be back soon.</p>
+            <p>The server is currently undergoing maintenance. We'll be back soon.</p>
             <button id="outage-logout-btn" class="secondary">Log Out</button>
         </div>
     </div>
@@ -228,13 +228,11 @@
                     <textarea id="post-content-input" placeholder="What's on your mind?"></textarea>
                     <input type="url" id="post-image-url" placeholder="Optional: Image URL...">
                     <div class="create-post-options">
-                        <label class="story-switch-label">
-                            <label class="switch">
-                                <input type="checkbox" id="story-switch">
-                                <span class="slider"></span>
-                            </label>
-                            Story (24h)
-                        </label>
+                        <select id="post-type-select">
+                            <option value="regular">Post</option>
+                            <option value="story-24">Story | 24h</option>
+                            <option value="story-12">Story | 12h</option>
+                        </select>
                         <div class="create-post-actions">
                             <button id="submit-post-btn" class="primary">Post</button>
                         </div>
@@ -302,7 +300,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypnyjRmsbtKQZ0uab_1hqFGHOYn7UQF6qBbZnViY6sB1BfAUyf3hfb1Q0MdozhLtmO/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypmJHoJpCrL21dxtZ-DeunsxpKwYVc3dKfvSlKOybYj3fIkGT49N8HWGQdXHBSP3-X/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -594,7 +592,10 @@
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
                     const imageUrlInput = document.getElementById('post-image-url'); 
-                    const isStory = document.getElementById('story-switch').checked;
+                    const postType = document.getElementById('post-type-select').value;
+                    const isStory = postType.startsWith('story');
+                    const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0;
+
                     let postContent = sanitizeHTML(contentInput.value.trim()); 
                     const imageUrl = imageUrlInput.value.trim(); 
                     if (!postContent && !imageUrl) return; 
@@ -602,10 +603,10 @@
                     
                     ui.setButtonState('submit-post-btn', 'Posting...', true); 
                     try { 
-                        await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory }); 
+                        await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration }); 
                         contentInput.value = ''; 
                         imageUrlInput.value = ''; 
-                        document.getElementById('story-switch').checked = false;
+                        document.getElementById('post-type-select').value = 'regular';
                         await core.refreshFeed(false); 
                     } catch (e) { 
                         alert(`Error: ${e.message}`); 
@@ -779,6 +780,7 @@
                         this.updateNotificationDot();
 
                     } catch(e) { 
+                        console.error("Feed refresh error:", e);
                         document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
                         if (e.message.includes("validate user session")) {
                             setTimeout(() => core.logout(), 2000);
