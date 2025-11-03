@@ -14,7 +14,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- MODIFIED: Updated font link to request FILL=1 by default for all icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
     <style>
@@ -47,7 +46,6 @@
         .container { max-width: 600px; margin: 0 auto; padding: 0 16px; }
         .hidden { display: none !important; }
 
-        /* --- Components --- */
         button { font-weight: 600; cursor: pointer; border-radius: 6px; border: none; }
         button.primary { background-color: var(--accent-color); color: white; transition: opacity 0.2s; }
         button.primary:hover:not(:disabled) { opacity: 0.85; }
@@ -58,7 +56,6 @@
         .pfp { border-radius: 50%; object-fit: cover; background-color: var(--border-color); cursor: pointer; }
         .pfp-sm { width: 36px; height: 36px; }
         .pfp-lg { width: 80px; height: 80px; }
-        .verified-check { width: 1em; height: 1em; margin-left: 6px; vertical-align: middle; }
         .delete-btn { background: none; color: var(--secondary-text-color); font-size: 20px; padding: 0 5px; cursor: pointer; opacity: 0.6; }
         .delete-btn:hover { opacity: 1; color: var(--error-color); }
         .hashtag-link { color: var(--accent-color); font-weight: normal; text-decoration: none; }
@@ -69,13 +66,8 @@
             vertical-align: -6px;
             font-size: inherit;
         }
-        .header-icon .material-symbols-rounded {
-            font-size: 28px;
-            vertical-align: -8px;
-        }
-        .delete-btn .material-symbols-rounded {
-            font-size: 24px;
-        }
+        .header-icon .material-symbols-rounded { font-size: 28px; vertical-align: -8px; }
+        .delete-btn .material-symbols-rounded { font-size: 24px; }
         
         #auth-view, #suspended-view, #outage-view { padding-top: 10vh; text-align: center; }
         #auth-container { max-width: 350px; margin: 20px auto; padding: 30px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--secondary-bg-color); }
@@ -86,28 +78,26 @@
         .warning-icon { color: var(--warning-color); font-size: 48px; margin-bottom: 16px; display: inline-block; }
 
         header { 
-            position: fixed; top: 0; left: 0; right: 0;
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background-color: var(--primary-bg-color); 
-            z-index: 10; 
-            border-bottom: 1px solid var(--border-color);
-            min-height: 50px; 
-            padding-left: 16px;
-            padding-right: 16px;
-            padding-top: env(safe-area-inset-top);
+            position: fixed; top: 0; left: 0; right: 0; display: flex; 
+            justify-content: space-between; align-items: center; 
+            background-color: var(--primary-bg-color); z-index: 10; 
+            border-bottom: 1px solid var(--border-color); min-height: 50px; 
+            padding-left: 16px; padding-right: 16px; padding-top: env(safe-area-inset-top);
         }
         .header-actions { display: flex; align-items: center; gap: 20px; }
-        .header-icon { font-size: 24px; cursor: pointer; }
+        .header-icon { font-size: 24px; cursor: pointer; position: relative; }
+        #notification-dot {
+            position: absolute; top: -2px; right: -4px; width: 10px; height: 10px;
+            background-color: var(--error-color); border-radius: 50%;
+            border: 2px solid var(--primary-bg-color); display: none;
+        }
         
         #create-post-form { 
-            padding: 16px; 
-            margin: 0 0 20px 0;
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            background-color: var(--secondary-bg-color); 
+            padding: 16px; margin: 0 0 20px 0; border: 1px solid var(--border-color); 
+            border-radius: 8px; background-color: var(--secondary-bg-color); 
         }
+        .create-post-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .story-switch-label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--secondary-text-color); cursor: pointer;}
         #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 10px; }
         #create-post-form input[type="url"] { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; margin-bottom: 10px; }
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
@@ -121,11 +111,8 @@
         .post-content { padding: 0 16px 12px; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; }
         .post-content img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
         .post-actions { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
-        .like-btn { font-size: 26px; background: none; color: var(--primary-text-color); padding: 0; transition: color 0.2s; }
-        /* MODIFIED: Removed transform:scale(1.1) to stop growth animation */
-        .like-btn.liked { 
-            color: var(--accent-color); 
-        }
+        .like-btn { font-size: 26px; background: none; color: var(--primary-text-color); padding: 0; }
+        .like-btn.liked { color: var(--accent-color); }
         .like-count { font-weight: 600; color: var(--secondary-text-color); }
         .comments-section { padding: 12px 16px; border-top: 1px solid var(--border-color); }
         .comment { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; font-size: 14px; gap: 8px; }
@@ -157,6 +144,17 @@
         .skeleton .post-display-name { height: 20px; width: 30%; }
         .skeleton .post-content { height: 60px; }
 
+        #notifications-modal .modal-content { max-width: 450px; }
+        #notifications-modal .modal-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
+        #notifications-list { max-height: 60vh; overflow-y: auto; }
+        .notification-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; }
+        .notification-item-clickable { cursor: pointer; }
+        .notification-item-clickable:hover { background-color: var(--border-color); }
+        .notification-text { flex-grow: 1; font-size: 14px; }
+        .notification-text .username { font-weight: 600; }
+        .notification-timestamp { font-size: 12px; color: var(--secondary-text-color); margin-top: 2px; }
+        .delete-notification-btn { margin-left: auto; }
+        
         #search-modal .modal-content { max-width: 500px; }
         #search-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 20px; }
         #search-results h3 { margin: 20px 0 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
@@ -193,6 +191,10 @@
         <div class="header-actions">
             <div class="header-icon" id="home-btn"><span class="material-symbols-rounded">home</span></div>
             <div class="header-icon" id="search-btn"><span class="material-symbols-rounded">search</span></div>
+            <div class="header-icon" id="notifications-btn">
+                <span class="material-symbols-rounded">notifications</span>
+                <span id="notification-dot"></span>
+            </div>
             <div class="header-icon" id="settings-btn"><span class="material-symbols-rounded">settings</span></div>
         </div>
     </header>
@@ -220,7 +222,27 @@
     </div>
 
     <div id="main-app-view" class="view">
-        <div class="container"><main><section id="create-post-form"><textarea id="post-content-input" placeholder="What's on your mind?"></textarea><input type="url" id="post-image-url" placeholder="Optional: Image URL..."><div class="create-post-actions"><button id="submit-post-btn" class="primary">Post</button></div></section><section id="feed"></section></main></div>
+        <div class="container">
+            <main>
+                <section id="create-post-form">
+                    <textarea id="post-content-input" placeholder="What's on your mind?"></textarea>
+                    <input type="url" id="post-image-url" placeholder="Optional: Image URL...">
+                    <div class="create-post-options">
+                        <label class="story-switch-label">
+                            <label class="switch">
+                                <input type="checkbox" id="story-switch">
+                                <span class="slider"></span>
+                            </label>
+                            Story (24h)
+                        </label>
+                        <div class="create-post-actions">
+                            <button id="submit-post-btn" class="primary">Post</button>
+                        </div>
+                    </div>
+                </section>
+                <section id="feed"></section>
+            </main>
+        </div>
     </div>
     
     <div id="profile-page-view" class="view">
@@ -239,6 +261,7 @@
         <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
     </div>
 
+    <!-- Modals -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -267,23 +290,36 @@
         <div class="modal-content"><div class="modal-header"><h2>Search</h2><button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button></div><input type="search" id="search-input" placeholder="Search for users or posts..."><div id="search-results"></div></div>
     </div>
 
+    <div id="notifications-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Notifications</h2>
+                <button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <div id="notifications-list"></div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAA395zJMe0r8TT4DiaBRWlZTn5AvtTNFAk2Ni4czUixQCKzPqFtFYucZIEEvbJr8/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7CmOrpcdrsPJDkz_puo-vX5_E_hLkLfw0N2ZnCOyOKzhK8BqWw7Wjz9RY5XdeD6Xt/exec'; 
 
             const state = { 
                 currentUser: null, 
                 posts: [], 
                 currentUserFollowingList: [], 
                 currentUserFollowersList: [],
+                notifications: [],
+                unreadNotificationCount: 0,
                 currentView: null, 
                 profileUser: null,
                 backgroundPosts: null,
-                backgroundRefreshIntervalId: null
+                backgroundRefreshIntervalId: null,
+                storyUpdateIntervalId: null,
+                feedScrollPosition: 0
             };
             const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
-            const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal') };
-            // MODIFIED: Added margin-left to create space
+            const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal'), notifications: document.getElementById('notifications-modal') };
             const VERIFIED_SVG = `<span class="material-symbols-rounded" style="color: #1DA1F2; vertical-align: -4px; margin-left: 5px;">verified</span>`;
 
             const api = {
@@ -321,26 +357,28 @@
                     if (state.currentView === 'editProfile') this.renderEditProfilePage();
                 },
                 renderFeed(posts, container, isMainFeed = false) {
-                    if (!posts || posts.length === 0) {
+                    const validPosts = posts.filter(p => !p.isStory || new Date() < new Date(p.expiryTimestamp));
+                    
+                    if (!validPosts || validPosts.length === 0) {
                         container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color);">No posts to see here.</p>';
                         return;
                     }
-                    let postsToRender = [...posts];
+                    let postsToRender = [...validPosts];
                     if (isMainFeed) {
                         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
                         const priorityPosts = [];
                         const otherPosts = [];
-                        posts.forEach(post => {
+                        postsToRender.forEach(post => {
                             const postDate = new Date(post.timestamp);
                             const isFollowed = state.currentUserFollowingList.includes(post.userId);
                             const isOwnPost = post.userId === state.currentUser.userId;
-                            if ((isFollowed || isOwnPost) && postDate > twentyFourHoursAgo) {
+                            if ((isFollowed || isOwnPost) && !post.isStory && postDate > twentyFourHoursAgo) {
                                 priorityPosts.push(post);
                             } else {
                                 otherPosts.push(post);
                             }
                         });
-                        postsToRender = [...priorityPosts, ...otherPosts];
+                        postsToRender = [...priorityPosts.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)), ...otherPosts];
                     }
                     container.innerHTML = '';
                     postsToRender.forEach(post => container.appendChild(this.createPostElement(post)));
@@ -414,7 +452,7 @@
                             <img src="${pfpUrl}" class="pfp pfp-sm">
                             <div class="post-header-info">
                                 <span class="post-display-name">${sanitizeHTML(post.displayName)} ${String(post.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</span>
-                                <span class="post-timestamp">${formatTimestamp(post.timestamp)}</span>
+                                <span class="post-timestamp" data-timestamp="${post.isStory ? post.expiryTimestamp : post.timestamp}" data-is-story="${post.isStory || false}">${formatTimestamp(post)}</span>
                             </div>
                             ${isAuthor ? '<button class="delete-btn" data-delete-type="post" title="Delete Post"><span class="material-symbols-rounded">close</span></button>' : ''}
                         </div>
@@ -441,6 +479,42 @@
                                 </div>
                                 ${isAuthor ? '<button class="delete-btn" data-delete-type="comment" title="Delete Comment"><span class="material-symbols-rounded">close</span></button>' : ''}
                             </div>`;
+                },
+                renderNotifications() {
+                    const container = document.getElementById('notifications-list');
+                    if(state.notifications.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color); padding: 20px 0;">No new notifications.</p>';
+                        return;
+                    }
+                    container.innerHTML = '';
+                    state.notifications.forEach(n => {
+                        const item = document.createElement('div');
+                        item.className = 'notification-item';
+                        item.dataset.notificationId = n.notificationId;
+                        item.dataset.actorId = n.actorUserId;
+                        item.dataset.postId = n.postId;
+
+                        let text = '';
+                        switch(n.actionType) {
+                            case 'like': text = 'liked your post.'; break;
+                            case 'comment': text = 'commented on your post.'; break;
+                            case 'follow': text = 'started following you.'; break;
+                        }
+
+                        const pfpUrl = sanitizeHTML(n.actorProfilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${n.actorDisplayName}`;
+                        item.innerHTML = `
+                            <div class="notification-item-clickable" style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
+                                <img src="${pfpUrl}" class="pfp pfp-sm">
+                                <div class="notification-text">
+                                    <span class="username">${sanitizeHTML(n.actorDisplayName)}</span>
+                                    ${text}
+                                    <div class="notification-timestamp">${formatTimestamp({timestamp: n.timestamp})}</div>
+                                </div>
+                            </div>
+                            <button class="delete-btn delete-notification-btn" title="Delete Notification"><span class="material-symbols-rounded">close</span></button>
+                        `;
+                        container.appendChild(item);
+                    });
                 },
                 renderSearchResults(results) {
                     const container = document.getElementById('search-results');
@@ -504,7 +578,28 @@
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
                 async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
-                async createPost() { const contentInput = document.getElementById('post-content-input'); const imageUrlInput = document.getElementById('post-image-url'); let postContent = sanitizeHTML(contentInput.value.trim()); const imageUrl = imageUrlInput.value.trim(); if (!postContent && !imageUrl) return; if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } const tempPost = { ...state.currentUser, postId: `temp_${Date.now()}`, timestamp: new Date().toISOString(), postContent: postContent, likes: [], comments: [] }; state.posts.unshift(tempPost); ui.render(); contentInput.value = ''; imageUrlInput.value = ''; ui.setButtonState('submit-post-btn', 'Posting...', true); try { await api.call('createPost', { userId: state.currentUser.userId, postContent: postContent }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); state.posts.shift(); ui.render(); } finally { ui.setButtonState('submit-post-btn', 'Post', false); } },
+                async createPost() { 
+                    const contentInput = document.getElementById('post-content-input'); 
+                    const imageUrlInput = document.getElementById('post-image-url'); 
+                    const isStory = document.getElementById('story-switch').checked;
+                    let postContent = sanitizeHTML(contentInput.value.trim()); 
+                    const imageUrl = imageUrlInput.value.trim(); 
+                    if (!postContent && !imageUrl) return; 
+                    if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } 
+                    
+                    ui.setButtonState('submit-post-btn', 'Posting...', true); 
+                    try { 
+                        await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory }); 
+                        contentInput.value = ''; 
+                        imageUrlInput.value = ''; 
+                        document.getElementById('story-switch').checked = false;
+                        await core.refreshFeed(false); 
+                    } catch (e) { 
+                        alert(`Error: ${e.message}`); 
+                    } finally { 
+                        ui.setButtonState('submit-post-btn', 'Post', false); 
+                    } 
+                },
                 async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
                 async toggleLike(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const likeIndex = post.likes.findIndex(l => l.userId === state.currentUser.userId); if (likeIndex > -1) post.likes.splice(likeIndex, 1); else post.likes.push({ userId: state.currentUser.userId }); ui.render(); try { await api.call('toggleLike', { postId, userId: state.currentUser.userId }); } catch (e) { if (likeIndex > -1) post.likes.push({ userId: state.currentUser.userId }); else post.likes.pop(); ui.render(); alert(`Error: ${e.message}`); }},
                 async updateProfile() { ui.hideError('edit-profile-error'); const [displayName, pfpUrl, description] = [document.getElementById('edit-display-name').value, document.getElementById('edit-pfp-url').value, document.getElementById('edit-description').value]; ui.setButtonState('save-profile-btn', 'Saving...', true); try { await api.call('updateProfile', { userId: state.currentUser.userId, displayName, profilePictureUrl: pfpUrl, description }); state.currentUser = { ...state.currentUser, displayName, profilePictureUrl: pfpUrl, description }; localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); await core.refreshFeed(false); await handlers.showProfile(state.currentUser.userId); } catch (e) { ui.showError('edit-profile-error', e.message); } finally { ui.setButtonState('save-profile-btn', 'Save Changes', false); }},
@@ -518,7 +613,6 @@
 
                     try {
                         const result = await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId });
-                        state.profileUser.relationship = result.newRelationship;
                         
                         const isNowFollowing = result.newRelationship === 'Following' || result.newRelationship === 'Friends';
                         if (isNowFollowing) {
@@ -528,9 +622,7 @@
                             state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId);
                             state.profileUser.followers--;
                         }
-                        
-                        core.refreshFeed(false);
-
+                        state.profileUser.relationship = result.newRelationship;
                     } catch (e) {
                         alert(`Error: ${e.message}`);
                     } finally {
@@ -539,6 +631,9 @@
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
                 async showProfile(userId) {
+                    if (state.currentView !== 'profile') {
+                        state.feedScrollPosition = window.scrollY;
+                    }
                     core.navigateTo('profile');
                     const userFromCache = state.posts.find(p => p.userId === userId);
 
@@ -547,19 +642,10 @@
                         const isFollower = state.currentUserFollowersList.includes(userId);
                         
                         let preliminaryRelationship = 'none';
-                        if (isFollowing && isFollower) {
-                            preliminaryRelationship = 'Friends';
-                        } else if (isFollowing) {
-                            preliminaryRelationship = 'Following';
-                        }
+                        if (isFollowing && isFollower) { preliminaryRelationship = 'Friends';
+                        } else if (isFollowing) { preliminaryRelationship = 'Following'; }
 
-                        state.profileUser = {
-                            ...userFromCache,
-                            followers: userFromCache.followers || 0,
-                            following: userFromCache.following || 0,
-                            description: userFromCache.description || '',
-                            relationship: preliminaryRelationship
-                        };
+                        state.profileUser = { ...userFromCache, followers: userFromCache.followers || 0, following: userFromCache.following || 0, description: userFromCache.description || '', relationship: preliminaryRelationship };
                         ui.renderProfilePage();
                     } else {
                         state.profileUser = null; 
@@ -581,6 +667,9 @@
                     }
                 },
                 showHashtagFeed(tag) {
+                    if (state.currentView !== 'hashtagFeed') {
+                        state.feedScrollPosition = window.scrollY;
+                    }
                     core.navigateTo('hashtagFeed');
                     const titleEl = document.getElementById('hashtag-title');
                     const feedEl = document.getElementById('hashtag-feed');
@@ -593,6 +682,29 @@
                     );
                     
                     ui.renderFeed(filteredPosts, feedEl, false);
+                },
+                async showNotifications() {
+                    ui.toggleModal('notifications', true);
+                    ui.renderNotifications();
+                    if(state.unreadNotificationCount > 0) {
+                        state.unreadNotificationCount = 0;
+                        core.updateNotificationDot();
+                        try {
+                            await api.call('markNotificationsAsRead', { userId: state.currentUser.userId });
+                        } catch (e) {
+                            console.error("Failed to mark notifications as read:", e);
+                        }
+                    }
+                },
+                async deleteNotification(notificationId) {
+                    state.notifications = state.notifications.filter(n => n.notificationId !== notificationId);
+                    ui.renderNotifications(); 
+                    try {
+                        await api.call('deleteNotification', { userId: state.currentUser.userId, notificationId });
+                    } catch(e) {
+                        alert("Could not delete notification: " + e.message);
+                        core.refreshFeed(false);
+                    }
                 },
                 async updatePostVisibility(e) {
                     const newVisibility = e.target.value;
@@ -612,42 +724,65 @@
             };
 
             const core = {
-                navigateTo(view) { if (state.backgroundPosts) { state.posts = state.backgroundPosts; state.backgroundPosts = null; } state.currentView = view; ui.render(); window.scrollTo(0, 0); },
+                navigateTo(view) { 
+                    if (state.backgroundPosts) { state.posts = state.backgroundPosts; state.backgroundPosts = null; } 
+                    state.currentView = view; 
+                    ui.render(); 
+                    if(view === 'feed') {
+                        setTimeout(() => window.scrollTo(0, state.feedScrollPosition), 0);
+                    } else {
+                        window.scrollTo(0, 0);
+                    }
+                },
                 async refreshFeed(showLoader = true) { 
                     if (showLoader) ui.showFeedSkeleton(document.getElementById('feed')); 
                     try { 
-                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET'); 
+                        const [postsResult, notificationsResult] = await Promise.all([
+                            api.call('getPosts', { userId: state.currentUser.userId }, 'GET'),
+                            api.call('getNotifications', { userId: state.currentUser.userId }, 'GET')
+                        ]);
+
+                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = postsResult;
                         state.posts = posts; 
                         state.currentUserFollowingList = currentUserFollowingList;
                         state.currentUserFollowersList = currentUserFollowersList;
                         if (currentUserData) { 
                             state.currentUser = currentUserData; 
                             localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
-                        } 
+                        }
+
+                        const { notifications } = notificationsResult;
+                        state.notifications = notifications;
+                        state.unreadNotificationCount = notifications.filter(n => n.isRead === 'FALSE' || n.isRead === false).length;
+                        this.updateNotificationDot();
+
                     } catch(e) { 
                         document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
                     } finally { 
-                        if (state.currentView === 'feed' || state.currentView === 'profile') ui.render(); 
+                        if (['feed', 'profile', 'hashtagFeed'].includes(state.currentView)) ui.render(); 
                     }
                 },
-                async backgroundRefreshLogic() { 
-                    if (!state.currentUser) return; 
-                    try { 
-                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: state.currentUser.userId }, 'GET'); 
-                        state.backgroundPosts = posts; 
-                        state.currentUserFollowingList = currentUserFollowingList; 
-                        state.currentUserFollowersList = currentUserFollowersList;
-                        if (currentUserData) { 
-                            state.currentUser = currentUserData; 
-                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
-                        } 
-                        console.log("Background feed refresh successful."); 
-                    } catch (e) { 
-                        console.error("Background feed refresh failed:", e.message); 
-                    }
+                updateNotificationDot() {
+                    document.getElementById('notification-dot').style.display = state.unreadNotificationCount > 0 ? 'block' : 'none';
                 },
-                startBackgroundRefresh() { if (state.backgroundRefreshIntervalId) { clearInterval(state.backgroundRefreshIntervalId); } state.backgroundRefreshIntervalId = setInterval(core.backgroundRefreshLogic, 60000); },
-                logout() { localStorage.removeItem('currentUser'); state.currentUser = null; if (state.backgroundRefreshIntervalId) { clearInterval(state.backgroundRefreshIntervalId); state.backgroundRefreshIntervalId = null; } window.location.reload(); },
+                startStoryCountdownInterval() {
+                    if (state.storyUpdateIntervalId) clearInterval(state.storyUpdateIntervalId);
+                    state.storyUpdateIntervalId = setInterval(() => {
+                        document.querySelectorAll('.post-timestamp[data-is-story="true"]').forEach(el => {
+                           const post = { isStory: true, expiryTimestamp: el.dataset.timestamp };
+                           el.textContent = formatTimestamp(post);
+                        });
+                    }, 60000);
+                },
+                logout() { 
+                    localStorage.removeItem('currentUser'); 
+                    state.currentUser = null; 
+                    if (state.backgroundRefreshIntervalId) clearInterval(state.backgroundRefreshIntervalId);
+                    if (state.storyUpdateIntervalId) clearInterval(state.storyUpdateIntervalId);
+                    state.backgroundRefreshIntervalId = null;
+                    state.storyUpdateIntervalId = null;
+                    window.location.reload(); 
+                },
                 setupEventListeners() {
                     let searchTimeout;
                     document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('register-form').classList.remove('hidden'); });
@@ -657,8 +792,12 @@
                     document.getElementById('home-btn').addEventListener('click', () => core.navigateTo('feed'));
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
+                    document.getElementById('notifications-btn').addEventListener('click', handlers.showNotifications);
+                    
                     document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
                     document.querySelector('#search-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('search', false));
+                    document.querySelector('#notifications-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('notifications', false));
+
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
@@ -667,10 +806,33 @@
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
                     
+                    document.getElementById('notifications-list').addEventListener('click', (e) => {
+                        const item = e.target.closest('.notification-item');
+                        if(!item) return;
+
+                        if(e.target.closest('.delete-notification-btn')) {
+                            handlers.deleteNotification(item.dataset.notificationId);
+                            return;
+                        }
+                        
+                        const clickableArea = e.target.closest('.notification-item-clickable');
+                        if (clickableArea) {
+                            ui.toggleModal('notifications', false);
+                            if (item.dataset.postId && item.dataset.postId !== 'null') {
+                                alert("Navigating to posts from notifications is coming soon!");
+                            } else if (item.dataset.actorId) {
+                                handlers.showProfile(item.dataset.actorId);
+                            }
+                        }
+                    });
+
                     document.body.addEventListener('click', (e) => { 
                         const target = e.target; 
                         const deleteBtn = target.closest('.delete-btn'); 
-                        if (deleteBtn) { if (target.closest('.post')) { handlers.deletePost(target.closest('.post').dataset.postId); return; } if (target.closest('.comment')) { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } } 
+                        if (deleteBtn && !target.closest('.notification-item')) {
+                            if (target.closest('.post')) { handlers.deletePost(target.closest('.post').dataset.postId); return; } 
+                            if (target.closest('.comment')) { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } 
+                        } 
                         if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); } 
                         const hashtagLink = target.closest('.hashtag-link');
                         if (hashtagLink) { e.preventDefault(); handlers.showHashtagFeed(hashtagLink.dataset.hashtag); return; }
@@ -690,16 +852,13 @@
                     core.navigateTo('feed');
                     ui.showFeedSkeleton(document.getElementById('feed'));
                     try {
-                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData } = await api.call('getPosts', { userId: savedUser.userId }, 'GET');
-                        if (currentUserData.isSuspended === 'OUTAGE') { return core.navigateTo('outage'); }
-                        if (currentUserData.isSuspended) { core.logout(); return core.navigateTo('suspended'); }
-                        state.currentUser = currentUserData;
-                        localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-                        state.posts = posts;
-                        state.currentUserFollowingList = currentUserFollowingList;
-                        state.currentUserFollowersList = currentUserFollowersList;
+                        await core.refreshFeed(false);
+                        
+                        if (state.currentUser.isSuspended === 'OUTAGE') { return core.navigateTo('outage'); }
+                        if (state.currentUser.isSuspended) { core.logout(); return core.navigateTo('suspended'); }
+                        
                         ui.render();
-                        core.startBackgroundRefresh(); 
+                        core.startStoryCountdownInterval();
                     } catch (error) {
                         alert(`Session error: ${error.message}. Please log in again.`);
                         core.logout();
@@ -719,7 +878,30 @@
                 }
             };
             
-            const formatTimestamp = (isoString) => { if (!isoString) return ''; const postDate = new Date(isoString); const now = new Date(); const secondsAgo = Math.round((now - postDate) / 1000); if (secondsAgo < 60) return 'just now'; const minutesAgo = Math.round(secondsAgo / 60); if (minutesAgo < 60) return `${minutesAgo}m ago`; const hoursAgo = Math.round(minutesAgo / 60); if (hoursAgo < 24) return `${hoursAgo}h ago`; return postDate.toLocaleDateString('en-us', { month: 'short', day: 'numeric' }); };
+            const formatTimestamp = (post) => {
+                const isoString = post.isStory ? post.expiryTimestamp : post.timestamp;
+                if (!isoString) return '';
+                
+                const date = new Date(isoString);
+                const now = new Date();
+                
+                if (post.isStory) {
+                    const diff = date - now;
+                    if (diff <= 0) return 'Expired';
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    return `${hours}h ${minutes}m left`;
+                }
+
+                const secondsAgo = Math.round((now - date) / 1000);
+                if (secondsAgo < 60) return 'just now';
+                const minutesAgo = Math.round(secondsAgo / 60);
+                if (minutesAgo < 60) return `${minutesAgo}m ago`;
+                const hoursAgo = Math.round(minutesAgo / 60);
+                if (hoursAgo < 24) return `${hoursAgo}h ago`;
+                return date.toLocaleDateString('en-us', { month: 'short', day: 'numeric' });
+            };
+
             const sanitizeHTML = (str) => { if (!str) return ''; const temp = document.createElement('div'); temp.textContent = str; return temp.innerHTML; };
             core.main();
         });
