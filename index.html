@@ -338,7 +338,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiI1IWKf4yj19HHTqfUjVbNZl9L5vpoQcfk_ykjVPvjyvkJNrjqAmkEOsvBfJpJD54/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7KztXEAmggohFY4bVNZfiWMaUM59QlaZm5aLBzVZqISNvPhwpjWtPiN2-r3Fb9D3A/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -608,8 +608,6 @@
                     if (modalName === 'settings' && show) {
                         const user = state.currentUser;
                         const pfpUrl = sanitizeHTML(user.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${user.username}`;
-                        
-                        // ===== MODIFICATION FOR VERIFIED BADGE =====
                         const isVerified = String(user.isVerified).toUpperCase() === 'TRUE';
                         
                         document.getElementById('settings-user-info-row').innerHTML = `
@@ -630,7 +628,37 @@
 
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
-                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); }},
+                
+                // ===== MODIFIED FUNCTION =====
+                async register() { 
+                    ui.hideError('register-error'); 
+                    const [username, displayName, password] = [
+                        document.getElementById('register-username').value.trim(), 
+                        document.getElementById('register-displayname').value.trim(), 
+                        document.getElementById('register-password').value.trim()
+                    ]; 
+                    
+                    if (!username || !displayName || !password) {
+                        return ui.showError('register-error', 'All fields required.');
+                    }
+                    
+                    // --- CLIENT-SIDE PASSWORD LENGTH CHECK ---
+                    if (password.length < 4) {
+                        return ui.showError('register-error', 'Password must be at least 4 characters long.');
+                    }
+                    
+                    ui.setButtonState('register-btn', 'Signing Up...', true); 
+                    try { 
+                        const { user } = await api.call('register', { username, displayName, password }); 
+                        state.currentUser = user; 
+                        localStorage.setItem('currentUser', JSON.stringify(user)); 
+                        await core.initializeApp(); 
+                    } catch (e) { 
+                        ui.showError('register-error', e.message); 
+                    } finally { 
+                        ui.setButtonState('register-btn', 'Sign Up', false); 
+                    }
+                },
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
                     const imageUrlInput = document.getElementById('post-image-url'); 
