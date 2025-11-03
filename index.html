@@ -23,6 +23,7 @@
             --accent-color: #fe5721; 
             --error-color: #ed4956;
             --warning-color: #FFC107;
+            --banner-height: 0px; 
         }
         [data-theme="dark"] {
             --primary-bg-color: #000000; --secondary-bg-color: #121212; --primary-text-color: #F5F5F7;
@@ -37,8 +38,10 @@
             transition: background-color 0.3s, color 0.3s;
         }
         
+        /* MODIFIED: Padding now accounts for banner height */
         body.logged-in {
-            padding-top: calc(50px + env(safe-area-inset-top) + 30px); 
+            padding-top: calc(50px + env(safe-area-inset-top) + 20px + var(--banner-height)); 
+            transition: padding-top 0.3s ease-in-out;
         }
 
         .view { display: none; }
@@ -78,11 +81,15 @@
         .warning-icon { color: var(--warning-color); font-size: 48px; margin-bottom: 16px; display: inline-block; }
 
         header { 
-            position: fixed; top: 0; left: 0; right: 0; display: flex; 
+            position: fixed; 
+            /* MODIFIED: Header top is now controlled by the banner height variable */
+            top: calc(env(safe-area-inset-top) + var(--banner-height));
+            left: 0; right: 0; display: flex; 
             justify-content: space-between; align-items: center; 
             background-color: var(--primary-bg-color); z-index: 10; 
             border-bottom: 1px solid var(--border-color); min-height: 50px; 
-            padding-left: 16px; padding-right: 16px; padding-top: env(safe-area-inset-top);
+            padding-left: 16px; padding-right: 16px;
+            transition: top 0.3s ease-in-out;
         }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .header-icon { font-size: 24px; cursor: pointer; position: relative; }
@@ -93,16 +100,21 @@
         }
         #global-banner {
             position: fixed;
-            top: calc(50px + env(safe-area-inset-top));
+            top: env(safe-area-inset-top);
             left: 0;
             right: 0;
-            background-color: var(--warning-color);
-            color: var(--primary-text-color);
+            background-color: var(--primary-text-color);
+            color: var(--primary-bg-color);
             text-align: center;
-            padding: 8px;
+            padding: 8px 16px;
             font-size: 14px;
             font-weight: 600;
-            z-index: 9;
+            z-index: 11;
+            line-height: 1.4;
+            transition: transform 0.3s ease-in-out;
+        }
+        #global-banner.hidden {
+            transform: translateY(-100%);
         }
         
         #create-post-form { 
@@ -774,11 +786,17 @@
                         const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData, bannerText } = postsResult;
                         
                         const banner = document.getElementById('global-banner');
+                        const root = document.documentElement;
                         if(bannerText) {
                             banner.textContent = bannerText;
                             banner.classList.remove('hidden');
+                            // Use a timeout to ensure the element is rendered before getting its height
+                            setTimeout(() => {
+                                root.style.setProperty('--banner-height', `${banner.offsetHeight}px`);
+                            }, 0);
                         } else {
                             banner.classList.add('hidden');
+                            root.style.setProperty('--banner-height', '0px');
                         }
 
                         if (currentUserData) {
@@ -807,7 +825,9 @@
 
                     } catch(e) { 
                         console.error("Feed refresh error:", e);
-                        document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
+                        if(state.currentView === 'feed') {
+                           document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
+                        }
                         if (e.message.includes("validate user session")) {
                             setTimeout(() => core.logout(), 2000);
                         }
