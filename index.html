@@ -119,12 +119,17 @@
             padding: 16px; margin: 0 0 20px 0; border: 1px solid var(--border-color); 
             border-radius: 8px; background-color: var(--secondary-bg-color); 
         }
-        .create-post-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .create-post-options { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         #post-type-select { padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; }
-        #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 10px; }
-        #create-post-form input[type="url"] { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; margin-bottom: 10px; }
+        #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 0; }
+        .create-post-left-actions { display: flex; align-items: center; gap: 8px; }
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
         .create-post-actions button { padding: 8px 16px; }
+        #add-image-btn { background: none; padding: 5px; color: var(--secondary-text-color); font-size: 26px; }
+        #add-image-btn:hover { color: var(--primary-text-color); }
+        #post-image-preview-container { position: relative; margin: 10px 0 0 0; }
+        #post-image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; }
+        #remove-image-btn { position: absolute; top: 8px; right: 8px; background-color: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; cursor: pointer; padding: 0; font-weight: bold; }
         
         .post { border: 1px solid var(--border-color); border-radius: 8px; margin: 20px 0; background-color: var(--secondary-bg-color); box-shadow: 0 4px 12px var(--shadow-color); overflow: hidden; }
         .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; }
@@ -166,6 +171,10 @@
         .skeleton .pfp, .skeleton .post-display-name, .skeleton .post-content, .skeleton .display-name, .skeleton .username, .skeleton .description { background-color: var(--border-color); border-radius: 6px; }
         .skeleton .post-display-name { height: 20px; width: 30%; }
         .skeleton .post-content { height: 60px; }
+
+        #image-url-modal input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 20px; }
+        #image-url-modal .modal-actions { text-align: right; }
+        #image-url-modal .modal-actions button { padding: 10px 20px; }
 
         #notifications-modal .modal-content { max-width: 450px; }
         #notifications-modal .modal-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
@@ -258,13 +267,16 @@
             <main>
                 <section id="create-post-form">
                     <textarea id="post-content-input" placeholder="What's on your mind?"></textarea>
-                    <input type="url" id="post-image-url" placeholder="Optional: Image URL...">
+                    <div id="post-image-preview-container" class="hidden"></div>
                     <div class="create-post-options">
-                        <select id="post-type-select">
-                            <option value="regular">Post</option>
-                            <option value="story-24">Story (24h)</option>
-                            <option value="story-12">Story (12h)</option>
-                        </select>
+                        <div class="create-post-left-actions">
+                            <select id="post-type-select">
+                                <option value="regular">Post</option>
+                                <option value="story-24">Story (24h)</option>
+                                <option value="story-12">Story (12h)</option>
+                            </select>
+                            <button id="add-image-btn" title="Add Image URL"><span class="material-symbols-rounded">add_photo_alternate</span></button>
+                        </div>
                         <div class="create-post-actions">
                             <button id="submit-post-btn" class="primary">Post</button>
                         </div>
@@ -336,9 +348,23 @@
         </div>
     </div>
 
+    <div id="image-url-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Image URL</h2>
+                <button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            <input type="url" id="image-url-modal-input" placeholder="https://example.com/image.png">
+            <div class="modal-actions">
+                <button id="image-url-modal-done-btn" class="primary">Done</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7KztXEAmggohFY4bVNZfiWMaUM59QlaZm5aLBzVZqISNvPhwpjWtPiN2-r3Fb9D3A/exec'; 
+            // ===== MODIFIED LINE =====
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRCoHy4sBAwO8Wx7ilJcrZijAH5HmlVte-5LLwsOISS9Gd_7ntwN6Rwl_nsNwnU7mH/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -352,10 +378,11 @@
                 backgroundPosts: null,
                 backgroundRefreshIntervalId: null,
                 storyUpdateIntervalId: null,
-                feedScrollPosition: 0
+                feedScrollPosition: 0,
+                postImageUrl: null
             };
             const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
-            const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal'), notifications: document.getElementById('notifications-modal') };
+            const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal'), notifications: document.getElementById('notifications-modal'), imageUrl: document.getElementById('image-url-modal') };
             const VERIFIED_SVG = `<span class="material-symbols-rounded" style="color: #1DA1F2; vertical-align: -4px; margin-left: 5px;">verified</span>`;
 
             const api = {
@@ -473,6 +500,7 @@
                             <div class="profile-stats">
                                 <div class="stat"><span>${state.profileUser.followers}</span> Followers</div>
                                 <div class="stat"><span>${state.profileUser.following}</span> Following</div>
+                                <div class="stat"><span>${state.profileUser.totalLikes || 0}</span> Likes</div>
                             </div>
                             <p class="description">${sanitizeHTML(state.profileUser.description)}</p>
                             <div class="profile-actions">${actionButton}</div>
@@ -589,6 +617,19 @@
                         document.getElementById('search-posts-list').appendChild(postEl);
                     });
                 },
+                renderImagePreview() {
+                    const container = document.getElementById('post-image-preview-container');
+                    if (state.postImageUrl) {
+                        container.innerHTML = `
+                            <img id="post-image-preview" src="${sanitizeHTML(state.postImageUrl)}" alt="Image Preview">
+                            <button id="remove-image-btn" title="Remove Image">&times;</button>
+                        `;
+                        container.classList.remove('hidden');
+                    } else {
+                        container.innerHTML = '';
+                        container.classList.add('hidden');
+                    }
+                },
                 showFeedSkeleton(container) {
                     const skeletonHTML = Array(3).fill().map(() => `<div class="post skeleton"><div class="post-header"><div class="pfp pfp-sm"></div><div class="post-display-name"></div></div><div class="post-content"></div></div>`).join('');
                     container.innerHTML = skeletonHTML;
@@ -628,46 +669,15 @@
 
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
-                
-                // ===== MODIFIED FUNCTION =====
-                async register() { 
-                    ui.hideError('register-error'); 
-                    const [username, displayName, password] = [
-                        document.getElementById('register-username').value.trim(), 
-                        document.getElementById('register-displayname').value.trim(), 
-                        document.getElementById('register-password').value.trim()
-                    ]; 
-                    
-                    if (!username || !displayName || !password) {
-                        return ui.showError('register-error', 'All fields required.');
-                    }
-                    
-                    // --- CLIENT-SIDE PASSWORD LENGTH CHECK ---
-                    if (password.length < 4) {
-                        return ui.showError('register-error', 'Password must be at least 4 characters long.');
-                    }
-                    
-                    ui.setButtonState('register-btn', 'Signing Up...', true); 
-                    try { 
-                        const { user } = await api.call('register', { username, displayName, password }); 
-                        state.currentUser = user; 
-                        localStorage.setItem('currentUser', JSON.stringify(user)); 
-                        await core.initializeApp(); 
-                    } catch (e) { 
-                        ui.showError('register-error', e.message); 
-                    } finally { 
-                        ui.setButtonState('register-btn', 'Sign Up', false); 
-                    }
-                },
+                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); } },
                 async createPost() { 
                     const contentInput = document.getElementById('post-content-input'); 
-                    const imageUrlInput = document.getElementById('post-image-url'); 
                     const postType = document.getElementById('post-type-select').value;
                     const isStory = postType.startsWith('story');
                     const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0;
 
                     let postContent = sanitizeHTML(contentInput.value.trim()); 
-                    const imageUrl = imageUrlInput.value.trim(); 
+                    const imageUrl = state.postImageUrl; 
                     if (!postContent && !imageUrl) return; 
                     if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } 
                     
@@ -675,7 +685,8 @@
                     try { 
                         await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration }); 
                         contentInput.value = ''; 
-                        imageUrlInput.value = ''; 
+                        state.postImageUrl = null;
+                        ui.renderImagePreview();
                         document.getElementById('post-type-select').value = 'regular';
                         await core.refreshFeed(false); 
                     } catch (e) { 
@@ -729,7 +740,14 @@
                         if (isFollowing && isFollower) { preliminaryRelationship = 'Friends';
                         } else if (isFollowing) { preliminaryRelationship = 'Following'; }
 
-                        state.profileUser = { ...userFromCache, followers: userFromCache.followers || 0, following: userFromCache.following || 0, description: userFromCache.description || '', relationship: preliminaryRelationship };
+                        state.profileUser = { 
+                            ...userFromCache, 
+                            followers: userFromCache.followers || 0, 
+                            following: userFromCache.following || 0, 
+                            totalLikes: userFromCache.totalLikes || 0,
+                            description: userFromCache.description || '', 
+                            relationship: preliminaryRelationship 
+                        };
                         ui.renderProfilePage();
                     } else {
                         state.profileUser = null; 
@@ -918,6 +936,7 @@
                     document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
                     document.querySelector('#search-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('search', false));
                     document.querySelector('#notifications-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('notifications', false));
+                    document.querySelector('#image-url-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('imageUrl', false));
 
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
@@ -927,6 +946,24 @@
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
                     
+                    document.getElementById('add-image-btn').addEventListener('click', () => ui.toggleModal('imageUrl', true));
+                    document.getElementById('image-url-modal-done-btn').addEventListener('click', () => {
+                        const url = document.getElementById('image-url-modal-input').value.trim();
+                        if (url) {
+                            state.postImageUrl = url;
+                            ui.renderImagePreview();
+                        }
+                        document.getElementById('image-url-modal-input').value = '';
+                        ui.toggleModal('imageUrl', false);
+                    });
+
+                    document.getElementById('create-post-form').addEventListener('click', (e) => {
+                        if (e.target.id === 'remove-image-btn') {
+                            state.postImageUrl = null;
+                            ui.renderImagePreview();
+                        }
+                    });
+
                     document.getElementById('notifications-list').addEventListener('click', (e) => {
                         const item = e.target.closest('.notification-item');
                         if(!item) return;
