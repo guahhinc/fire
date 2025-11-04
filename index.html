@@ -48,7 +48,7 @@
         .container { max-width: 600px; margin: 0 auto; padding: 0 16px; }
         .hidden { display: none !important; }
 
-        button { font-weight: 600; cursor: pointer; border-radius: 6px; border: none; }
+        button { font-weight: 600; cursor: pointer; border-radius: 10px; border: none; }
         button.primary { background-color: var(--accent-color); color: white; transition: opacity 0.2s; }
         button.primary:hover:not(:disabled) { opacity: 0.85; }
         button.secondary { background-color: var(--border-color); color: var(--primary-text-color); }
@@ -72,8 +72,8 @@
         .delete-btn .material-symbols-rounded { font-size: 24px; }
         
         #auth-view, #suspended-view, #outage-view { padding-top: 10vh; text-align: center; }
-        #auth-container { max-width: 350px; margin: 20px auto; padding: 30px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--secondary-bg-color); }
-        #auth-container input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; }
+        #auth-container { max-width: 350px; margin: 20px auto; padding: 30px; border: 1px solid var(--border-color); border-radius: 12px; background-color: var(--secondary-bg-color); }
+        #auth-container input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         #auth-container button { width: 100%; padding: 12px; font-size: 16px; }
         #suspended-view p, #outage-view p { max-width: 350px; margin: 20px auto; line-height: 1.5; }
         #suspended-view button, #outage-view button { padding: 12px 24px; font-size: 16px; margin-top: 10px; }
@@ -117,27 +117,27 @@
         
         #create-post-form { 
             padding: 16px; margin: 0 0 20px 0; border: 1px solid var(--border-color); 
-            border-radius: 8px; background-color: var(--secondary-bg-color); 
+            border-radius: 12px; background-color: var(--secondary-bg-color); 
         }
         .create-post-options { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         #post-type-select { padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color); font-size: 14px; }
-        #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 0; }
+        #create-post-form textarea { width: 100%; min-height: 60px; padding: 10px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--primary-bg-color); color: var(--primary-text-color); font-size: 16px; resize: vertical; margin-bottom: 0; }
         .create-post-left-actions { display: flex; align-items: center; gap: 8px; }
         .create-post-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
         .create-post-actions button { padding: 8px 16px; }
         #add-image-btn { background: none; padding: 5px; color: var(--secondary-text-color); font-size: 26px; }
         #add-image-btn:hover { color: var(--primary-text-color); }
         #post-image-preview-container { position: relative; margin: 10px 0 0 0; }
-        #post-image-preview { max-width: 100%; max-height: 200px; border-radius: 8px; }
+        #post-image-preview { max-width: 100%; max-height: 200px; border-radius: 12px; }
         #remove-image-btn { position: absolute; top: 8px; right: 8px; background-color: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; cursor: pointer; padding: 0; font-weight: bold; }
         
-        .post { border: 1px solid var(--border-color); border-radius: 8px; margin: 20px 0; background-color: var(--secondary-bg-color); box-shadow: 0 4px 12px var(--shadow-color); overflow: hidden; }
+        .post { border: 1px solid var(--border-color); border-radius: 12px; margin: 20px 0; background-color: var(--secondary-bg-color); box-shadow: none; overflow: hidden; }
         .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; }
         .post-header-info { flex-grow: 1; }
         .post-display-name { font-weight: 600; font-size: 16px; display: inline-flex; align-items: center; }
         .post-timestamp { font-size: 14px; color: var(--secondary-text-color); margin-left: 8px; font-weight: 400; }
         .post-content { padding: 0 16px 12px; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; line-height: 1.5; }
-        .post-content img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+        .post-content img { max-width: 100%; border-radius: 12px; margin-top: 10px; }
         .post-actions { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
         .like-btn { font-size: 26px; background: none; color: var(--primary-text-color); padding: 0; }
         .like-btn.liked { color: var(--accent-color); }
@@ -151,7 +151,7 @@
         .comment-form button { border: none; background: none; color: var(--accent-color); font-weight: 600; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h2 { margin: 0; font-weight: 700; }
         .close-modal-btn { font-size: 24px; cursor: pointer; border: none; background: none; color: var(--primary-text-color); }
@@ -168,18 +168,18 @@
         input:checked + .slider:before { transform: translateX(22px); }
         .skeleton { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .skeleton .pfp, .skeleton .post-display-name, .skeleton .post-content, .skeleton .display-name, .skeleton .username, .skeleton .description { background-color: var(--border-color); border-radius: 6px; }
+        .skeleton .pfp, .skeleton .post-display-name, .skeleton .post-content, .skeleton .display-name, .skeleton .username, .skeleton .description { background-color: var(--border-color); border-radius: 10px; }
         .skeleton .post-display-name { height: 20px; width: 30%; }
         .skeleton .post-content { height: 60px; }
 
-        #image-url-modal input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 20px; }
+        #image-url-modal input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; }
         #image-url-modal .modal-actions { text-align: right; }
         #image-url-modal .modal-actions button { padding: 10px 20px; }
 
         #notifications-modal .modal-content { max-width: 450px; }
         #notifications-modal .modal-header { padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
         #notifications-list { max-height: 60vh; overflow-y: auto; }
-        .notification-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; }
+        .notification-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; }
         .notification-item-clickable { cursor: pointer; }
         .notification-item-clickable:hover { background-color: var(--border-color); }
         .notification-text { flex-grow: 1; font-size: 14px; }
@@ -188,11 +188,11 @@
         .delete-notification-btn { margin-left: auto; }
         
         #search-modal .modal-content { max-width: 500px; }
-        #search-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 20px; }
+        #search-input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 20px; }
         #search-results h3 { margin: 20px 0 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .search-result-user { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 6px; cursor: pointer; }
+        .search-result-user { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 10px; cursor: pointer; }
         .search-result-user:hover { background-color: var(--border-color); }
-        .search-result-post { padding: 8px; border-radius: 6px; font-size: 14px; color: var(--secondary-text-color); }
+        .search-result-post { padding: 8px; border-radius: 10px; font-size: 14px; color: var(--secondary-text-color); }
 
         .profile-header { text-align: center; margin-bottom: 20px; }
         .profile-header .pfp { margin: 0 auto 16px auto; cursor: default; }
@@ -205,7 +205,7 @@
         .back-btn { margin: 20px 0; font-weight: 600; cursor: pointer; display: inline-block; }
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--secondary-bg-color); color: var(--primary-text-color); font-size: 16px; }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
         #edit-profile-view .actions { margin-top: 20px; }
@@ -364,7 +364,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ===== MODIFIED LINE =====
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRCoHy4sBAwO8Wx7ilJcrZijAH5HmlVte-5LLwsOISS9Gd_7ntwN6Rwl_nsNwnU7mH/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxQfOGRhcyZJ-bCNwkjo-9iKiWIZNB1RA5OvL2vb0ecQTjQrGq-S-i2X9ze7go9OiQ/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -379,7 +379,8 @@
                 backgroundRefreshIntervalId: null,
                 storyUpdateIntervalId: null,
                 feedScrollPosition: 0,
-                postImageUrl: null
+                postImageUrl: null,
+                scrollToPostId: null
             };
             const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
             const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal'), notifications: document.getElementById('notifications-modal'), imageUrl: document.getElementById('image-url-modal') };
@@ -468,7 +469,7 @@
                                 <img src="${pfpUrl}" class="pfp pfp-lg" style="filter: grayscale(100%); cursor: default;">
                                 <div class="display-name" style="color: var(--secondary-text-color);">${sanitizeHTML(state.profileUser.displayName)}</div>
                                 <div class="username" style="color: var(--secondary-text-color);">@${sanitizeHTML(state.profileUser.username)}</div>
-                                <div style="margin-top: 20px; padding: 12px; background-color: var(--border-color); border-radius: 8px; font-weight: 600;">
+                                <div style="margin-top: 20px; padding: 12px; background-color: var(--border-color); border-radius: 12px; font-weight: 600;">
                                     This account is suspended.
                                 </div>
                             </div>`;
@@ -506,6 +507,24 @@
                             <div class="profile-actions">${actionButton}</div>
                         </div>`;
                     this.renderFeed(state.posts.filter(p => p.userId === state.profileUser.userId), document.getElementById('profile-feed'), false);
+
+                    if (state.scrollToPostId) {
+                        const postIdToScroll = state.scrollToPostId;
+                        setTimeout(() => {
+                            const postElement = document.querySelector(`#profile-feed .post[data-post-id="${postIdToScroll}"]`);
+                            if (postElement) {
+                                postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                const warningColor = getComputedStyle(document.documentElement).getPropertyValue('--warning-color');
+                                postElement.style.transition = 'background-color 1s ease';
+                                postElement.style.backgroundColor = `${warningColor}4D`;
+                                
+                                setTimeout(() => {
+                                    postElement.style.backgroundColor = '';
+                                }, 2500);
+                            }
+                        }, 200);
+                        state.scrollToPostId = null;
+                    }
                 },
                 formatPostContent(content) {
                     if (!content) return '';
@@ -725,27 +744,25 @@
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
-                async showProfile(userId) {
+                // ===== MODIFIED FUNCTION =====
+                async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') {
                         state.feedScrollPosition = window.scrollY;
                     }
+                    state.scrollToPostId = scrollToPostId;
                     core.navigateTo('profile');
-                    const userFromCache = state.posts.find(p => p.userId === userId);
 
+                    const userFromCache = state.posts.find(p => p.userId === userId);
                     if (userFromCache) {
                         const isFollowing = state.currentUserFollowingList.includes(userId);
                         const isFollower = state.currentUserFollowersList.includes(userId);
                         
-                        let preliminaryRelationship = 'none';
+                        let preliminaryRelationship = "none";
                         if (isFollowing && isFollower) { preliminaryRelationship = 'Friends';
                         } else if (isFollowing) { preliminaryRelationship = 'Following'; }
 
                         state.profileUser = { 
                             ...userFromCache, 
-                            followers: userFromCache.followers || 0, 
-                            following: userFromCache.following || 0, 
-                            totalLikes: userFromCache.totalLikes || 0,
-                            description: userFromCache.description || '', 
                             relationship: preliminaryRelationship 
                         };
                         ui.renderProfilePage();
@@ -753,18 +770,20 @@
                         state.profileUser = null; 
                         ui.showProfileSkeleton();
                     }
-
-                    try {
-                        const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
-                        if (!state.profileUser || state.profileUser.userId === user.userId) {
-                            state.profileUser = user; 
-                            ui.renderProfilePage();
-                        }
-                    } catch (e) {
-                        console.error("Failed to refresh profile:", e);
-                        if (!userFromCache) {
-                            document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
-                            document.getElementById('profile-feed').innerHTML = '';
+                    
+                    if (userId !== state.currentUser.userId) {
+                        try {
+                            const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
+                            if (!state.profileUser || state.profileUser.userId === user.userId) {
+                                state.profileUser = user; 
+                                ui.renderProfilePage();
+                            }
+                        } catch (e) {
+                            console.error("Failed to refresh profile:", e);
+                            if (!userFromCache) {
+                                document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
+                                document.getElementById('profile-feed').innerHTML = '';
+                            }
                         }
                     }
                 },
@@ -967,19 +986,20 @@
                     document.getElementById('notifications-list').addEventListener('click', (e) => {
                         const item = e.target.closest('.notification-item');
                         if(!item) return;
-
                         if(e.target.closest('.delete-notification-btn')) {
                             handlers.deleteNotification(item.dataset.notificationId);
                             return;
                         }
-                        
                         const clickableArea = e.target.closest('.notification-item-clickable');
                         if (clickableArea) {
                             ui.toggleModal('notifications', false);
-                            if (item.dataset.postId && item.dataset.postId !== 'null') {
-                                alert("Navigating to posts from notifications is coming soon!");
-                            } else if (item.dataset.actorId) {
-                                handlers.showProfile(item.dataset.actorId);
+                            const notification = state.notifications.find(n => n.notificationId === item.dataset.notificationId);
+                            if (!notification) return;
+                            if (notification.postAuthorId && notification.postId && notification.postId !== 'null') {
+                                handlers.showProfile(notification.postAuthorId, notification.postId);
+                            } 
+                            else if (notification.actorUserId) {
+                                handlers.showProfile(notification.actorUserId);
                             }
                         }
                     });
