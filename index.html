@@ -363,8 +363,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ===== MODIFIED LINE =====
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxQfOGRhcyZJ-bCNwkjo-9iKiWIZNB1RA5OvL2vb0ecQTjQrGq-S-i2X9ze7go9OiQ/exec'; 
+            // ===== THIS LINE IS NOW UPDATED WITH YOUR NEW URL =====
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhIL3arTSuXv0vBp_fRTYsOsvjRlGiKjm5Dg21oh2yRDbPyk_ORK4u7vZQieHV19Y2/exec'; 
 
             const state = { 
                 currentUser: null, 
@@ -744,7 +744,6 @@
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
-                // ===== MODIFIED FUNCTION =====
                 async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') {
                         state.feedScrollPosition = window.scrollY;
