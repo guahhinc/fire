@@ -169,7 +169,13 @@
         .options-btn { background: none; border: none; cursor: pointer; color: var(--secondary-text-color); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .options-btn:hover { background-color: var(--border-color); color: var(--primary-text-color); }
         .options-menu { position: absolute; top: 100%; right: 0; background-color: var(--secondary-bg-color); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px var(--shadow-color); z-index: 10; width: 150px; overflow: hidden; display: flex; flex-direction: column; }
-        .options-menu button { background: none; border: none; box-shadow: none; text-align: left; padding: 10px 15px; width: 100%; border-radius: 0; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+        .options-menu button {
+            background: none; border: none; box-shadow: none;
+            text-align: left; padding: 10px 15px; width: 100%;
+            border-radius: 0; font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-text-color); /* <<< DARK MODE FIX >>> */
+        }
         .options-menu button:last-child { border-bottom: none; }
         .options-menu button:hover { background-color: var(--border-color); }
         .options-menu .delete-btn { color: var(--error-color); font-weight: 700; }
@@ -268,17 +274,18 @@
         <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
-    <!-- <<< THIS ENTIRE VIEW IS REPLACED >>> -->
     <div id="suspended-view" class="view">
         <div class="container">
             <span class="material-symbols-rounded warning-icon" style="font-size: 52px;">warning</span>
             <h2>Account Banned</h2>
             <div id="ban-details-container" style="max-width: 400px; margin: 20px auto; line-height: 1.6; text-align: left;">
-                <p style="text-align: center; margin-bottom: 20px;">Contact guahhinc@gmail.com for more info or appeal.</p>
+                <p style="text-align: center; margin-bottom: 20px;">Contact guahhinc@outlook.com for more info or appeal.</p>
                 <p style="font-weight: 600; text-align: center;">Reason:</p>
                 <p id="ban-reason" style="margin-top: 5px; background-color: var(--border-color); padding: 12px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; text-align: center;"></p>
-                <p style="margin-top: 20px; font-weight: 600; text-align: center;">Time remaining:</p>
-                <p id="ban-countdown" style="font-size: 1.2em; font-weight: 700; margin-top: 5px; text-align: center;"></p>
+                <div id="ban-timer-container">
+                    <p style="margin-top: 20px; font-weight: 600; text-align: center;">Time remaining:</p>
+                    <p id="ban-countdown" style="font-size: 1.2em; font-weight: 700; margin-top: 5px; text-align: center;"></p>
+                </div>
             </div>
             <button id="suspended-logout-btn" class="secondary">Log Out</button>
         </div>
@@ -354,6 +361,13 @@
             </div>
             <div class="setting-row">
                 <div>
+                    <span>Private Profile</span>
+                    <p class="setting-description">If enabled, only your friends can see your profile and posts.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="privacy-switch"><span class="slider"></span></label>
+            </div>
+            <div class="setting-row">
+                <div>
                     <span>Dark Mode</span>
                     <p class="setting-description">Change the website theme</p>
                 </div>
@@ -395,7 +409,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ===== THIS LINE IS NOW UPDATED WITH YOUR NEW URL =====
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIqQZhW5XdBTlZp1x_2G1aXS5O4u4T3XY4mwUBS2liOSps3oDYg38idTKCBdKPmF_Y/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4eda5AiQgT2OrzQ2euiaesK2xYUVj2eB4n9zi7ljdhPXevJsILPZSJoiaXlG83Pac/exec';
 
             const state = { 
                 currentUser: null, 
@@ -461,9 +475,16 @@
                     if (state.banCountdownIntervalId) clearInterval(state.banCountdownIntervalId);
 
                     const reasonEl = document.getElementById('ban-reason');
+                    const timerContainer = document.getElementById('ban-timer-container');
                     const countdownEl = document.getElementById('ban-countdown');
                     reasonEl.textContent = banDetails.reason || 'No reason provided.';
 
+                    if (banDetails.endDate === 'permanent') {
+                        timerContainer.classList.add('hidden');
+                        return;
+                    }
+                    
+                    timerContainer.classList.remove('hidden');
                     const endDate = new Date(banDetails.endDate);
 
                     const updateCountdown = () => {
@@ -477,7 +498,6 @@
                             return;
                         }
 
-                        // <<< UPDATED COUNTDOWN LOGIC >>>
                         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -491,7 +511,7 @@
                     };
 
                     updateCountdown();
-                    state.banCountdownIntervalId = setInterval(updateCountdown, 1000); // Check every second to catch minute change
+                    state.banCountdownIntervalId = setInterval(updateCountdown, 1000);
                 },
                 renderFeed(posts, container, isMainFeed = false) {
                     const validPosts = posts.filter(p => !p.isStory || new Date() < new Date(p.expiryTimestamp));
@@ -535,6 +555,7 @@
                 },
                 renderProfilePage() {
                     if (!state.profileUser) return;
+                    
                     if (state.profileUser.isSuspended) {
                         const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
                         document.getElementById('profile-content').innerHTML = `
@@ -549,9 +570,10 @@
                         document.getElementById('profile-feed').innerHTML = '';
                         return;
                     }
+
                     const isOwnProfile = state.currentUser?.userId === state.profileUser.userId;
                     const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
-                    
+
                     let actionButton = '';
                     if (!isOwnProfile) {
                         const relationship = state.profileUser.relationship;
@@ -566,6 +588,23 @@
                         actionButton = `<button id="edit-profile-btn" class="secondary">Edit Profile</button>`;
                     }
 
+                    if (state.profileUser.profilePrivacy === 'private' && !isOwnProfile) {
+                        document.getElementById('profile-content').innerHTML = `
+                            <div class="profile-header">
+                                <img src="${pfpUrl}" class="pfp pfp-lg">
+                                <div class="display-name">${sanitizeHTML(state.profileUser.displayName)} ${String(state.profileUser.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</div>
+                                <div class="username">@${sanitizeHTML(state.profileUser.username)}</div>
+                                <div class="profile-actions" style="margin-top: 20px;">${actionButton}</div>
+                                <div style="margin-top: 20px; padding: 12px; background-color: var(--border-color); border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <span class="material-symbols-rounded" style="font-size: 20px; vertical-align: -4px;">lock</span>
+                                    This Account is Private
+                                </div>
+                                <p style="color: var(--secondary-text-color); margin-top: 10px;">Become friends with this user to see their posts and profile details.</p>
+                            </div>`;
+                        document.getElementById('profile-feed').innerHTML = '';
+                        return;
+                    }
+                    
                     document.getElementById('profile-content').innerHTML = `
                         <div class="profile-header">
                             <img src="${pfpUrl}" class="pfp pfp-lg">
@@ -576,7 +615,7 @@
                                 <div class="stat"><span>${state.profileUser.following}</span> Following</div>
                                 <div class="stat"><span>${state.profileUser.totalLikes || 0}</span> Likes</div>
                             </div>
-                            <p class="description">${sanitizeHTML(state.profileUser.description)}</p>
+                            <p class="description">${sanitizeHTML(state.profileUser.description || '')}</p>
                             <div class="profile-actions">${actionButton}</div>
                         </div>`;
                     this.renderFeed(state.posts.filter(p => p.userId === state.profileUser.userId), document.getElementById('profile-feed'), false);
@@ -787,6 +826,7 @@
                                 </div>
                             </a>`;
                         document.getElementById('post-visibility-select').value = state.currentUser.postVisibility || 'Everyone';
+                        document.getElementById('privacy-switch').checked = state.currentUser.profilePrivacy === 'private';
                     }
                 },
                 showError(elId, msg) { const el = document.getElementById(elId); el.textContent = msg; el.classList.remove('hidden'); },
@@ -885,8 +925,46 @@
                 async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
                 async toggleLike(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const likeIndex = post.likes.findIndex(l => l.userId === state.currentUser.userId); if (likeIndex > -1) post.likes.splice(likeIndex, 1); else post.likes.push({ userId: state.currentUser.userId }); ui.render(); try { await api.call('toggleLike', { postId, userId: state.currentUser.userId }); } catch (e) { if (likeIndex > -1) post.likes.push({ userId: state.currentUser.userId }); else post.likes.pop(); ui.render(); alert(`Error: ${e.message}`); }},
                 async updateProfile() { ui.hideError('edit-profile-error'); const [displayName, pfpUrl, description] = [document.getElementById('edit-display-name').value, document.getElementById('edit-pfp-url').value, document.getElementById('edit-description').value]; ui.setButtonState('save-profile-btn', 'Saving...', true); try { await api.call('updateProfile', { userId: state.currentUser.userId, displayName, profilePictureUrl: pfpUrl, description }); state.currentUser = { ...state.currentUser, displayName, profilePictureUrl: pfpUrl, description }; localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); await core.refreshFeed(false); await handlers.showProfile(state.currentUser.userId); } catch (e) { ui.showError('edit-profile-error', e.message); } finally { ui.setButtonState('save-profile-btn', 'Save Changes', false); }},
-                async deletePost(postId) { if (!confirm("Delete this post?")) return; try { await api.call('deletePost', { postId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
-                async deleteComment(commentId) { if (!confirm("Delete this comment?")) return; try { await api.call('deleteComment', { commentId, userId: state.currentUser.userId }); await core.refreshFeed(false); } catch(e) { alert(`Error: ${e.message}`); }},
+                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
+                async deletePost(postId) {
+                    if (!confirm("Delete this post?")) return;
+                    const postToDeleteIndex = state.posts.findIndex(p => p.postId === postId);
+                    if (postToDeleteIndex === -1) return;
+                    const postToDelete = state.posts[postToDeleteIndex];
+                    state.posts.splice(postToDeleteIndex, 1);
+                    ui.render();
+                    try {
+                        await api.call('deletePost', { postId, userId: state.currentUser.userId });
+                    } catch(e) {
+                        alert(`Error: Could not delete post. ${e.message}`);
+                        state.posts.splice(postToDeleteIndex, 0, postToDelete);
+                        ui.render();
+                    }
+                },
+                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
+                async deleteComment(commentId) {
+                    if (!confirm("Delete this comment?")) return;
+                    let postIndex = -1, commentIndex = -1, commentToDelete = null;
+                    for (let i = 0; i < state.posts.length; i++) {
+                        const foundIndex = state.posts[i].comments.findIndex(c => c.commentId === commentId);
+                        if (foundIndex !== -1) {
+                            postIndex = i;
+                            commentIndex = foundIndex;
+                            commentToDelete = state.posts[i].comments[foundIndex];
+                            break;
+                        }
+                    }
+                    if (postIndex === -1) return;
+                    state.posts[postIndex].comments.splice(commentIndex, 1);
+                    ui.render();
+                    try {
+                        await api.call('deleteComment', { commentId, userId: state.currentUser.userId });
+                    } catch(e) {
+                        alert(`Error: Could not delete comment. ${e.message}`);
+                        state.posts[postIndex].comments.splice(commentIndex, 0, commentToDelete);
+                        ui.render();
+                    }
+                },
                 async toggleFollow(followingId) {
                     const followBtn = document.getElementById('follow-btn');
                     if (!followBtn) return;
@@ -895,16 +973,15 @@
 
                     try {
                         const result = await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId });
-                        
+                        state.profileUser.relationship = result.newRelationship;
+                        const { user } = await api.call('getUserProfile', { userId: followingId, currentUserId: state.currentUser.userId }, 'GET');
+                        state.profileUser = user;
                         const isNowFollowing = result.newRelationship === 'Following' || result.newRelationship === 'Friends';
                         if (isNowFollowing) {
                              if(!state.currentUserFollowingList.includes(followingId)) state.currentUserFollowingList.push(followingId);
-                             state.profileUser.followers++;
                         } else {
                             state.currentUserFollowingList = state.currentUserFollowingList.filter(id => id !== followingId);
-                            state.profileUser.followers--;
                         }
-                        state.profileUser.relationship = result.newRelationship;
                     } catch (e) {
                         alert(`Error: ${e.message}`);
                     } finally {
@@ -912,6 +989,7 @@
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
+                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
                 async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') {
                         state.feedScrollPosition = window.scrollY;
@@ -923,7 +1001,6 @@
                     if (userFromCache) {
                         const isFollowing = state.currentUserFollowingList.includes(userId);
                         const isFollower = state.currentUserFollowersList.includes(userId);
-                        
                         let preliminaryRelationship = "none";
                         if (isFollowing && isFollower) { preliminaryRelationship = 'Friends';
                         } else if (isFollowing) { preliminaryRelationship = 'Following'; }
@@ -934,13 +1011,12 @@
                         };
                         ui.renderProfilePage();
                     } else {
-                        state.profileUser = null; 
                         ui.showProfileSkeleton();
                     }
                     
                     try {
                         const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
-                        if (!state.profileUser || state.profileUser.userId === user.userId) {
+                        if (state.currentView === 'profile' && (!state.profileUser || state.profileUser.userId === user.userId)) {
                             state.profileUser = user; 
                             ui.renderProfilePage();
                         }
@@ -1006,6 +1082,21 @@
                     } finally {
                         selectElement.disabled = false;
                     }
+                },
+                async updateProfilePrivacy(e) {
+                    const newPrivacy = e.target.checked ? 'private' : 'public';
+                    const switchElement = e.target;
+                    switchElement.disabled = true;
+                    try {
+                        await api.call('updateProfilePrivacy', { userId: state.currentUser.userId, privacy: newPrivacy });
+                        state.currentUser.profilePrivacy = newPrivacy;
+                        localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+                    } catch (err) {
+                        alert('Could not update setting: ' + err.message);
+                        switchElement.checked = state.currentUser.profilePrivacy === 'private';
+                    } finally {
+                        switchElement.disabled = false;
+                    }
                 }
             };
 
@@ -1054,7 +1145,7 @@
                                 return core.navigateTo('suspended');
                             }
                             state.currentUser = currentUserData; 
-                            localStorage.setItem('currentUser', JSON.stringify(currentUserData)); 
+                            localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); 
                         } else {
                             throw new Error("Could not validate user session.");
                         }
@@ -1132,6 +1223,7 @@
                     document.getElementById('back-to-profile-btn').addEventListener('click', () => { handlers.showProfile(state.profileUser.userId) });
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
+                    document.getElementById('privacy-switch').addEventListener('change', handlers.updateProfilePrivacy);
                     
                     document.getElementById('add-image-btn').addEventListener('click', () => ui.toggleModal('imageUrl', true));
                     document.getElementById('image-url-modal-done-btn').addEventListener('click', () => {
