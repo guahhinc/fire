@@ -11,6 +11,8 @@
     <meta name="apple-mobile-web-app-title" content="Fire">
     <link rel="apple-touch-icon" href="https://avatars.githubusercontent.com/u/208152170?v=4">
     
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/208152170?v=4" type="image/png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;600;700&display=swap" rel="stylesheet">
@@ -59,7 +61,6 @@
         .hidden { display: none !important; }
 
         button { font-weight: 600; cursor: pointer; border-radius: 10px; border: none; box-shadow: none; }
-        button { font-weight: 600; cursor: pointer; border-radius: 10px; border: none; box-shadow: 0 2px 5px var(--shadow-color); }
         button.primary { background-color: var(--accent-color); color: white; transition: opacity 0.2s; }
         button.primary:hover:not(:disabled) { opacity: 0.85; }
         button.secondary { background-color: var(--border-color); color: var(--primary-text-color); }
@@ -69,8 +70,6 @@
         .pfp { border-radius: 50%; object-fit: cover; background-color: var(--border-color); cursor: pointer; }
         .pfp-sm { width: 36px; height: 36px; }
         .pfp-lg { width: 80px; height: 80px; }
-        .delete-btn { background: none; color: var(--secondary-text-color); font-size: 20px; padding: 0 5px; cursor: pointer; opacity: 0.6; }
-        .delete-btn:hover { opacity: 1; color: var(--error-color); }
         .hashtag-link { color: var(--accent-color); font-weight: normal; text-decoration: none; }
         .hashtag-link:hover { text-decoration: underline; }
         
@@ -148,7 +147,7 @@
         #remove-image-btn { position: absolute; top: 8px; right: 8px; background-color: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; cursor: pointer; padding: 0; font-weight: bold; }
         
         .post { border: 1px solid var(--border-color); border-radius: 12px; margin: 20px 0; background-color: var(--secondary-bg-color); box-shadow: none; overflow: hidden; }
-        .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; }
+        .post-header { display: flex; align-items: center; padding: 12px 16px; gap: 12px; cursor: pointer; position: relative; }
         .post-header-info { flex-grow: 1; }
         .post-display-name { font-weight: 600; font-size: 16px; display: inline-flex; align-items: center; }
         .post-timestamp { font-size: 14px; color: var(--secondary-text-color); margin-left: 8px; font-weight: 400; }
@@ -165,6 +164,15 @@
         .comment-form { display: flex; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; }
         .comment-form input { flex-grow: 1; border: none; padding: 8px; background-color: transparent; color: var(--primary-text-color); font-size: 14px; }
         .comment-form button { border: none; background: none; color: var(--accent-color); font-weight: 600; }
+
+        .post-options { position: relative; margin-left: auto; }
+        .options-btn { background: none; border: none; cursor: pointer; color: var(--secondary-text-color); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .options-btn:hover { background-color: var(--border-color); color: var(--primary-text-color); }
+        .options-menu { position: absolute; top: 100%; right: 0; background-color: var(--secondary-bg-color); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px var(--shadow-color); z-index: 10; width: 150px; overflow: hidden; display: flex; flex-direction: column; }
+        .options-menu button { background: none; border: none; box-shadow: none; text-align: left; padding: 10px 15px; width: 100%; border-radius: 0; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+        .options-menu button:last-child { border-bottom: none; }
+        .options-menu button:hover { background-color: var(--border-color); }
+        .options-menu .delete-btn { color: var(--error-color); font-weight: 700; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
@@ -260,11 +268,18 @@
         <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
+    <!-- <<< THIS ENTIRE VIEW IS REPLACED >>> -->
     <div id="suspended-view" class="view">
         <div class="container">
-            <span class="material-symbols-rounded warning-icon">warning</span>
-            <h2>Account Suspended</h2>
-            <p>Contact guahhinc@outlook.com for more info and/or to appeal.</p>
+            <span class="material-symbols-rounded warning-icon" style="font-size: 52px;">warning</span>
+            <h2>Account Banned</h2>
+            <div id="ban-details-container" style="max-width: 400px; margin: 20px auto; line-height: 1.6; text-align: left;">
+                <p style="text-align: center; margin-bottom: 20px;">Contact guahhinc@gmail.com for more info or appeal.</p>
+                <p style="font-weight: 600; text-align: center;">Reason:</p>
+                <p id="ban-reason" style="margin-top: 5px; background-color: var(--border-color); padding: 12px; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; text-align: center;"></p>
+                <p style="margin-top: 20px; font-weight: 600; text-align: center;">Time remaining:</p>
+                <p id="ban-countdown" style="font-size: 1.2em; font-weight: 700; margin-top: 5px; text-align: center;"></p>
+            </div>
             <button id="suspended-logout-btn" class="secondary">Log Out</button>
         </div>
     </div>
@@ -380,7 +395,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ===== THIS LINE IS NOW UPDATED WITH YOUR NEW URL =====
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhIL3arTSuXv0vBp_fRTYsOsvjRlGiKjm5Dg21oh2yRDbPyk_ORK4u7vZQieHV19Y2/exec'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIqQZhW5XdBTlZp1x_2G1aXS5O4u4T3XY4mwUBS2liOSps3oDYg38idTKCBdKPmF_Y/exec';
 
             const state = { 
                 currentUser: null, 
@@ -396,6 +411,8 @@
                 storyUpdateIntervalId: null,
                 feedScrollPosition: 0,
                 postImageUrl: null,
+                editingPostId: null, 
+                banCountdownIntervalId: null,
                 scrollToPostId: null
             };
             const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
@@ -416,7 +433,11 @@
                         const response = await fetch(url, options);
                         if (!response.ok) throw new Error(`Network error: ${response.status}`);
                         const result = await response.json();
-                        if (result.status === 'error') throw new Error(result.message);
+                        if (result.status === 'error') {
+                            const error = new Error(result.message);
+                            if (result.banDetails) error.banDetails = result.banDetails;
+                            throw error;
+                        }
                         return result;
                     } catch (error) { console.error(`API Call failed for action "${action}":`, error); throw error; }
                 }
@@ -435,6 +456,42 @@
                     if (state.currentView === 'feed') this.renderFeed(state.posts, document.getElementById('feed'), true);
                     if (state.currentView === 'profile') this.renderProfilePage();
                     if (state.currentView === 'editProfile') this.renderEditProfilePage();
+                },
+                renderBanPage(banDetails) {
+                    if (state.banCountdownIntervalId) clearInterval(state.banCountdownIntervalId);
+
+                    const reasonEl = document.getElementById('ban-reason');
+                    const countdownEl = document.getElementById('ban-countdown');
+                    reasonEl.textContent = banDetails.reason || 'No reason provided.';
+
+                    const endDate = new Date(banDetails.endDate);
+
+                    const updateCountdown = () => {
+                        const now = new Date();
+                        const diff = endDate - now;
+
+                        if (diff <= 0) {
+                            countdownEl.textContent = 'Your ban has expired. You can now log out and log back in.';
+                            clearInterval(state.banCountdownIntervalId);
+                            state.banCountdownIntervalId = null;
+                            return;
+                        }
+
+                        // <<< UPDATED COUNTDOWN LOGIC >>>
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                        let countdownText = '';
+                        if (days > 0) countdownText += `${days}d `;
+                        if (hours > 0 || days > 0) countdownText += `${hours}h `;
+                        countdownText += `${minutes}m`;
+
+                        countdownEl.textContent = countdownText.trim();
+                    };
+
+                    updateCountdown();
+                    state.banCountdownIntervalId = setInterval(updateCountdown, 1000); // Check every second to catch minute change
                 },
                 renderFeed(posts, container, isMainFeed = false) {
                     const validPosts = posts.filter(p => !p.isStory || new Date() < new Date(p.expiryTimestamp));
@@ -486,7 +543,7 @@
                                 <div class="display-name" style="color: var(--secondary-text-color);">${sanitizeHTML(state.profileUser.displayName)}</div>
                                 <div class="username" style="color: var(--secondary-text-color);">@${sanitizeHTML(state.profileUser.username)}</div>
                                 <div style="margin-top: 20px; padding: 12px; background-color: var(--border-color); border-radius: 12px; font-weight: 600;">
-                                    This account is suspended.
+                                    This account is currently banned.
                                 </div>
                             </div>`;
                         document.getElementById('profile-feed').innerHTML = '';
@@ -544,7 +601,23 @@
                 },
                 formatPostContent(content) {
                     if (!content) return '';
-                    return content.replace(/#(\w+)/g, '<a href="#" class="hashtag-link" data-hashtag="$1">#$1</a>');
+                    let inTag = false;
+                    let formattedContent = "";
+                    for(let i = 0; i < content.length; i++) {
+                        if(content[i] === '<') inTag = true;
+                        if(content[i] === '>') inTag = false;
+                        
+                        if(content[i] === '#' && !inTag && (i === 0 || /\s/.test(content[i-1]))) {
+                            let tag = content.substring(i+1).match(/^\w+/);
+                            if(tag) {
+                                formattedContent += `<a href="#" class="hashtag-link" data-hashtag="${tag[0]}">#${tag[0]}</a>`;
+                                i += tag[0].length;
+                                continue;
+                            }
+                        }
+                        formattedContent += content[i];
+                    }
+                    return formattedContent;
                 },
                 renderEditProfilePage() {
                     document.getElementById('edit-pfp-url').value = state.currentUser.profilePictureUrl;
@@ -559,6 +632,17 @@
                     const isLiked = post.likes.some(like => like.userId === state.currentUser.userId);
                     const isAuthor = post.userId === state.currentUser.userId;
                     const pfpUrl = sanitizeHTML(post.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${post.username}`;
+                    
+                    const optionsMenuHTML = `
+                        <div class="post-options">
+                            <button class="options-btn" title="More options"><span class="material-symbols-rounded">more_vert</span></button>
+                            <div class="options-menu hidden">
+                                <button class="edit-btn" data-action="edit-post">Edit Post</button>
+                                <button class="delete-btn" data-action="delete-post">Delete Post</button>
+                            </div>
+                        </div>
+                    `;
+
                     postDiv.innerHTML = `
                         <div class="post-header">
                             <img src="${pfpUrl}" class="pfp pfp-sm">
@@ -566,7 +650,7 @@
                                 <span class="post-display-name">${sanitizeHTML(post.displayName)} ${String(post.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</span>
                                 <span class="post-timestamp" data-timestamp="${post.isStory ? post.expiryTimestamp : post.timestamp}" data-is-story="${post.isStory || false}">${formatTimestamp(post)}</span>
                             </div>
-                            ${isAuthor ? '<button class="delete-btn" data-delete-type="post" title="Delete Post"><span class="material-symbols-rounded">close</span></button>' : ''}
+                            ${isAuthor ? optionsMenuHTML : ''}
                         </div>
                         <div class="post-content"></div>
                         <div class="post-actions">
@@ -584,12 +668,20 @@
                 },
                 createCommentElement(comment) {
                     const isAuthor = comment.userId === state.currentUser.userId;
+                    const optionsMenuHTML = `
+                        <div class="post-options">
+                            <button class="options-btn" title="More options"><span class="material-symbols-rounded">more_vert</span></button>
+                            <div class="options-menu hidden">
+                                <button class="delete-btn" data-action="delete-comment">Delete Comment</button>
+                            </div>
+                        </div>
+                    `;
                     return `<div class="comment" data-comment-id="${comment.commentId}" data-user-id="${comment.userId}">
                                 <div class="comment-text">
                                     <a class="comment-author">${sanitizeHTML(comment.displayName)} ${String(comment.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</a>
                                     <span>${sanitizeHTML(comment.commentText)}</span>
                                 </div>
-                                ${isAuthor ? '<button class="delete-btn" data-delete-type="comment" title="Delete Comment"><span class="material-symbols-rounded">close</span></button>' : ''}
+                                ${isAuthor ? optionsMenuHTML : ''}
                             </div>`;
                 },
                 renderNotifications() {
@@ -703,32 +795,92 @@
             };
 
             const handlers = {
-                async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_SUSPENDED') { core.logout(false); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
+                async login() {
+                    ui.hideError('login-error');
+                    const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()];
+                    if (!username || !password) return ui.showError('login-error', 'All fields required.');
+                    ui.setButtonState('login-btn', 'Logging In...', true);
+                    try {
+                        const { user } = await api.call('login', { username, password });
+                        state.currentUser = user;
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        await core.initializeApp();
+                    } catch (e) {
+                        if (e.message === 'ACCOUNT_BANNED') {
+                            core.logout(false);
+                            ui.renderBanPage(e.banDetails);
+                            core.navigateTo('suspended');
+                        } else if (e.message === 'SERVER_OUTAGE') {
+                            core.logout(false);
+                            core.navigateTo('outage');
+                        } else {
+                            ui.showError('login-error', e.message);
+                        }
+                    } finally {
+                        ui.setButtonState('login-btn', 'Log In', false);
+                    }
+                },
                 async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); } },
-                async createPost() { 
-                    const contentInput = document.getElementById('post-content-input'); 
-                    const postType = document.getElementById('post-type-select').value;
-                    const isStory = postType.startsWith('story');
-                    const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0;
+                async createPost() {
+                    const contentInput = document.getElementById('post-content-input');
+                    let postContent = sanitizeHTML(contentInput.value.trim());
+                    const imageUrl = state.postImageUrl;
 
-                    let postContent = sanitizeHTML(contentInput.value.trim()); 
-                    const imageUrl = state.postImageUrl; 
-                    if (!postContent && !imageUrl) return; 
-                    if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } 
-                    
-                    ui.setButtonState('submit-post-btn', 'Posting...', true); 
-                    try { 
-                        await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration }); 
-                        contentInput.value = ''; 
+                    if (!postContent && !imageUrl && !state.editingPostId) return;
+
+                    if (imageUrl) {
+                        postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`;
+                    }
+
+                    const isUpdating = !!state.editingPostId;
+                    const button = document.getElementById('submit-post-btn');
+                    const originalButtonText = isUpdating ? 'Save Changes' : 'Post';
+                    ui.setButtonState(button.id, 'Saving...', true);
+
+                    try {
+                        if (isUpdating) {
+                            await api.call('updatePost', {
+                                userId: state.currentUser.userId,
+                                postId: state.editingPostId,
+                                postContent: postContent
+                            });
+                        } else {
+                            const postType = document.getElementById('post-type-select').value;
+                            const isStory = postType.startsWith('story');
+                            const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0;
+                            await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration });
+                        }
+
+                        contentInput.value = '';
                         state.postImageUrl = null;
+                        state.editingPostId = null;
                         ui.renderImagePreview();
+                        button.textContent = 'Post';
                         document.getElementById('post-type-select').value = 'regular';
-                        await core.refreshFeed(false); 
-                    } catch (e) { 
-                        alert(`Error: ${e.message}`); 
-                    } finally { 
-                        ui.setButtonState('submit-post-btn', 'Post', false); 
-                    } 
+                        await core.refreshFeed(false);
+
+                    } catch (e) {
+                        alert(`Error: ${e.message}`);
+                    } finally {
+                        ui.setButtonState(button.id, originalButtonText, false);
+                        if (isUpdating) {
+                            button.textContent = 'Post';
+                            state.editingPostId = null; 
+                        }
+                    }
+                },
+                enterEditMode(postId) {
+                    const post = state.posts.find(p => p.postId === postId);
+                    if (!post) return;
+
+                    const textContent = post.postContent.replace(/<br><img src=".*?" alt=".*?">/g, '').trim();
+
+                    document.getElementById('post-content-input').value = textContent;
+                    document.getElementById('submit-post-btn').textContent = 'Save Changes';
+                    state.editingPostId = postId;
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    document.getElementById('post-content-input').focus();
                 },
                 async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
                 async toggleLike(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const likeIndex = post.likes.findIndex(l => l.userId === state.currentUser.userId); if (likeIndex > -1) post.likes.splice(likeIndex, 1); else post.likes.push({ userId: state.currentUser.userId }); ui.render(); try { await api.call('toggleLike', { postId, userId: state.currentUser.userId }); } catch (e) { if (likeIndex > -1) post.likes.push({ userId: state.currentUser.userId }); else post.likes.pop(); ui.render(); alert(`Error: ${e.message}`); }},
@@ -786,19 +938,17 @@
                         ui.showProfileSkeleton();
                     }
                     
-                    if (userId !== state.currentUser.userId) {
-                        try {
-                            const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
-                            if (!state.profileUser || state.profileUser.userId === user.userId) {
-                                state.profileUser = user; 
-                                ui.renderProfilePage();
-                            }
-                        } catch (e) {
-                            console.error("Failed to refresh profile:", e);
-                            if (!userFromCache) {
-                                document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
-                                document.getElementById('profile-feed').innerHTML = '';
-                            }
+                    try {
+                        const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
+                        if (!state.profileUser || state.profileUser.userId === user.userId) {
+                            state.profileUser = user; 
+                            ui.renderProfilePage();
+                        }
+                    } catch (e) {
+                        console.error("Failed to refresh profile:", e);
+                        if (!userFromCache) {
+                            document.getElementById('profile-content').innerHTML = `<p class="error-message" style="text-align:center;">Could not load profile: ${e.message}</p>`;
+                            document.getElementById('profile-feed').innerHTML = '';
                         }
                     }
                 },
@@ -898,7 +1048,8 @@
                                 core.logout(false);
                                 return core.navigateTo('outage');
                             }
-                            if (currentUserData.isSuspended === true || String(currentUserData.isSuspended).toUpperCase() === 'TRUE') {
+                            if (currentUserData.banDetails) {
+                                ui.renderBanPage(currentUserData.banDetails);
                                 core.logout(false);
                                 return core.navigateTo('suspended');
                             }
@@ -950,8 +1101,10 @@
                     state.currentUser = null; 
                     if (state.backgroundRefreshIntervalId) clearInterval(state.backgroundRefreshIntervalId);
                     if (state.storyUpdateIntervalId) clearInterval(state.storyUpdateIntervalId);
+                    if (state.banCountdownIntervalId) clearInterval(state.banCountdownIntervalId);
                     state.backgroundRefreshIntervalId = null;
                     state.storyUpdateIntervalId = null;
+                    state.banCountdownIntervalId = null;
                     if(forceReload) {
                         window.location.reload(); 
                     }
@@ -1019,23 +1172,50 @@
                         }
                     });
 
-                    document.body.addEventListener('click', (e) => { 
-                        const target = e.target; 
-                        const deleteBtn = target.closest('.delete-btn'); 
-                        if (deleteBtn && !target.closest('.notification-item')) {
-                            if (target.closest('.post')) { handlers.deletePost(target.closest('.post').dataset.postId); return; } 
-                            if (target.closest('.comment')) { handlers.deleteComment(target.closest('.comment').dataset.commentId); return; } 
-                        } 
-                        if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); } 
+                    document.body.addEventListener('click', (e) => {
+                        const target = e.target;
+
+                        const optionsBtn = target.closest('.options-btn');
+                        const allMenus = document.querySelectorAll('.options-menu');
+
+                        if (optionsBtn) {
+                            e.preventDefault();
+                            const menu = optionsBtn.nextElementSibling;
+                            const isHidden = menu.classList.contains('hidden');
+                            allMenus.forEach(m => m.classList.add('hidden'));
+                            if (isHidden) menu.classList.remove('hidden');
+                            return;
+                        }
+
+                        if (!target.closest('.options-menu')) {
+                            allMenus.forEach(m => m.classList.add('hidden'));
+                        }
+
+                        const actionButton = target.closest('[data-action]');
+                        if (actionButton) {
+                            const action = actionButton.dataset.action;
+                            if (action === 'delete-post') handlers.deletePost(target.closest('.post').dataset.postId);
+                            else if (action === 'delete-comment') handlers.deleteComment(target.closest('.comment').dataset.commentId);
+                            else if (action === 'edit-post') handlers.enterEditMode(target.closest('.post').dataset.postId);
+                            return;
+                        }
+
+                        if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); }
                         const hashtagLink = target.closest('.hashtag-link');
                         if (hashtagLink) { e.preventDefault(); handlers.showHashtagFeed(hashtagLink.dataset.hashtag); return; }
-                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user'); 
-                        if (profileLink) { const userElement = profileLink.closest('[data-user-id]'); if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; } } 
-                        if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile'); 
-                        if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId); 
-                        if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; } 
-                        const likeBtn = target.closest('.like-btn'); 
-                        if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId); });
+                        
+                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user');
+                        if (profileLink && !target.closest('.post-options')) {
+                             const userElement = profileLink.closest('[data-user-id]');
+                             if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; }
+                        }
+
+                        if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile');
+                        if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId);
+                        if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; }
+                        const likeBtn = target.closest('.like-btn');
+                        if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId);
+                    });
                     document.body.addEventListener('submit', (e) => { const commentForm = e.target.closest('.comment-form'); if(commentForm) { e.preventDefault(); const input = commentForm.querySelector('input'); handlers.addComment(e.target.closest('.post').dataset.postId, input.value); input.value = ''; }});
                     document.getElementById('auth-view').addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const activeForm = !document.getElementById('login-form').classList.contains('hidden') ? document.getElementById('login-form') : document.getElementById('register-form'); e.preventDefault(); const inputs = [...activeForm.querySelectorAll('input')]; const currentInputIndex = inputs.findIndex(input => input === document.activeElement); if (currentInputIndex > -1 && currentInputIndex < inputs.length - 1) { inputs[currentInputIndex + 1].focus(); } else { activeForm.querySelector('button.primary').click(); } });
                 },
