@@ -174,7 +174,7 @@
             text-align: left; padding: 10px 15px; width: 100%;
             border-radius: 0; font-size: 14px;
             border-bottom: 1px solid var(--border-color);
-            color: var(--primary-text-color); /* <<< DARK MODE FIX >>> */
+            color: var(--primary-text-color);
         }
         .options-menu button:last-child { border-bottom: none; }
         .options-menu button:hover { background-color: var(--border-color); }
@@ -182,7 +182,7 @@
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } /* Reduced margin */
         .modal-header h2 { margin: 0; font-weight: 700; }
         .close-modal-btn { font-size: 24px; cursor: pointer; border: none; background: none; color: var(--primary-text-color); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
@@ -252,65 +252,29 @@
             padding-right: 15px;
         }
 
-        /* ===== NEW CUSTOM CHECKBOX STYLES ===== */
-        .form-group-tos {
-            display: flex;
-            align-items: flex-start;
-            text-align: left;
-            font-size: 13px;
-            margin-bottom: 16px;
-            color: var(--secondary-text-color);
-            cursor: pointer;
-            line-height: 1.4;
+        /* ===== NEW STYLES FOR SETTINGS MODAL ===== */
+        .settings-section + .settings-section {
+            border-top: 1px solid var(--border-color);
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        .settings-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+        #settings-modal .settings-section .setting-row:last-of-type {
+            border-bottom: none;
         }
 
-        /* Hide the default checkbox */
-        .form-group-tos input[type="checkbox"] {
-            display: none;
-        }
-
-        /* The custom box */
-        .tos-checkmark {
-            height: 22px;
-            width: 22px;
-            background-color: transparent;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            margin-right: 12px;
-            flex-shrink: 0;
-            position: relative;
-            top: 1px;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
-
-        /* Style the box when the hidden checkbox is checked */
-        .form-group-tos input:checked + .tos-checkmark {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        /* The checkmark symbol (created with CSS) */
-        .tos-checkmark:after {
-            content: "";
-            position: absolute;
-            display: none; /* Hidden by default */
-            left: 6px;
-            top: 1px;
-            width: 6px;
-            height: 12px;
-            border: solid white; /* Checkmark color */
-            border-width: 0 3px 3px 0;
-            transform: rotate(45deg);
-        }
-        
-        /* Show the checkmark when the box is checked */
-        .form-group-tos input:checked + .tos-checkmark:after {
-            display: block;
-        }
-
-        .form-group-tos .tos-text {
-            font-weight: 400;
-        }
+        /* ===== CUSTOM CHECKBOX STYLES ===== */
+        .form-group-tos { display: flex; align-items: flex-start; text-align: left; font-size: 13px; margin-bottom: 16px; color: var(--secondary-text-color); cursor: pointer; line-height: 1.4; }
+        .form-group-tos input[type="checkbox"] { display: none; }
+        .tos-checkmark { height: 22px; width: 22px; background-color: transparent; border: 2px solid var(--border-color); border-radius: 6px; margin-right: 12px; flex-shrink: 0; position: relative; top: 1px; transition: background-color 0.2s, border-color 0.2s; }
+        .form-group-tos input:checked + .tos-checkmark { background-color: var(--accent-color); border-color: var(--accent-color); }
+        .tos-checkmark:after { content: ""; position: absolute; display: none; left: 6px; top: 1px; width: 6px; height: 12px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+        .form-group-tos input:checked + .tos-checkmark:after { display: block; }
+        .form-group-tos .tos-text { font-weight: 400; }
     </style>
 </head>
 <body>
@@ -332,14 +296,11 @@
 
     <div id="auth-view" class="view">
         <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password">
-        
-        <!-- ===== NEW CUSTOM CHECKBOX HTML STRUCTURE ===== -->
         <label class="form-group-tos">
             <input type="checkbox" id="register-tos">
             <span class="tos-checkmark"></span>
             <span class="tos-text">I agree to the <a href="https://sites.google.com/view/guahh/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service and Privacy Policy</a>.</span>
         </label>
-        
         <button id="register-btn" class="primary" disabled>Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
@@ -410,40 +371,54 @@
         <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
     </div>
 
-    <!-- Modals -->
+    <!-- ===== MODAL: Settings (Restructured) ===== -->
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Settings</h2><button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
-            <div class="setting-row" id="settings-user-info-row"></div>
-            <div class="setting-row">
-                <div>
-                    <span>Who can see your posts</span>
-                    <p class="setting-description">Control which people can see your posts and stories</p>
+            
+            <div class="settings-section">
+                <h4 class="settings-section-title">👤 Account</h4>
+                <div class="setting-row" id="settings-user-info-row">
+                    <!-- User info will be rendered here by JS -->
                 </div>
-                <select id="post-visibility-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color);">
-                    <option value="Everyone">Everyone</option>
-                    <option value="Followers">Followers</option>
-                    <option value="Friends">Friends</option>
-                </select>
-            </div>
-            <div class="setting-row">
-                <div>
-                    <span>Private Profile</span>
-                    <p class="setting-description">If enabled, only your friends can see your profile and posts.</p>
+                <div class="setting-row">
+                    <button id="logout-btn">Log Out</button>
                 </div>
-                <label class="switch"><input type="checkbox" id="privacy-switch"><span class="slider"></span></label>
             </div>
-            <div class="setting-row">
-                <div>
-                    <span>Dark Mode</span>
-                    <p class="setting-description">Change the website theme</p>
+    
+            <div class="settings-section">
+                <h4 class="settings-section-title">🔒 Privacy</h4>
+                <div class="setting-row">
+                    <div>
+                        <span>Private Profile</span>
+                        <p class="setting-description">Only friends can see your full profile.</p>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="privacy-switch"><span class="slider"></span></label>
                 </div>
-                <label class="switch"><input type="checkbox" id="theme-switch"><span class="slider"></span></label>
+                <div class="setting-row">
+                    <div>
+                        <span>Who can see your posts</span>
+                        <p class="setting-description">Control who can see your posts and stories.</p>
+                    </div>
+                    <select id="post-visibility-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--primary-bg-color); color: var(--primary-text-color);">
+                        <option value="Everyone">Everyone</option>
+                        <option value="Followers">Followers</option>
+                        <option value="Friends">Friends</option>
+                    </select>
+                </div>
             </div>
-            <div class="setting-row">
-                <button id="logout-btn">Log Out</button>
+    
+            <div class="settings-section">
+                <h4 class="settings-section-title">🎨 Customisation</h4>
+                <div class="setting-row">
+                    <div>
+                        <span>Dark Mode</span>
+                        <p class="setting-description">Change the website theme.</p>
+                    </div>
+                    <label class="switch"><input type="checkbox" id="theme-switch"><span class="slider"></span></label>
+                </div>
             </div>
         </div>
     </div>
@@ -477,8 +452,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ===== THIS LINE IS NOW UPDATED WITH YOUR NEW URL =====
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4eda5AiQgT2OrzQ2euiaesK2xYUVj2eB4n9zi7ljdhPXevJsILPZSJoiaXlG83Pac/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoXXKwxD6CsI26THXHNF6k9Lw3u6fzPyjpMWZZhm5fuI16LyEqRbKxpbG5PjRrYin8/exec';
 
             const state = { 
                 currentUser: null, 
@@ -1012,7 +986,6 @@
                 async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
                 async toggleLike(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const likeIndex = post.likes.findIndex(l => l.userId === state.currentUser.userId); if (likeIndex > -1) post.likes.splice(likeIndex, 1); else post.likes.push({ userId: state.currentUser.userId }); ui.render(); try { await api.call('toggleLike', { postId, userId: state.currentUser.userId }); } catch (e) { if (likeIndex > -1) post.likes.push({ userId: state.currentUser.userId }); else post.likes.pop(); ui.render(); alert(`Error: ${e.message}`); }},
                 async updateProfile() { ui.hideError('edit-profile-error'); const [displayName, pfpUrl, description] = [document.getElementById('edit-display-name').value, document.getElementById('edit-pfp-url').value, document.getElementById('edit-description').value]; ui.setButtonState('save-profile-btn', 'Saving...', true); try { await api.call('updateProfile', { userId: state.currentUser.userId, displayName, profilePictureUrl: pfpUrl, description }); state.currentUser = { ...state.currentUser, displayName, profilePictureUrl: pfpUrl, description }; localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); await core.refreshFeed(false); await handlers.showProfile(state.currentUser.userId); } catch (e) { ui.showError('edit-profile-error', e.message); } finally { ui.setButtonState('save-profile-btn', 'Save Changes', false); }},
-                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
                 async deletePost(postId) {
                     if (!confirm("Delete this post?")) return;
                     const postToDeleteIndex = state.posts.findIndex(p => p.postId === postId);
@@ -1028,7 +1001,6 @@
                         ui.render();
                     }
                 },
-                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
                 async deleteComment(commentId) {
                     if (!confirm("Delete this comment?")) return;
                     let postIndex = -1, commentIndex = -1, commentToDelete = null;
@@ -1076,7 +1048,6 @@
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
-                // <<< THIS ENTIRE FUNCTION IS REPLACED >>>
                 async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') {
                         state.feedScrollPosition = window.scrollY;
@@ -1323,7 +1294,6 @@
                         ui.toggleModal('imageUrl', false);
                     });
 
-                    // Event listener for the new TOS checkbox
                     document.getElementById('register-tos').addEventListener('change', (e) => {
                         document.getElementById('register-btn').disabled = !e.target.checked;
                     });
