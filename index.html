@@ -251,6 +251,66 @@
             margin-top: 4px;
             padding-right: 15px;
         }
+
+        /* ===== NEW CUSTOM CHECKBOX STYLES ===== */
+        .form-group-tos {
+            display: flex;
+            align-items: flex-start;
+            text-align: left;
+            font-size: 13px;
+            margin-bottom: 16px;
+            color: var(--secondary-text-color);
+            cursor: pointer;
+            line-height: 1.4;
+        }
+
+        /* Hide the default checkbox */
+        .form-group-tos input[type="checkbox"] {
+            display: none;
+        }
+
+        /* The custom box */
+        .tos-checkmark {
+            height: 22px;
+            width: 22px;
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            position: relative;
+            top: 1px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        /* Style the box when the hidden checkbox is checked */
+        .form-group-tos input:checked + .tos-checkmark {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* The checkmark symbol (created with CSS) */
+        .tos-checkmark:after {
+            content: "";
+            position: absolute;
+            display: none; /* Hidden by default */
+            left: 6px;
+            top: 1px;
+            width: 6px;
+            height: 12px;
+            border: solid white; /* Checkmark color */
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+        
+        /* Show the checkmark when the box is checked */
+        .form-group-tos input:checked + .tos-checkmark:after {
+            display: block;
+        }
+
+        .form-group-tos .tos-text {
+            font-weight: 400;
+        }
     </style>
 </head>
 <body>
@@ -271,7 +331,16 @@
     <div id="global-banner" class="hidden"></div>
 
     <div id="auth-view" class="view">
-        <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password"><button id="register-btn" class="primary">Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
+        <div class="container"><h1 class="logo" style="font-size: 36px;">Fire</h1><div id="auth-container"><div id="login-form"><input type="text" id="login-username" placeholder="Username" autocomplete="username"><input type="password" id="login-password" placeholder="Password" autocomplete="current-password"><button id="login-btn" class="primary">Log In</button><p id="login-error" class="error-message hidden"></p><p>Don't have an account? <a id="show-register-link">Sign up</a></p></div><div id="register-form" class="hidden"><input type="text" id="register-username" placeholder="Username (no spaces)" autocomplete="username"><input type="text" id="register-displayname" placeholder="Display Name"><input type="password" id="register-password" placeholder="Password" autocomplete="new-password">
+        
+        <!-- ===== NEW CUSTOM CHECKBOX HTML STRUCTURE ===== -->
+        <label class="form-group-tos">
+            <input type="checkbox" id="register-tos">
+            <span class="tos-checkmark"></span>
+            <span class="tos-text">I agree to the <a href="https://sites.google.com/view/guahh/terms-of-service" target="_blank" rel="noopener noreferrer">Terms of Service and Privacy Policy</a>.</span>
+        </label>
+        
+        <button id="register-btn" class="primary" disabled>Sign Up</button><p id="register-error" class="error-message hidden"></p><p>Have an account? <a id="show-login-link">Log in</a></p></div></div></div>
     </div>
 
     <div id="suspended-view" class="view">
@@ -860,7 +929,25 @@
                         ui.setButtonState('login-btn', 'Log In', false);
                     }
                 },
-                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); } },
+                async register() { 
+                    ui.hideError('register-error'); 
+                    const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; 
+                    const tosChecked = document.getElementById('register-tos').checked;
+                    if (!tosChecked) return ui.showError('register-error', 'You must agree to the Terms of Service.');
+                    if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); 
+                    if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.'); 
+                    ui.setButtonState('register-btn', 'Signing Up...', true); 
+                    try { 
+                        const { user } = await api.call('register', { username, displayName, password }); 
+                        state.currentUser = user; 
+                        localStorage.setItem('currentUser', JSON.stringify(user)); 
+                        await core.initializeApp(); 
+                    } catch (e) { 
+                        ui.showError('register-error', e.message); 
+                    } finally { 
+                        ui.setButtonState('register-btn', 'Sign Up', false); 
+                    } 
+                },
                 async createPost() {
                     const contentInput = document.getElementById('post-content-input');
                     let postContent = sanitizeHTML(contentInput.value.trim());
@@ -1234,6 +1321,11 @@
                         }
                         document.getElementById('image-url-modal-input').value = '';
                         ui.toggleModal('imageUrl', false);
+                    });
+
+                    // Event listener for the new TOS checkbox
+                    document.getElementById('register-tos').addEventListener('change', (e) => {
+                        document.getElementById('register-btn').disabled = !e.target.checked;
                     });
 
                     document.getElementById('create-post-form').addEventListener('click', (e) => {
