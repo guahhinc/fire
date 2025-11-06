@@ -684,11 +684,12 @@
                     }
                     const isOwnProfile = state.currentUser?.userId === state.profileUser.userId;
                     const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
+                    
                     let actionButtonHTML = '';
                     if (!isOwnProfile) {
-                        const messageButton = `<button id="message-user-btn" class="primary">Message</button>`;
                         const relationship = state.profileUser.relationship;
                         let followButton = '';
+
                         if (relationship === 'Friends') {
                             followButton = `<button id="follow-btn" class="secondary">Friends</button>`;
                         } else if (relationship === 'Following') {
@@ -696,11 +697,18 @@
                         } else {
                             followButton = `<button id="follow-btn" class="primary">Follow</button>`;
                         }
-                        actionButtonHTML = `${followButton} ${messageButton}`;
+                        
+                        actionButtonHTML = followButton;
+
+                        if (state.profileUser.profilePrivacy !== 'private' || relationship === 'Friends') {
+                            const messageButton = `<button id="message-user-btn" class="primary">Message</button>`;
+                            actionButtonHTML += ` ${messageButton}`;
+                        }
                     } else {
                         actionButtonHTML = `<button id="edit-profile-btn" class="secondary">Edit Profile</button>`;
                     }
-                    if (state.profileUser.profilePrivacy === 'private' && !isOwnProfile) {
+
+                    if (state.profileUser.profilePrivacy === 'private' && !isOwnProfile && state.profileUser.relationship !== 'Friends') {
                         document.getElementById('profile-content').innerHTML = `
                             <div class="profile-header">
                                 <img src="${pfpUrl}" class="pfp pfp-lg">
