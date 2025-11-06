@@ -182,7 +182,7 @@
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: var(--secondary-bg-color); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } /* Reduced margin */
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .modal-header h2 { margin: 0; font-weight: 700; }
         .close-modal-btn { font-size: 24px; cursor: pointer; border: none; background: none; color: var(--primary-text-color); }
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color); }
@@ -252,7 +252,6 @@
             padding-right: 15px;
         }
 
-        /* ===== NEW STYLES FOR SETTINGS MODAL ===== */
         .settings-section + .settings-section {
             border-top: 1px solid var(--border-color);
             margin-top: 10px;
@@ -267,7 +266,6 @@
             border-bottom: none;
         }
 
-        /* ===== CUSTOM CHECKBOX STYLES ===== */
         .form-group-tos { display: flex; align-items: flex-start; text-align: left; font-size: 13px; margin-bottom: 16px; color: var(--secondary-text-color); cursor: pointer; line-height: 1.4; }
         .form-group-tos input[type="checkbox"] { display: none; }
         .tos-checkmark { height: 22px; width: 22px; background-color: transparent; border: 2px solid var(--border-color); border-radius: 6px; margin-right: 12px; flex-shrink: 0; position: relative; top: 1px; transition: background-color 0.2s, border-color 0.2s; }
@@ -275,6 +273,37 @@
         .tos-checkmark:after { content: ""; position: absolute; display: none; left: 6px; top: 1px; width: 6px; height: 12px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
         .form-group-tos input:checked + .tos-checkmark:after { display: block; }
         .form-group-tos .tos-text { font-weight: 400; }
+
+        #messages-view .container { max-width: 900px; padding-top: 20px; }
+        .messages-container { display: flex; border: 1px solid var(--border-color); border-radius: 12px; height: calc(100vh - 120px); max-height: 700px; overflow: hidden; background-color: var(--secondary-bg-color); }
+        #conversations-list { width: 35%; min-width: 250px; border-right: 1px solid var(--border-color); overflow-y: auto; }
+        .conversation-item { display: flex; align-items: center; padding: 12px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); position: relative; }
+        .conversation-item:last-child { border-bottom: none; }
+        .conversation-item:hover { background-color: var(--border-color); }
+        .conversation-item.active { background-color: var(--accent-color); color: white; }
+        .conversation-item.active .convo-details .username, .conversation-item.active .convo-details .last-message { color: #f0f0f0; }
+        .convo-details { flex-grow: 1; overflow: hidden; }
+        .convo-details .username { font-weight: 600; font-size: 15px; }
+        .convo-details .last-message { font-size: 13px; color: var(--secondary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-dot { width: 10px; height: 10px; background-color: var(--accent-color); border-radius: 50%; margin-left: auto; flex-shrink: 0; }
+        .conversation-item.active .unread-dot { background-color: white; }
+        #conversation-view { flex-grow: 1; display: flex; flex-direction: column; }
+        #conversation-header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        #conversation-header a { text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px; }
+        #messages-list { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .message-wrapper { display: flex; flex-direction: column; }
+        .message-wrapper.sent { align-items: flex-end; }
+        .message-wrapper.received { align-items: flex-start; }
+        .message-bubble { max-width: 70%; padding: 8px 12px; border-radius: 18px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+        .message-bubble.sent { background-color: var(--accent-color); color: white; border-bottom-right-radius: 4px; }
+        .message-bubble.received { background-color: var(--border-color); color: var(--primary-text-color); border-bottom-left-radius: 4px; }
+        .message-status { font-size: 11px; color: var(--secondary-text-color); padding: 2px 8px 0 0; text-align: right; }
+        .message-status.error { color: var(--error-color); font-weight: 600; }
+        #message-input-form { display: flex; padding: 10px; border-top: 1px solid var(--border-color); }
+        #message-input-form input { flex-grow: 1; border: none; padding: 10px; border-radius: 20px; background-color: var(--border-color); color: var(--primary-text-color); font-size: 15px; margin-right: 10px; }
+        #message-input-form button { padding: 0 16px; font-size: 15px; }
+        #conversation-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--secondary-text-color); text-align: center; }
+        #conversation-placeholder .material-symbols-rounded { font-size: 60px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -284,6 +313,7 @@
         <div class="header-actions">
             <div class="header-icon" id="home-btn"><span class="material-symbols-rounded">home</span></div>
             <div class="header-icon" id="search-btn"><span class="material-symbols-rounded">search</span></div>
+            <div class="header-icon" id="messages-btn"><span class="material-symbols-rounded">mail</span></div>
             <div class="header-icon" id="notifications-btn">
                 <span class="material-symbols-rounded">notifications</span>
                 <span id="notification-dot"></span>
@@ -371,23 +401,34 @@
         <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
     </div>
 
-    <!-- ===== MODAL: Settings (Restructured) ===== -->
+    <div id="messages-view" class="view">
+        <div class="container">
+            <a class="back-btn" data-nav="feed">&larr; Back to Feed</a>
+            <div class="messages-container">
+                <div id="conversations-list"></div>
+                <div id="conversation-view">
+                    <div id="conversation-placeholder">
+                        <span class="material-symbols-rounded">chat</span>
+                        <h3>Your Messages</h3>
+                        <p>Select a conversation to start chatting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="settings-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Settings</h2><button class="close-modal-btn"><span class="material-symbols-rounded">close</span></button>
             </div>
-            
             <div class="settings-section">
                 <h4 class="settings-section-title">👤 Account</h4>
-                <div class="setting-row" id="settings-user-info-row">
-                    <!-- User info will be rendered here by JS -->
-                </div>
+                <div class="setting-row" id="settings-user-info-row"></div>
                 <div class="setting-row">
                     <button id="logout-btn">Log Out</button>
                 </div>
             </div>
-    
             <div class="settings-section">
                 <h4 class="settings-section-title">🔒 Privacy</h4>
                 <div class="setting-row">
@@ -409,7 +450,6 @@
                     </select>
                 </div>
             </div>
-    
             <div class="settings-section">
                 <h4 class="settings-section-title">🎨 Customisation</h4>
                 <div class="setting-row">
@@ -452,27 +492,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoXXKwxD6CsI26THXHNF6k9Lw3u6fzPyjpMWZZhm5fuI16LyEqRbKxpbG5PjRrYin8/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK5Y94l7UaVX2UsoW_Cvaes_bNoANzS7USRr5Wb9NBhottNEdhm8L8V-C9yr7k-hfA/exec';
 
             const state = { 
-                currentUser: null, 
-                posts: [], 
-                currentUserFollowingList: [], 
-                currentUserFollowersList: [],
-                notifications: [],
-                unreadNotificationCount: 0,
-                currentView: null, 
-                profileUser: null,
-                backgroundPosts: null,
-                backgroundRefreshIntervalId: null,
-                storyUpdateIntervalId: null,
-                feedScrollPosition: 0,
-                postImageUrl: null,
-                editingPostId: null, 
-                banCountdownIntervalId: null,
-                scrollToPostId: null
+                currentUser: null, posts: [], currentUserFollowingList: [], currentUserFollowersList: [],
+                notifications: [], unreadNotificationCount: 0, currentView: null, profileUser: null,
+                backgroundPosts: null, backgroundRefreshIntervalId: null, storyUpdateIntervalId: null,
+                feedScrollPosition: 0, postImageUrl: null, editingPostId: null, banCountdownIntervalId: null,
+                scrollToPostId: null, conversations: [],
+                currentConversation: { otherUserId: null, messages: [] }, messagePollingIntervalId: null,
             };
-            const views = { auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), hashtagFeed: document.getElementById('hashtag-feed-view') };
+            
+            const views = { 
+                auth: document.getElementById('auth-view'), feed: document.getElementById('main-app-view'), 
+                profile: document.getElementById('profile-page-view'), editProfile: document.getElementById('edit-profile-view'), 
+                suspended: document.getElementById('suspended-view'), outage: document.getElementById('outage-view'), 
+                hashtagFeed: document.getElementById('hashtag-feed-view'), messages: document.getElementById('messages-view')
+            };
             const modals = { settings: document.getElementById('settings-modal'), search: document.getElementById('search-modal'), notifications: document.getElementById('notifications-modal'), imageUrl: document.getElementById('image-url-modal') };
             const VERIFIED_SVG = `<span class="material-symbols-rounded" style="color: #1DA1F2; vertical-align: -4px; margin-left: 5px;">verified</span>`;
 
@@ -503,62 +539,51 @@
             const ui = {
                 render() {
                     const header = document.querySelector('header');
-                    const isUserLoggedIn = ['feed', 'profile', 'editProfile', 'hashtagFeed'].includes(state.currentView);
-                    
+                    const isUserLoggedIn = ['feed', 'profile', 'editProfile', 'hashtagFeed', 'messages'].includes(state.currentView);
                     header.classList.toggle('hidden', !isUserLoggedIn);
                     document.body.classList.toggle('logged-in', isUserLoggedIn);
-
                     Object.values(views).forEach(v => v.classList.remove('active'));
                     views[state.currentView]?.classList.add('active');
                     if (state.currentView === 'feed') this.renderFeed(state.posts, document.getElementById('feed'), true);
                     if (state.currentView === 'profile') this.renderProfilePage();
                     if (state.currentView === 'editProfile') this.renderEditProfilePage();
+                    if (state.currentView === 'messages') this.renderMessagesPage();
                 },
                 renderBanPage(banDetails) {
                     if (state.banCountdownIntervalId) clearInterval(state.banCountdownIntervalId);
-
                     const reasonEl = document.getElementById('ban-reason');
                     const timerContainer = document.getElementById('ban-timer-container');
                     const countdownEl = document.getElementById('ban-countdown');
                     reasonEl.textContent = banDetails.reason || 'No reason provided.';
-
                     if (banDetails.endDate === 'permanent') {
                         timerContainer.classList.add('hidden');
                         return;
                     }
-                    
                     timerContainer.classList.remove('hidden');
                     const endDate = new Date(banDetails.endDate);
-
                     const updateCountdown = () => {
                         const now = new Date();
                         const diff = endDate - now;
-
                         if (diff <= 0) {
                             countdownEl.textContent = 'Your ban has expired. You can now log out and log back in.';
                             clearInterval(state.banCountdownIntervalId);
                             state.banCountdownIntervalId = null;
                             return;
                         }
-
                         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
                         let countdownText = '';
                         if (days > 0) countdownText += `${days}d `;
                         if (hours > 0 || days > 0) countdownText += `${hours}h `;
                         countdownText += `${minutes}m`;
-
                         countdownEl.textContent = countdownText.trim();
                     };
-
                     updateCountdown();
                     state.banCountdownIntervalId = setInterval(updateCountdown, 1000);
                 },
                 renderFeed(posts, container, isMainFeed = false) {
                     const validPosts = posts.filter(p => !p.isStory || new Date() < new Date(p.expiryTimestamp));
-                    
                     if (!validPosts || validPosts.length === 0) {
                         container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color);">No posts to see here.</p>';
                         return;
@@ -567,15 +592,12 @@
                     if (isMainFeed) {
                         const now = new Date();
                         const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-                        
                         const stories = [];
                         const priorityPosts = [];
                         const otherPosts = [];
-
                         postsToRender.forEach(post => {
                             const isFollowed = state.currentUserFollowingList.includes(post.userId);
                             const isOwnPost = post.userId === state.currentUser.userId;
-                            
                             if (post.isStory && (isFollowed || isOwnPost)) {
                                 stories.push(post);
                             } else {
@@ -587,10 +609,8 @@
                                 }
                             }
                         });
-                        
                         stories.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
                         priorityPosts.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
                         postsToRender = [...stories, ...priorityPosts, ...otherPosts];
                     }
                     container.innerHTML = '';
@@ -598,7 +618,6 @@
                 },
                 renderProfilePage() {
                     if (!state.profileUser) return;
-                    
                     if (state.profileUser.isSuspended) {
                         const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
                         document.getElementById('profile-content').innerHTML = `
@@ -613,31 +632,31 @@
                         document.getElementById('profile-feed').innerHTML = '';
                         return;
                     }
-
                     const isOwnProfile = state.currentUser?.userId === state.profileUser.userId;
                     const pfpUrl = sanitizeHTML(state.profileUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${state.profileUser.username}`;
-
-                    let actionButton = '';
+                    let actionButtonHTML = '';
                     if (!isOwnProfile) {
+                        const messageButton = `<button id="message-user-btn" class="primary">Message</button>`;
                         const relationship = state.profileUser.relationship;
+                        let followButton = '';
                         if (relationship === 'Friends') {
-                            actionButton = `<button id="follow-btn" class="secondary">Friends</button>`;
+                            followButton = `<button id="follow-btn" class="secondary">Friends</button>`;
                         } else if (relationship === 'Following') {
-                            actionButton = `<button id="follow-btn" class="secondary">Unfollow</button>`;
+                            followButton = `<button id="follow-btn" class="secondary">Unfollow</button>`;
                         } else {
-                            actionButton = `<button id="follow-btn" class="primary">Follow</button>`;
+                            followButton = `<button id="follow-btn" class="primary">Follow</button>`;
                         }
+                        actionButtonHTML = `${followButton} ${messageButton}`;
                     } else {
-                        actionButton = `<button id="edit-profile-btn" class="secondary">Edit Profile</button>`;
+                        actionButtonHTML = `<button id="edit-profile-btn" class="secondary">Edit Profile</button>`;
                     }
-
                     if (state.profileUser.profilePrivacy === 'private' && !isOwnProfile) {
                         document.getElementById('profile-content').innerHTML = `
                             <div class="profile-header">
                                 <img src="${pfpUrl}" class="pfp pfp-lg">
                                 <div class="display-name">${sanitizeHTML(state.profileUser.displayName)} ${String(state.profileUser.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</div>
                                 <div class="username">@${sanitizeHTML(state.profileUser.username)}</div>
-                                <div class="profile-actions" style="margin-top: 20px;">${actionButton}</div>
+                                <div class="profile-actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">${actionButtonHTML}</div>
                                 <div style="margin-top: 20px; padding: 12px; background-color: var(--border-color); border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
                                     <span class="material-symbols-rounded" style="font-size: 20px; vertical-align: -4px;">lock</span>
                                     This Account is Private
@@ -647,7 +666,6 @@
                         document.getElementById('profile-feed').innerHTML = '';
                         return;
                     }
-                    
                     document.getElementById('profile-content').innerHTML = `
                         <div class="profile-header">
                             <img src="${pfpUrl}" class="pfp pfp-lg">
@@ -659,10 +677,9 @@
                                 <div class="stat"><span>${state.profileUser.totalLikes || 0}</span> Likes</div>
                             </div>
                             <p class="description">${sanitizeHTML(state.profileUser.description || '')}</p>
-                            <div class="profile-actions">${actionButton}</div>
+                            <div class="profile-actions" style="display: flex; gap: 10px; justify-content: center;">${actionButtonHTML}</div>
                         </div>`;
                     this.renderFeed(state.posts.filter(p => p.userId === state.profileUser.userId), document.getElementById('profile-feed'), false);
-
                     if (state.scrollToPostId) {
                         const postIdToScroll = state.scrollToPostId;
                         setTimeout(() => {
@@ -672,7 +689,6 @@
                                 const warningColor = getComputedStyle(document.documentElement).getPropertyValue('--warning-color');
                                 postElement.style.transition = 'background-color 1s ease';
                                 postElement.style.backgroundColor = `${warningColor}4D`;
-                                
                                 setTimeout(() => {
                                     postElement.style.backgroundColor = '';
                                 }, 2500);
@@ -688,7 +704,6 @@
                     for(let i = 0; i < content.length; i++) {
                         if(content[i] === '<') inTag = true;
                         if(content[i] === '>') inTag = false;
-                        
                         if(content[i] === '#' && !inTag && (i === 0 || /\s/.test(content[i-1]))) {
                             let tag = content.substring(i+1).match(/^\w+/);
                             if(tag) {
@@ -714,7 +729,6 @@
                     const isLiked = post.likes.some(like => like.userId === state.currentUser.userId);
                     const isAuthor = post.userId === state.currentUser.userId;
                     const pfpUrl = sanitizeHTML(post.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${post.username}`;
-                    
                     const optionsMenuHTML = `
                         <div class="post-options">
                             <button class="options-btn" title="More options"><span class="material-symbols-rounded">more_vert</span></button>
@@ -724,7 +738,6 @@
                             </div>
                         </div>
                     `;
-
                     postDiv.innerHTML = `
                         <div class="post-header">
                             <img src="${pfpUrl}" class="pfp pfp-sm">
@@ -779,14 +792,12 @@
                         item.dataset.notificationId = n.notificationId;
                         item.dataset.actorId = n.actorUserId;
                         item.dataset.postId = n.postId;
-
                         let text = '';
                         switch(n.actionType) {
                             case 'like': text = 'liked your post.'; break;
                             case 'comment': text = 'commented on your post.'; break;
                             case 'follow': text = 'started following you.'; break;
                         }
-
                         const pfpUrl = sanitizeHTML(n.actorProfilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${n.actorDisplayName}`;
                         item.innerHTML = `
                             <div class="notification-item-clickable" style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
@@ -859,7 +870,6 @@
                         const user = state.currentUser;
                         const pfpUrl = sanitizeHTML(user.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${user.username}`;
                         const isVerified = String(user.isVerified).toUpperCase() === 'TRUE';
-                        
                         document.getElementById('settings-user-info-row').innerHTML = `
                             <a id="settings-profile-link" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; flex-grow: 1; cursor: pointer;">
                                 <img src="${pfpUrl}" class="pfp pfp-sm">
@@ -874,7 +884,89 @@
                 },
                 showError(elId, msg) { const el = document.getElementById(elId); el.textContent = msg; el.classList.remove('hidden'); },
                 hideError(elId) { document.getElementById(elId).classList.add('hidden'); },
-                setButtonState(btnId, text, disabled) { const btn = document.getElementById(btnId); btn.textContent = text; btn.disabled = disabled; }
+                setButtonState(btnId, text, disabled) { const btn = document.getElementById(btnId); if(btn) { btn.textContent = text; btn.disabled = disabled; } },
+                
+                renderMessagesPage() {
+                    this.renderConversationsList();
+                    if (state.currentConversation.otherUserId) {
+                        this.renderConversationHistory();
+                    } else {
+                        document.getElementById('conversation-view').innerHTML = `
+                            <div id="conversation-placeholder">
+                                <span class="material-symbols-rounded">chat</span>
+                                <h3>Your Messages</h3>
+                                <p>Select a conversation to start chatting.</p>
+                            </div>`;
+                    }
+                },
+                renderConversationsList() {
+                    const container = document.getElementById('conversations-list');
+                    if (state.conversations.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: var(--secondary-text-color); padding: 15px;">No conversations yet.</p>';
+                        return;
+                    }
+                    container.innerHTML = state.conversations.map(convo => {
+                        const isActive = convo.otherUser.userId === state.currentConversation.otherUserId;
+                        const pfp = sanitizeHTML(convo.otherUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${convo.otherUser.displayName}`;
+                        return `
+                            <div class="conversation-item ${isActive ? 'active' : ''}" data-user-id="${convo.otherUser.userId}">
+                                <img src="${pfp}" class="pfp pfp-sm">
+                                <div class="convo-details">
+                                    <div class="username">${sanitizeHTML(convo.otherUser.displayName)}</div>
+                                    <div class="last-message">${sanitizeHTML(convo.lastMessage)}</div>
+                                </div>
+                                ${convo.unreadCount > 0 ? '<div class="unread-dot"></div>' : ''}
+                            </div>
+                        `;
+                    }).join('');
+                },
+                renderConversationHistory() {
+                    const conversationView = document.getElementById('conversation-view');
+                    const otherUser = state.conversations.find(c => c.otherUser.userId === state.currentConversation.otherUserId)?.otherUser;
+                    if (!otherUser) {
+                        conversationView.innerHTML = `<div id="conversation-placeholder"><p>Could not load conversation.</p></div>`;
+                        return;
+                    }
+                    const pfp = sanitizeHTML(otherUser.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${otherUser.displayName}`;
+                    conversationView.innerHTML = `
+                        <div id="conversation-header">
+                            <a href="#" class="profile-link" data-user-id="${otherUser.userId}">
+                                <img src="${pfp}" class="pfp pfp-sm">
+                                <span>${sanitizeHTML(otherUser.displayName)} ${String(otherUser.isVerified).toUpperCase() === 'TRUE' ? VERIFIED_SVG : ''}</span>
+                            </a>
+                        </div>
+                        <div id="messages-list">
+                            ${state.currentConversation.messages.map(msg => this.createMessageBubble(msg)).join('')}
+                        </div>
+                        <form id="message-input-form">
+                            <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" required>
+                            <button type="submit" class="primary">Send</button>
+                        </form>
+                    `;
+                    const messagesList = document.getElementById('messages-list');
+                    if (messagesList) {
+                        messagesList.scrollTop = messagesList.scrollHeight;
+                    }
+                },
+                createMessageBubble(message) {
+                    const isSent = message.senderId === state.currentUser.userId;
+                    let statusHTML = '';
+                    if (isSent) {
+                        if (message.status === 'sent') {
+                            statusHTML = '<div class="message-status">Sent</div>';
+                        } else if (message.status === 'sending') {
+                            statusHTML = '<div class="message-status">Sending...</div>';
+                        } else if (message.status === 'failed') {
+                            statusHTML = '<div class="message-status error">Failed to send</div>';
+                        }
+                    }
+                    return `
+                        <div class="message-wrapper ${isSent ? 'sent' : 'received'}">
+                            <div class="message-bubble ${isSent ? 'sent' : 'received'}">${sanitizeHTML(message.messageContent)}</div>
+                            ${statusHTML}
+                        </div>
+                    `;
+                },
             };
 
             const handlers = {
@@ -926,32 +1018,23 @@
                     const contentInput = document.getElementById('post-content-input');
                     let postContent = sanitizeHTML(contentInput.value.trim());
                     const imageUrl = state.postImageUrl;
-
                     if (!postContent && !imageUrl && !state.editingPostId) return;
-
                     if (imageUrl) {
                         postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`;
                     }
-
                     const isUpdating = !!state.editingPostId;
                     const button = document.getElementById('submit-post-btn');
                     const originalButtonText = isUpdating ? 'Save Changes' : 'Post';
                     ui.setButtonState(button.id, 'Saving...', true);
-
                     try {
                         if (isUpdating) {
-                            await api.call('updatePost', {
-                                userId: state.currentUser.userId,
-                                postId: state.editingPostId,
-                                postContent: postContent
-                            });
+                            await api.call('updatePost', { userId: state.currentUser.userId, postId: state.editingPostId, postContent: postContent });
                         } else {
                             const postType = document.getElementById('post-type-select').value;
                             const isStory = postType.startsWith('story');
                             const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0;
                             await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration });
                         }
-
                         contentInput.value = '';
                         state.postImageUrl = null;
                         state.editingPostId = null;
@@ -959,7 +1042,6 @@
                         button.textContent = 'Post';
                         document.getElementById('post-type-select').value = 'regular';
                         await core.refreshFeed(false);
-
                     } catch (e) {
                         alert(`Error: ${e.message}`);
                     } finally {
@@ -973,13 +1055,10 @@
                 enterEditMode(postId) {
                     const post = state.posts.find(p => p.postId === postId);
                     if (!post) return;
-
                     const textContent = post.postContent.replace(/<br><img src=".*?" alt=".*?">/g, '').trim();
-
                     document.getElementById('post-content-input').value = textContent;
                     document.getElementById('submit-post-btn').textContent = 'Save Changes';
                     state.editingPostId = postId;
-
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     document.getElementById('post-content-input').focus();
                 },
@@ -1027,9 +1106,7 @@
                 async toggleFollow(followingId) {
                     const followBtn = document.getElementById('follow-btn');
                     if (!followBtn) return;
-                    
                     followBtn.disabled = true;
-
                     try {
                         const result = await api.call('toggleFollow', { followerId: state.currentUser.userId, followingId });
                         state.profileUser.relationship = result.newRelationship;
@@ -1054,7 +1131,6 @@
                     }
                     state.scrollToPostId = scrollToPostId;
                     core.navigateTo('profile');
-
                     const userFromCache = state.posts.find(p => p.userId === userId);
                     if (userFromCache) {
                         const isFollowing = state.currentUserFollowingList.includes(userId);
@@ -1062,16 +1138,11 @@
                         let preliminaryRelationship = "none";
                         if (isFollowing && isFollower) { preliminaryRelationship = 'Friends';
                         } else if (isFollowing) { preliminaryRelationship = 'Following'; }
-
-                        state.profileUser = { 
-                            ...userFromCache, 
-                            relationship: preliminaryRelationship 
-                        };
+                        state.profileUser = { ...userFromCache, relationship: preliminaryRelationship };
                         ui.renderProfilePage();
                     } else {
                         ui.showProfileSkeleton();
                     }
-                    
                     try {
                         const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
                         if (state.currentView === 'profile' && (!state.profileUser || state.profileUser.userId === user.userId)) {
@@ -1094,13 +1165,10 @@
                     const titleEl = document.getElementById('hashtag-title');
                     const feedEl = document.getElementById('hashtag-feed');
                     const fullHashtag = `#${tag.toLowerCase()}`;
-                    
                     titleEl.textContent = `Posts tagged with ${fullHashtag}`;
-                    
                     const filteredPosts = state.posts.filter(post => 
                         (post.postContent || '').toLowerCase().includes(fullHashtag)
                     );
-                    
                     ui.renderFeed(filteredPosts, feedEl, false);
                 },
                 async showNotifications() {
@@ -1155,11 +1223,103 @@
                     } finally {
                         switchElement.disabled = false;
                     }
-                }
+                },
+                async loadMessagesView() {
+                    core.navigateTo('messages');
+                    ui.renderMessagesPage();
+                },
+                async loadConversation(otherUserId) {
+                    if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId);
+                    state.currentConversation.otherUserId = otherUserId;
+                    const convo = state.conversations.find(c => c.otherUser.userId === otherUserId);
+                    if (convo) convo.unreadCount = 0;
+                    ui.renderMessagesPage();
+                    document.getElementById('conversation-view').innerHTML = '<div id="messages-list" style="display: flex; justify-content: center; align-items: center; height: 100%;"><p>Loading messages...</p></div>';
+                    try {
+                        const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET');
+                        state.currentConversation.messages = messages.map(m => ({...m, status: 'sent'}));
+                        ui.renderConversationHistory();
+                        api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId });
+                        state.messagePollingIntervalId = setInterval(() => handlers.pollNewMessages(otherUserId), 5000);
+                    } catch (e) {
+                        document.getElementById('messages-list').innerHTML = `<p class="error-message">Could not load conversation: ${e.message}</p>`;
+                    }
+                },
+                async sendMessage() {
+                    const input = document.getElementById('message-input');
+                    const messageContent = input.value.trim();
+                    const otherUserId = state.currentConversation.otherUserId;
+                    if (!messageContent || !otherUserId) return;
+                    input.value = '';
+                    input.disabled = true;
+                    document.querySelector('#message-input-form button').disabled = true;
+                    const tempId = `temp_${Date.now()}`;
+                    const tempMessage = { messageId: tempId, senderId: state.currentUser.userId, messageContent, status: 'sending' };
+                    state.currentConversation.messages.push(tempMessage);
+                    ui.renderConversationHistory();
+                    try {
+                        const { confirmedMessage } = await api.call('sendMessage', { senderId: state.currentUser.userId, recipientId: otherUserId, messageContent });
+                        const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
+                        if (messageIndex > -1) {
+                            state.currentConversation.messages[messageIndex] = { ...confirmedMessage, status: 'sent' };
+                        }
+                        ui.renderConversationHistory();
+                    } catch (e) {
+                        alert(`Error: ${e.message}`);
+                        const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
+                        if (messageIndex > -1) {
+                            state.currentConversation.messages[messageIndex].status = 'failed';
+                        }
+                        ui.renderConversationHistory();
+                    } finally {
+                        const finalInput = document.getElementById('message-input');
+                        if (finalInput) { finalInput.disabled = false; finalInput.focus(); }
+                        const button = document.querySelector('#message-input-form button');
+                        if (button) button.disabled = false;
+                    }
+                },
+                async pollNewMessages(otherUserId, isForced = false) {
+                    if (state.currentView !== 'messages' || state.currentConversation.otherUserId !== otherUserId) {
+                        if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId);
+                        return;
+                    }
+                    try {
+                        const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET');
+                        if (isForced || messages.length > state.currentConversation.messages.length) {
+                            state.currentConversation.messages = messages.map(m => ({...m, status: 'sent'}));
+                            ui.renderConversationHistory();
+                            api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId });
+                        }
+                    } catch (e) { console.error("Polling failed:", e.message); }
+                },
+                async startConversationFromProfile(otherUserId) {
+                    core.navigateTo('messages');
+                    const existingConvo = state.conversations.find(c => c.otherUser.userId === otherUserId);
+                    if (!existingConvo && state.profileUser && state.profileUser.userId === otherUserId) {
+                        const newConvo = {
+                            otherUser: {
+                                userId: state.profileUser.userId,
+                                displayName: state.profileUser.displayName,
+                                profilePictureUrl: state.profileUser.profilePictureUrl,
+                                isVerified: state.profileUser.isVerified
+                            },
+                            lastMessage: '',
+                            timestamp: new Date().toISOString(),
+                            unreadCount: 0
+                        };
+                        state.conversations.unshift(newConvo);
+                    }
+                    await handlers.loadConversation(otherUserId);
+                },
             };
 
             const core = {
                 navigateTo(view) { 
+                    if (state.currentView === 'messages' && view !== 'messages' && state.messagePollingIntervalId) {
+                        clearInterval(state.messagePollingIntervalId);
+                        state.messagePollingIntervalId = null;
+                        state.currentConversation.otherUserId = null;
+                    }
                     if (state.backgroundPosts) { state.posts = state.backgroundPosts; state.backgroundPosts = null; } 
                     state.currentView = view; 
                     ui.render(); 
@@ -1172,59 +1332,41 @@
                 async refreshFeed(showLoader = true) { 
                     if (showLoader) ui.showFeedSkeleton(document.getElementById('feed')); 
                     try { 
-                        const [postsResult, notificationsResult] = await Promise.all([
+                        const [postsAndConvosResult, notificationsResult] = await Promise.all([
                             api.call('getPosts', { userId: state.currentUser.userId }, 'GET'),
                             api.call('getNotifications', { userId: state.currentUser.userId }, 'GET')
                         ]);
-
-                        const { posts, currentUserFollowingList, currentUserFollowersList, currentUserData, bannerText } = postsResult;
-                        
+                        const { posts, conversations, currentUserFollowingList, currentUserFollowersList, currentUserData, bannerText } = postsAndConvosResult;
                         const banner = document.getElementById('global-banner');
                         const root = document.documentElement;
                         if(bannerText) {
                             banner.textContent = bannerText;
                             banner.classList.remove('hidden');
-                            setTimeout(() => {
-                                root.style.setProperty('--banner-height', `${banner.offsetHeight}px`);
-                            }, 0);
+                            setTimeout(() => { root.style.setProperty('--banner-height', `${banner.offsetHeight}px`); }, 0);
                         } else {
                             banner.classList.add('hidden');
                             root.style.setProperty('--banner-height', '0px');
                         }
-
                         if (currentUserData) {
-                            if (currentUserData.isSuspended === 'OUTAGE') {
-                                core.logout(false);
-                                return core.navigateTo('outage');
-                            }
-                            if (currentUserData.banDetails) {
-                                ui.renderBanPage(currentUserData.banDetails);
-                                core.logout(false);
-                                return core.navigateTo('suspended');
-                            }
+                            if (currentUserData.isSuspended === 'OUTAGE') { core.logout(false); return core.navigateTo('outage'); }
+                            if (currentUserData.banDetails) { ui.renderBanPage(currentUserData.banDetails); core.logout(false); return core.navigateTo('suspended'); }
                             state.currentUser = currentUserData; 
                             localStorage.setItem('currentUser', JSON.stringify(state.currentUser)); 
                         } else {
                             throw new Error("Could not validate user session.");
                         }
-
-                        state.posts = posts; 
+                        state.posts = posts;
+                        state.conversations = conversations;
                         state.currentUserFollowingList = currentUserFollowingList;
                         state.currentUserFollowersList = currentUserFollowersList;
-
                         const { notifications } = notificationsResult;
                         state.notifications = notifications;
-                        state.unreadNotificationCount = notifications.filter(n => n.isRead === 'FALSE' || n.isRead === false).length;
+                        state.unreadNotificationCount = notifications.filter(n => !n.isRead || n.isRead === 'FALSE').length;
                         this.updateNotificationDot();
-
                     } catch(e) { 
                         console.error("Feed refresh error:", e);
-                        if(state.currentView === 'feed') {
-                           document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; 
-                        }
-                        if (e.message.includes("validate user session")) {
-                            setTimeout(() => core.logout(), 2000);
-                        }
+                        if(state.currentView === 'feed') { document.getElementById('feed').innerHTML = `<p class="error-message">Could not load feed: ${e.message}</p>`; }
+                        if (e.message.includes("validate user session")) { setTimeout(() => core.logout(), 2000); }
                     } finally { 
                         if (['feed', 'profile', 'hashtagFeed'].includes(state.currentView)) ui.render(); 
                     }
@@ -1251,9 +1393,11 @@
                     if (state.backgroundRefreshIntervalId) clearInterval(state.backgroundRefreshIntervalId);
                     if (state.storyUpdateIntervalId) clearInterval(state.storyUpdateIntervalId);
                     if (state.banCountdownIntervalId) clearInterval(state.banCountdownIntervalId);
+                    if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId);
                     state.backgroundRefreshIntervalId = null;
                     state.storyUpdateIntervalId = null;
                     state.banCountdownIntervalId = null;
+                    state.messagePollingIntervalId = null;
                     if(forceReload) {
                         window.location.reload(); 
                     }
@@ -1268,12 +1412,11 @@
                     document.getElementById('settings-btn').addEventListener('click', () => ui.toggleModal('settings', true));
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
                     document.getElementById('notifications-btn').addEventListener('click', handlers.showNotifications);
-                    
+                    document.getElementById('messages-btn').addEventListener('click', () => handlers.loadMessagesView());
                     document.querySelector('#settings-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('settings', false));
                     document.querySelector('#search-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('search', false));
                     document.querySelector('#notifications-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('notifications', false));
                     document.querySelector('#image-url-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('imageUrl', false));
-
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
@@ -1282,69 +1425,38 @@
                     document.getElementById('search-input').addEventListener('input', (e) => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => handlers.search(e.target.value), 300); });
                     document.getElementById('post-visibility-select').addEventListener('change', handlers.updatePostVisibility);
                     document.getElementById('privacy-switch').addEventListener('change', handlers.updateProfilePrivacy);
-                    
                     document.getElementById('add-image-btn').addEventListener('click', () => ui.toggleModal('imageUrl', true));
                     document.getElementById('image-url-modal-done-btn').addEventListener('click', () => {
                         const url = document.getElementById('image-url-modal-input').value.trim();
-                        if (url) {
-                            state.postImageUrl = url;
-                            ui.renderImagePreview();
-                        }
+                        if (url) { state.postImageUrl = url; ui.renderImagePreview(); }
                         document.getElementById('image-url-modal-input').value = '';
                         ui.toggleModal('imageUrl', false);
                     });
-
-                    document.getElementById('register-tos').addEventListener('change', (e) => {
-                        document.getElementById('register-btn').disabled = !e.target.checked;
-                    });
-
-                    document.getElementById('create-post-form').addEventListener('click', (e) => {
-                        if (e.target.id === 'remove-image-btn') {
-                            state.postImageUrl = null;
-                            ui.renderImagePreview();
-                        }
-                    });
-
+                    document.getElementById('register-tos').addEventListener('change', (e) => { document.getElementById('register-btn').disabled = !e.target.checked; });
+                    document.getElementById('create-post-form').addEventListener('click', (e) => { if (e.target.id === 'remove-image-btn') { state.postImageUrl = null; ui.renderImagePreview(); } });
                     document.getElementById('notifications-list').addEventListener('click', (e) => {
-                        const item = e.target.closest('.notification-item');
-                        if(!item) return;
-                        if(e.target.closest('.delete-notification-btn')) {
-                            handlers.deleteNotification(item.dataset.notificationId);
-                            return;
-                        }
+                        const item = e.target.closest('.notification-item'); if(!item) return;
+                        if(e.target.closest('.delete-notification-btn')) { handlers.deleteNotification(item.dataset.notificationId); return; }
                         const clickableArea = e.target.closest('.notification-item-clickable');
                         if (clickableArea) {
                             ui.toggleModal('notifications', false);
                             const notification = state.notifications.find(n => n.notificationId === item.dataset.notificationId);
                             if (!notification) return;
-                            if (notification.postAuthorId && notification.postId && notification.postId !== 'null') {
-                                handlers.showProfile(notification.postAuthorId, notification.postId);
-                            } 
-                            else if (notification.actorUserId) {
-                                handlers.showProfile(notification.actorUserId);
-                            }
+                            if (notification.postAuthorId && notification.postId && notification.postId !== 'null') { handlers.showProfile(notification.postAuthorId, notification.postId); } 
+                            else if (notification.actorUserId) { handlers.showProfile(notification.actorUserId); }
                         }
                     });
-
                     document.body.addEventListener('click', (e) => {
                         const target = e.target;
-
                         const optionsBtn = target.closest('.options-btn');
-                        const allMenus = document.querySelectorAll('.options-menu');
-
                         if (optionsBtn) {
                             e.preventDefault();
-                            const menu = optionsBtn.nextElementSibling;
-                            const isHidden = menu.classList.contains('hidden');
-                            allMenus.forEach(m => m.classList.add('hidden'));
+                            const menu = optionsBtn.nextElementSibling; const isHidden = menu.classList.contains('hidden');
+                            document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden'));
                             if (isHidden) menu.classList.remove('hidden');
                             return;
                         }
-
-                        if (!target.closest('.options-menu')) {
-                            allMenus.forEach(m => m.classList.add('hidden'));
-                        }
-
+                        if (!target.closest('.options-menu')) { document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden')); }
                         const actionButton = target.closest('[data-action]');
                         if (actionButton) {
                             const action = actionButton.dataset.action;
@@ -1353,37 +1465,47 @@
                             else if (action === 'edit-post') handlers.enterEditMode(target.closest('.post').dataset.postId);
                             return;
                         }
-
                         if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); }
                         const hashtagLink = target.closest('.hashtag-link');
                         if (hashtagLink) { e.preventDefault(); handlers.showHashtagFeed(hashtagLink.dataset.hashtag); return; }
-                        
-                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user');
+                        const profileLink = target.closest('.post-header, .comment-author, .search-result-user, #conversation-header .profile-link');
                         if (profileLink && !target.closest('.post-options')) {
                              const userElement = profileLink.closest('[data-user-id]');
-                             if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; }
+                             if (userElement && userElement.dataset.userId) { 
+                                 ui.toggleModal('search', false);
+                                 handlers.showProfile(userElement.dataset.userId); 
+                                 return; 
+                             }
                         }
-
                         if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile');
                         if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId);
                         if (target.closest('#settings-profile-link')) { ui.toggleModal('settings', false); handlers.showProfile(state.currentUser.userId); return; }
                         const likeBtn = target.closest('.like-btn');
                         if (likeBtn) return handlers.toggleLike(target.closest('.post').dataset.postId);
+                        if (target.closest('#message-user-btn')) return handlers.startConversationFromProfile(state.profileUser.userId);
+                        const conversationItem = target.closest('.conversation-item');
+                        if (conversationItem) {
+                            const otherUserId = conversationItem.dataset.userId;
+                            if (otherUserId && otherUserId !== state.currentConversation.otherUserId) {
+                                handlers.loadConversation(otherUserId);
+                            }
+                            return;
+                        }
                     });
-                    document.body.addEventListener('submit', (e) => { const commentForm = e.target.closest('.comment-form'); if(commentForm) { e.preventDefault(); const input = commentForm.querySelector('input'); handlers.addComment(e.target.closest('.post').dataset.postId, input.value); input.value = ''; }});
+                    document.body.addEventListener('submit', (e) => { 
+                        const commentForm = e.target.closest('.comment-form'); 
+                        if(commentForm) { e.preventDefault(); const input = commentForm.querySelector('input'); handlers.addComment(e.target.closest('.post').dataset.postId, input.value); input.value = ''; }
+                        const messageForm = e.target.closest('#message-input-form');
+                        if(messageForm) { e.preventDefault(); handlers.sendMessage(); }
+                    });
                     document.getElementById('auth-view').addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const activeForm = !document.getElementById('login-form').classList.contains('hidden') ? document.getElementById('login-form') : document.getElementById('register-form'); e.preventDefault(); const inputs = [...activeForm.querySelectorAll('input')]; const currentInputIndex = inputs.findIndex(input => input === document.activeElement); if (currentInputIndex > -1 && currentInputIndex < inputs.length - 1) { inputs[currentInputIndex + 1].focus(); } else { activeForm.querySelector('button.primary').click(); } });
                 },
                 async initializeApp() {
                     const savedUser = JSON.parse(localStorage.getItem('currentUser'));
-                    if (!savedUser) {
-                        return core.navigateTo('auth');
-                    }
-                    
+                    if (!savedUser) { return core.navigateTo('auth'); }
                     state.currentUser = savedUser;
-
                     core.navigateTo('feed');
                     ui.showFeedSkeleton(document.getElementById('feed'));
-
                     try {
                         await core.refreshFeed(false);
                         core.startStoryCountdownInterval();
@@ -1397,7 +1519,6 @@
                     const savedTheme = localStorage.getItem('theme') || 'light'; 
                     document.documentElement.setAttribute('data-theme', savedTheme); 
                     document.getElementById('theme-switch').checked = savedTheme === 'dark';
-                    
                     if (localStorage.getItem('currentUser')) { 
                         core.initializeApp(); 
                     } else { 
@@ -1409,10 +1530,8 @@
             const formatTimestamp = (post) => {
                 const isoString = post.isStory ? post.expiryTimestamp : post.timestamp;
                 if (!isoString) return '';
-                
                 const date = new Date(isoString);
                 const now = new Date();
-                
                 if (post.isStory) {
                     const diff = date - now;
                     if (diff <= 0) return 'Expired';
@@ -1420,7 +1539,6 @@
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     return `${hours}h ${minutes}m left`;
                 }
-
                 const secondsAgo = Math.round((now - date) / 1000);
                 if (secondsAgo < 60) return 'just now';
                 const minutesAgo = Math.round(secondsAgo / 60);
