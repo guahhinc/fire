@@ -341,10 +341,19 @@
         .message-wrapper { display: flex; flex-direction: column; }
         .message-wrapper.sent { align-items: flex-end; }
         .message-wrapper.received { align-items: flex-start; }
-        .message-bubble { max-width: 70%; padding: 8px 12px; border-radius: 18px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+        
+        /* MODIFIED: Add flex row for sent messages to align options menu */
+        .message-wrapper.sent {
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            position: relative; /* For menu positioning */
+        }
+        
+        .message-bubble { max-width: 80%; padding: 8px 12px; border-radius: 18px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
         .message-bubble.sent { background-color: var(--accent-color); color: white; border-bottom-right-radius: 4px; }
         .message-bubble.received { background-color: var(--border-color); color: var(--primary-text-color); border-bottom-left-radius: 4px; }
-        .message-status { font-size: 11px; color: var(--secondary-text-color); padding: 2px 8px 0 0; text-align: right; }
+        .message-status { font-size: 11px; color: var(--secondary-text-color); padding: 2px 8px 0 0; text-align: right; width: 100%;}
         .message-status.error { color: var(--error-color); font-weight: 600; }
         
         #message-input-form { display: flex; padding: 10px; border-top: 1px solid var(--border-color); }
@@ -352,6 +361,26 @@
         #message-input-form button { padding: 0 16px; font-size: 15px; }
         #conversation-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--secondary-text-color); text-align: center; }
         #conversation-placeholder .material-symbols-rounded { font-size: 60px; margin-bottom: 16px; }
+
+        /* NEW: Styles for message options menu */
+        .message-options {
+            position: relative;
+            margin-left: 4px;
+        }
+        .message-options .options-btn {
+            padding: 2px;
+        }
+        .message-options .options-btn .material-symbols-rounded {
+            font-size: 18px;
+            vertical-align: -4px;
+        }
+        .message-options .options-menu {
+            width: 120px; /* Smaller menu */
+            top: 50%;
+            right: 100%;
+            transform: translateY(-50%);
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -542,8 +571,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK5Y94l7UaVX2UsoW_Cvaes_bNoANzS7USRr5Wb9NBhottNEdhm8L8V-C9yr7k-hfA/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHMT5Vg4rI_cagAKYobAh-ERIu_-nsRNboETjMQS_gsP7ptLebi0Y-ouWUd1VAaZzm/exec';
 
+            // REVERTED state object
             const state = { 
                 currentUser: null, posts: [], currentUserFollowingList: [], currentUserFollowersList: [],
                 notifications: [], unreadNotificationCount: 0, currentView: null, profileUser: null,
@@ -1008,9 +1038,12 @@
                         setTimeout(() => messagesList.scrollTop = messagesList.scrollHeight, 100);
                     }
                 },
+                // MODIFIED to use a three-dot menu for deletion
                 createMessageBubble(message) {
                     const isSent = message.senderId === state.currentUser.userId;
                     let statusHTML = '';
+                    let wrapperContent = '';
+
                     if (isSent) {
                         if (message.status === 'sent') {
                             statusHTML = '<div class="message-status">Sent</div>';
@@ -1019,12 +1052,29 @@
                         } else if (message.status === 'failed') {
                             statusHTML = '<div class="message-status error">Failed to send</div>';
                         }
+
+                        const optionsMenuHTML = `
+                            <div class="message-options">
+                                <button class="options-btn" title="More options"><span class="material-symbols-rounded">more_vert</span></button>
+                                <div class="options-menu hidden">
+                                    <button class="delete-btn" data-action="delete-message" data-message-id="${message.messageId}">Unsend</button>
+                                </div>
+                            </div>
+                        `;
+
+                        wrapperContent = `
+                            <div class="message-bubble sent">${sanitizeHTML(message.messageContent)}</div>
+                            ${optionsMenuHTML}
+                        `;
+                    } else {
+                        wrapperContent = `<div class="message-bubble received">${sanitizeHTML(message.messageContent)}</div>`;
                     }
+                    
                     return `
-                        <div class="message-wrapper ${isSent ? 'sent' : 'received'}">
-                            <div class="message-bubble ${isSent ? 'sent' : 'received'}">${sanitizeHTML(message.messageContent)}</div>
-                            ${statusHTML}
+                        <div class="message-wrapper ${isSent ? 'sent' : 'received'}" data-message-id="${message.messageId}">
+                           ${wrapperContent}
                         </div>
+                        ${isSent ? statusHTML : ''}
                     `;
                 },
             };
@@ -1185,6 +1235,7 @@
                     }
                 },
                 async search(query) { const container = document.getElementById('search-results'); container.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">Searching...</p>'; try { const results = await api.call('search', { query }, 'GET'); ui.renderSearchResults(results); } catch(e) { container.innerHTML = `<p class="error-message">Search failed: ${e.message}</p>`; }},
+                // REVERTED showProfile to always fetch
                 async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') {
                         state.feedScrollPosition = window.scrollY;
@@ -1327,6 +1378,29 @@
                         if (button) button.disabled = false;
                     }
                 },
+                // MODIFIED handler to include confirmation
+                async deleteMessage(messageId) {
+                    if (!confirm("Are you sure you want to unsend this message? This cannot be undone.")) return;
+                    
+                    const messageWrapper = document.querySelector(`.message-wrapper[data-message-id="${messageId}"]`);
+                    const messageStatus = document.querySelector(`.message-wrapper[data-message-id="${messageId}"] + .message-status`);
+                    if (!messageWrapper) return;
+
+                    messageWrapper.style.opacity = '0.5';
+
+                    try {
+                        await api.call('deleteMessage', { userId: state.currentUser.userId, messageId });
+                        const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === messageId);
+                        if (messageIndex > -1) {
+                            state.currentConversation.messages.splice(messageIndex, 1);
+                        }
+                        messageWrapper.remove();
+                        if (messageStatus) messageStatus.remove();
+                    } catch (e) {
+                        alert(`Error: Could not unsend message. ${e.message}`);
+                        messageWrapper.style.opacity = '1';
+                    }
+                },
                 async pollNewMessages(otherUserId, isForced = false) {
                     if (state.currentView !== 'messages' || state.currentConversation.otherUserId !== otherUserId) {
                         if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId);
@@ -1379,6 +1453,7 @@
                         window.scrollTo(0, 0);
                     }
                 },
+                // REVERTED refreshFeed to remove preloading logic
                 async refreshFeed(showLoader = true) { 
                     if (showLoader) ui.showFeedSkeleton(document.getElementById('feed')); 
                     try { 
@@ -1501,23 +1576,28 @@
                             else if (notification.actorUserId) { handlers.showProfile(notification.actorUserId); }
                         }
                     });
+                    // MODIFIED main click listener for new message options menu
                     document.body.addEventListener('click', (e) => {
                         const target = e.target;
                         const optionsBtn = target.closest('.options-btn');
                         if (optionsBtn) {
                             e.preventDefault();
-                            const menu = optionsBtn.nextElementSibling; const isHidden = menu.classList.contains('hidden');
+                            const menu = optionsBtn.nextElementSibling;
+                            const isHidden = menu.classList.contains('hidden');
                             document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden'));
                             if (isHidden) menu.classList.remove('hidden');
                             return;
                         }
-                        if (!target.closest('.options-menu')) { document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden')); }
+                        if (!target.closest('.options-menu')) {
+                            document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden'));
+                        }
                         const actionButton = target.closest('[data-action]');
                         if (actionButton) {
                             const action = actionButton.dataset.action;
                             if (action === 'delete-post') handlers.deletePost(target.closest('.post').dataset.postId);
                             else if (action === 'delete-comment') handlers.deleteComment(target.closest('.comment').dataset.commentId);
                             else if (action === 'edit-post') handlers.enterEditMode(target.closest('.post').dataset.postId);
+                            else if (action === 'delete-message') handlers.deleteMessage(actionButton.dataset.messageId);
                             return;
                         }
                         if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); }
