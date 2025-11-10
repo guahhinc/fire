@@ -158,8 +158,8 @@
         .profile-actions button { padding: 8px 16px; }
         .back-btn { margin: 20px 0; font-weight: 600; cursor: pointer; display: inline-block; }
         .profile-options-menu { position: absolute; top: 0; right: 0; }
-        .profile-options-menu .options-btn { padding: 8px; } /* NEW */
-        .profile-options-menu .options-btn .material-symbols-rounded { font-size: 24px; vertical-align: -6px; } /* NEW */
+        .profile-options-menu .options-btn { padding: 8px; }
+        .profile-options-menu .options-btn .material-symbols-rounded { font-size: 24px; vertical-align: -6px; }
         .profile-options-menu .options-menu { min-width: 160px; }
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
@@ -167,7 +167,6 @@
         .form-group textarea { resize: vertical; min-height: 80px; }
         #edit-profile-view .actions { margin-top: 20px; }
         #edit-profile-view .actions button { width: 100%; padding: 12px; font-size: 16px; }
-        /* NEW: PFP Choices */
         #pfp-choices-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         #pfp-choices-gallery img { width: 60px; height: 60px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
         #pfp-choices-gallery img.selected { border-color: var(--accent-color); }
@@ -463,7 +462,9 @@
                 'https://api.dicebear.com/8.x/bottts/svg?seed=bot',
                 'https://api.dicebear.com/8.x/micah/svg?seed=micah',
                 'https://api.dicebear.com/8.x/miniavs/svg?seed=miniavs',
-                'https://api.dicebear.com/8.x/thumbs/svg?seed=thumbs'
+                'https://api.dicebear.com/8.x/thumbs/svg?seed=thumbs',
+                'https://api.dicebear.com/8.x/lorelei/svg?seed=lorelei',
+                'https://api.dicebear.com/8.x/initials/svg?seed=Fire'
             ];
 
             const state = { 
@@ -741,8 +742,6 @@
                             await core.refreshFeed(true);
                             if (state.currentView === 'profile' && state.profileUser && state.profileUser.userId === userIdToBlock) {
                                 core.navigateTo('feed');
-                            } else if (state.currentView === 'settings') {
-                                ui.renderSettingsPage();
                             }
                         } catch (e) { alert(`Error: Could not block user. ${e.message}`); }
                     }
@@ -821,13 +820,20 @@
                     const messageContent = input.value.trim();
                     const otherUserId = state.currentConversation.otherUserId;
                     if (!messageContent || !otherUserId) return;
+
                     const tempId = `temp_${Date.now()}`;
                     const tempMessage = { messageId: tempId, senderId: state.currentUser.userId, messageContent, status: 'sending' };
-                    
+
+                    // Disable form and pause polling
                     input.value = '';
                     input.disabled = true;
                     document.querySelector('#message-input-form button').disabled = true;
+                    if (state.messagePollingIntervalId) {
+                        clearInterval(state.messagePollingIntervalId);
+                        state.messagePollingIntervalId = null;
+                    }
 
+                    // Optimistically add message to UI
                     state.currentConversation.messages.push(tempMessage);
                     ui.renderConversationHistory();
 
@@ -835,25 +841,54 @@
                         const { confirmedMessage } = await api.call('sendMessage', { senderId: state.currentUser.userId, recipientId: otherUserId, messageContent });
                         const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
                         if (messageIndex > -1) {
+                            // Replace temp message with confirmed one
                             state.currentConversation.messages[messageIndex] = { ...confirmedMessage, status: 'sent' };
+                        } else {
+                            // Fallback in case something went wrong
+                            state.currentConversation.messages.push({ ...confirmedMessage, status: 'sent' });
                         }
-                        ui.renderConversationHistory();
                     } catch (e) {
                         alert(`Error: ${e.message}`);
                         const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
                         if (messageIndex > -1) {
                             state.currentConversation.messages[messageIndex].status = 'failed';
                         }
-                        ui.renderConversationHistory();
                     } finally {
+                        // Re-enable form and resume polling
+                        ui.renderConversationHistory();
                         const finalInput = document.getElementById('message-input');
                         if (finalInput) { finalInput.disabled = false; finalInput.focus(); }
                         const button = document.querySelector('#message-input-form button');
                         if (button) button.disabled = false;
+                        
+                        if (state.currentView === 'messages' && state.currentConversation.otherUserId) {
+                            state.messagePollingIntervalId = setInterval(() => handlers.pollNewMessages(state.currentConversation.otherUserId), 5000);
+                        }
                     }
                 },
                 async deleteMessage(messageId) { if (!confirm("Are you sure you want to unsend this message? This cannot be undone.")) return; const messageWrapper = document.querySelector(`.message-wrapper[data-message-id="${messageId}"]`); const messageStatus = document.querySelector(`.message-wrapper[data-message-id="${messageId}"] + .message-status`); if (!messageWrapper) return; messageWrapper.style.opacity = '0.5'; try { await api.call('deleteMessage', { userId: state.currentUser.userId, messageId }); const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === messageId); if (messageIndex > -1) { state.currentConversation.messages.splice(messageIndex, 1); } messageWrapper.remove(); if (messageStatus) messageStatus.remove(); } catch (e) { alert(`Error: Could not unsend message. ${e.message}`); messageWrapper.style.opacity = '1'; } },
-                async pollNewMessages(otherUserId, isForced = false) { if (state.currentView !== 'messages' || state.currentConversation.otherUserId !== otherUserId) { if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId); return; } try { const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET'); if (isForced || messages.length !== state.currentConversation.messages.length) { state.currentConversation.messages = messages.map(m => ({...m, status: 'sent'})); ui.renderConversationHistory(); api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId }); } } catch (e) { console.error("Polling failed:", e.message); } },
+                async pollNewMessages(otherUserId, isForced = false) {
+                    if (state.currentView !== 'messages' || state.currentConversation.otherUserId !== otherUserId) {
+                        if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId);
+                        return;
+                    }
+                    try {
+                        const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET');
+                        const pendingMessages = state.currentConversation.messages.filter(m => m.status === 'sending' || m.status === 'failed');
+                        const confirmedIds = new Set(messages.map(m => m.messageId));
+                        const uniquePending = pendingMessages.filter(pm => !confirmedIds.has(pm.messageId));
+
+                        const newMessages = [...messages.map(m => ({...m, status: 'sent'})), ...uniquePending];
+
+                        if (isForced || newMessages.length !== state.currentConversation.messages.length) {
+                            state.currentConversation.messages = newMessages;
+                            ui.renderConversationHistory();
+                            api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId });
+                        }
+                    } catch (e) {
+                        console.error("Polling failed:", e.message);
+                    }
+                },
                 async startConversationFromProfile(otherUserId) { core.navigateTo('messages'); const existingConvo = state.conversations.find(c => c.otherUser.userId === otherUserId); if (!existingConvo && state.profileUser && state.profileUser.userId === otherUserId) { const newConvo = { otherUser: { userId: state.profileUser.userId, displayName: state.profileUser.displayName, profilePictureUrl: state.profileUser.profilePictureUrl, isVerified: state.profileUser.isVerified }, lastMessage: '', timestamp: new Date().toISOString(), unreadCount: 0 }; state.conversations.unshift(newConvo); } await handlers.loadConversation(otherUserId); },
             };
 
