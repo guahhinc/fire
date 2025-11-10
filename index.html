@@ -158,6 +158,8 @@
         .profile-actions button { padding: 8px 16px; }
         .back-btn { margin: 20px 0; font-weight: 600; cursor: pointer; display: inline-block; }
         .profile-options-menu { position: absolute; top: 0; right: 0; }
+        .profile-options-menu .options-btn { padding: 8px; } /* NEW */
+        .profile-options-menu .options-btn .material-symbols-rounded { font-size: 24px; vertical-align: -6px; } /* NEW */
         .profile-options-menu .options-menu { min-width: 160px; }
         .form-group { margin-bottom: 16px; text-align: left; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
@@ -165,6 +167,10 @@
         .form-group textarea { resize: vertical; min-height: 80px; }
         #edit-profile-view .actions { margin-top: 20px; }
         #edit-profile-view .actions button { width: 100%; padding: 12px; font-size: 16px; }
+        /* NEW: PFP Choices */
+        #pfp-choices-gallery { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        #pfp-choices-gallery img { width: 60px; height: 60px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.2s; }
+        #pfp-choices-gallery img.selected { border-color: var(--accent-color); }
         .setting-description { font-size: 13px; color: var(--secondary-text-color); margin-top: 4px; padding-right: 15px; }
         .settings-section + .settings-section { border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 10px; }
         .settings-section-title { font-size: 16px; font-weight: 700; margin: 0 0 10px 0; }
@@ -308,7 +314,6 @@
 
     <div id="settings-view" class="view">
         <div class="container">
-            <!-- REMOVED back button -->
             <h2 style="margin-top: 20px;">Settings</h2>
             <div class="settings-section">
                 <h4 class="settings-section-title">👤 Account</h4>
@@ -365,7 +370,30 @@
     </div>
 
     <div id="edit-profile-view" class="view">
-        <div class="container"><a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a><h2>Edit Profile</h2><div class="form-group"><label for="edit-pfp-url">Profile Picture URL</label><input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png"></div><div class="form-group"><label for="edit-display-name">Display Name</label><input type="text" id="edit-display-name"></div><div class="form-group"><label for="edit-description">Description</label><textarea id="edit-description"></textarea></div><div class="actions"><button id="save-profile-btn" class="primary">Save Changes</button></div><p id="edit-profile-error" class="error-message hidden"></p></div>
+        <div class="container">
+            <a class="back-btn" id="back-to-profile-btn">&larr; Back to Profile</a>
+            <h2>Edit Profile</h2>
+            <div class="form-group">
+                <label for="edit-pfp-url">Profile Picture URL</label>
+                <input type="url" id="edit-pfp-url" placeholder="https://example.com/image.png">
+            </div>
+            <div class="form-group">
+                <label>Or choose an avatar:</label>
+                <div id="pfp-choices-gallery"></div>
+            </div>
+            <div class="form-group">
+                <label for="edit-display-name">Display Name</label>
+                <input type="text" id="edit-display-name">
+            </div>
+            <div class="form-group">
+                <label for="edit-description">Description</label>
+                <textarea id="edit-description"></textarea>
+            </div>
+            <div class="actions">
+                <button id="save-profile-btn" class="primary">Save Changes</button>
+            </div>
+            <p id="edit-profile-error" class="error-message hidden"></p>
+        </div>
     </div>
 
     <div id="messages-view" class="view">
@@ -428,6 +456,15 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxm-DlJnvD3M0aiPhjFd6dUWs2AWOhKJn_IUciUpM_rHGBujx77I14m98YIgUfK7BE/exec';
+
+            const pfpChoices = [
+                'https://api.dicebear.com/8.x/pixel-art/svg?seed=pixel',
+                'https://api.dicebear.com/8.x/adventurer/svg?seed=adventurer',
+                'https://api.dicebear.com/8.x/bottts/svg?seed=bot',
+                'https://api.dicebear.com/8.x/micah/svg?seed=micah',
+                'https://api.dicebear.com/8.x/miniavs/svg?seed=miniavs',
+                'https://api.dicebear.com/8.x/thumbs/svg?seed=thumbs'
+            ];
 
             const state = { 
                 currentUser: null, posts: [], currentUserFollowingList: [], currentUserFollowersList: [],
@@ -587,7 +624,23 @@
                     if (state.scrollToPostId) { const postIdToScroll = state.scrollToPostId; setTimeout(() => { const postElement = document.querySelector(`#profile-feed .post[data-post-id="${postIdToScroll}"]`); if (postElement) { postElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); const warningColor = getComputedStyle(document.documentElement).getPropertyValue('--warning-color'); postElement.style.transition = 'background-color 1s ease'; postElement.style.backgroundColor = `${warningColor}4D`; setTimeout(() => { postElement.style.backgroundColor = ''; }, 2500); } }, 200); state.scrollToPostId = null; }
                 },
                 formatPostContent(content) { if (!content) return ''; let inTag = false; let formattedContent = ""; for(let i = 0; i < content.length; i++) { if(content[i] === '<') inTag = true; if(content[i] === '>') inTag = false; if(content[i] === '#' && !inTag && (i === 0 || /\s/.test(content[i-1]))) { let tag = content.substring(i+1).match(/^\w+/); if(tag) { formattedContent += `<a href="#" class="hashtag-link" data-hashtag="${tag[0]}">#${tag[0]}</a>`; i += tag[0].length; continue; } } formattedContent += content[i]; } return formattedContent; },
-                renderEditProfilePage() { document.getElementById('edit-pfp-url').value = state.currentUser.profilePictureUrl; document.getElementById('edit-display-name').value = state.currentUser.displayName; document.getElementById('edit-description').value = state.currentUser.description; },
+                renderEditProfilePage() {
+                    document.getElementById('edit-pfp-url').value = state.currentUser.profilePictureUrl;
+                    document.getElementById('edit-display-name').value = state.currentUser.displayName;
+                    document.getElementById('edit-description').value = state.currentUser.description;
+
+                    const gallery = document.getElementById('pfp-choices-gallery');
+                    gallery.innerHTML = '';
+                    pfpChoices.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.dataset.url = url;
+                        if (state.currentUser.profilePictureUrl === url) {
+                            img.classList.add('selected');
+                        }
+                        gallery.appendChild(img);
+                    });
+                },
                 createPostElement(post) {
                     const postDiv = document.createElement('div'); postDiv.className = 'post'; postDiv.dataset.postId = post.postId; postDiv.dataset.userId = post.userId;
                     const isLiked = post.likes.some(like => like.userId === state.currentUser.userId); const isAuthor = post.userId === state.currentUser.userId;
@@ -763,7 +816,42 @@
                 },
                 async loadMessagesView() { core.navigateTo('messages'); ui.renderMessagesPage(); },
                 async loadConversation(otherUserId) { if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId); state.currentConversation.otherUserId = otherUserId; const convo = state.conversations.find(c => c.otherUser.userId === otherUserId); if (convo) convo.unreadCount = 0; core.updateMessageDot(); document.querySelector('.messages-container').classList.add('show-chat-view'); ui.renderMessagesPage(); document.getElementById('conversation-view').innerHTML = '<div id="messages-list" style="display: flex; justify-content: center; align-items: center; height: 100%;"><p>Loading messages...</p></div>'; try { const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET'); state.currentConversation.messages = messages.map(m => ({...m, status: 'sent'})); ui.renderConversationHistory(); api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId }); state.messagePollingIntervalId = setInterval(() => handlers.pollNewMessages(otherUserId), 5000); } catch (e) { document.getElementById('conversation-view').innerHTML = `<div id="conversation-placeholder" class="error-message">Could not load conversation: ${e.message}</div>`; } },
-                async sendMessage() { const input = document.getElementById('message-input'); const messageContent = input.value.trim(); const otherUserId = state.currentConversation.otherUserId; if (!messageContent || !otherUserId) return; input.value = ''; input.disabled = true; document.querySelector('#message-input-form button').disabled = true; const tempId = `temp_${Date.now()}`; const tempMessage = { messageId: tempId, senderId: state.currentUser.userId, messageContent, status: 'sending' }; state.currentConversation.messages.push(tempMessage); ui.renderConversationHistory(); try { const { confirmedMessage } = await api.call('sendMessage', { senderId: state.currentUser.userId, recipientId: otherUserId, messageContent }); const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId); if (messageIndex > -1) { state.currentConversation.messages[messageIndex] = { ...confirmedMessage, status: 'sent' }; } ui.renderConversationHistory(); } catch (e) { alert(`Error: ${e.message}`); const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId); if (messageIndex > -1) { state.currentConversation.messages[messageIndex].status = 'failed'; } ui.renderConversationHistory(); } finally { const finalInput = document.getElementById('message-input'); if (finalInput) { finalInput.disabled = false; finalInput.focus(); } const button = document.querySelector('#message-input-form button'); if (button) button.disabled = false; } },
+                async sendMessage() {
+                    const input = document.getElementById('message-input');
+                    const messageContent = input.value.trim();
+                    const otherUserId = state.currentConversation.otherUserId;
+                    if (!messageContent || !otherUserId) return;
+                    const tempId = `temp_${Date.now()}`;
+                    const tempMessage = { messageId: tempId, senderId: state.currentUser.userId, messageContent, status: 'sending' };
+                    
+                    input.value = '';
+                    input.disabled = true;
+                    document.querySelector('#message-input-form button').disabled = true;
+
+                    state.currentConversation.messages.push(tempMessage);
+                    ui.renderConversationHistory();
+
+                    try {
+                        const { confirmedMessage } = await api.call('sendMessage', { senderId: state.currentUser.userId, recipientId: otherUserId, messageContent });
+                        const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
+                        if (messageIndex > -1) {
+                            state.currentConversation.messages[messageIndex] = { ...confirmedMessage, status: 'sent' };
+                        }
+                        ui.renderConversationHistory();
+                    } catch (e) {
+                        alert(`Error: ${e.message}`);
+                        const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === tempId);
+                        if (messageIndex > -1) {
+                            state.currentConversation.messages[messageIndex].status = 'failed';
+                        }
+                        ui.renderConversationHistory();
+                    } finally {
+                        const finalInput = document.getElementById('message-input');
+                        if (finalInput) { finalInput.disabled = false; finalInput.focus(); }
+                        const button = document.querySelector('#message-input-form button');
+                        if (button) button.disabled = false;
+                    }
+                },
                 async deleteMessage(messageId) { if (!confirm("Are you sure you want to unsend this message? This cannot be undone.")) return; const messageWrapper = document.querySelector(`.message-wrapper[data-message-id="${messageId}"]`); const messageStatus = document.querySelector(`.message-wrapper[data-message-id="${messageId}"] + .message-status`); if (!messageWrapper) return; messageWrapper.style.opacity = '0.5'; try { await api.call('deleteMessage', { userId: state.currentUser.userId, messageId }); const messageIndex = state.currentConversation.messages.findIndex(m => m.messageId === messageId); if (messageIndex > -1) { state.currentConversation.messages.splice(messageIndex, 1); } messageWrapper.remove(); if (messageStatus) messageStatus.remove(); } catch (e) { alert(`Error: Could not unsend message. ${e.message}`); messageWrapper.style.opacity = '1'; } },
                 async pollNewMessages(otherUserId, isForced = false) { if (state.currentView !== 'messages' || state.currentConversation.otherUserId !== otherUserId) { if (state.messagePollingIntervalId) clearInterval(state.messagePollingIntervalId); return; } try { const { messages } = await api.call('getConversationHistory', { userId: state.currentUser.userId, otherUserId }, 'GET'); if (isForced || messages.length !== state.currentConversation.messages.length) { state.currentConversation.messages = messages.map(m => ({...m, status: 'sent'})); ui.renderConversationHistory(); api.call('markConversationAsRead', { userId: state.currentUser.userId, otherUserId }); } } catch (e) { console.error("Polling failed:", e.message); } },
                 async startConversationFromProfile(otherUserId) { core.navigateTo('messages'); const existingConvo = state.conversations.find(c => c.otherUser.userId === otherUserId); if (!existingConvo && state.profileUser && state.profileUser.userId === otherUserId) { const newConvo = { otherUser: { userId: state.profileUser.userId, displayName: state.profileUser.displayName, profilePictureUrl: state.profileUser.profilePictureUrl, isVerified: state.profileUser.isVerified }, lastMessage: '', timestamp: new Date().toISOString(), unreadCount: 0 }; state.conversations.unshift(newConvo); } await handlers.loadConversation(otherUserId); },
@@ -832,7 +920,6 @@
                     document.getElementById('notifications-btn').addEventListener('click', handlers.showNotifications);
                     document.getElementById('messages-btn').addEventListener('click', () => handlers.loadMessagesView());
                     document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', (e) => { const modal = e.target.closest('.modal'); if(modal) ui.toggleModal(modal.id.replace('-modal', ''), false); }));
-                    document.querySelector('#image-url-modal .close-modal-btn').addEventListener('click', () => ui.toggleModal('imageUrl', false)); // FIXED
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
@@ -847,6 +934,14 @@
                     document.getElementById('submit-report-btn').addEventListener('click', handlers.submitReport);
                     document.getElementById('create-post-form').addEventListener('click', (e) => { if (e.target.id === 'remove-image-btn') { state.postImageUrl = null; ui.renderImagePreview(); } });
                     document.getElementById('notifications-list').addEventListener('click', (e) => { const item = e.target.closest('.notification-item'); if(!item) return; if(e.target.closest('.delete-notification-btn')) { handlers.deleteNotification(item.dataset.notificationId); return; } const clickableArea = e.target.closest('.notification-item-clickable'); if (clickableArea) { ui.toggleModal('notifications', false); const notification = state.notifications.find(n => n.notificationId === item.dataset.notificationId); if (!notification) return; if (notification.postAuthorId && notification.postId && notification.postId !== 'null') { handlers.showProfile(notification.postAuthorId, notification.postId); } else if (notification.actorUserId) { handlers.showProfile(notification.actorUserId); } } });
+                    document.getElementById('edit-profile-view').addEventListener('click', e => {
+                        const choice = e.target.closest('#pfp-choices-gallery img');
+                        if (choice) {
+                            document.getElementById('edit-pfp-url').value = choice.dataset.url;
+                            document.querySelectorAll('#pfp-choices-gallery img').forEach(img => img.classList.remove('selected'));
+                            choice.classList.add('selected');
+                        }
+                    });
                     document.body.addEventListener('click', (e) => {
                         const target = e.target;
                         const optionsBtn = target.closest('.options-btn');
@@ -873,7 +968,7 @@
                         const profileLink = target.closest('.post-header, .comment-author, .search-result-user, #conversation-header .profile-link, #settings-profile-link');
                         if (profileLink && !target.closest('.post-options')) {
                              const userElement = profileLink.closest('[data-user-id]');
-                             if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); handlers.showProfile(userElement.dataset.userId); return; }
+                             if (userElement && userElement.dataset.userId) { ui.toggleModal('search', false); core.navigateTo('profile'); handlers.showProfile(userElement.dataset.userId); return; }
                         }
                         if (target.closest('#edit-profile-btn')) return core.navigateTo('editProfile');
                         if (target.closest('#follow-btn')) return handlers.toggleFollow(state.profileUser.userId);
