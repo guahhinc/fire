@@ -284,15 +284,40 @@
         .tos-checkmark:after { content: ""; position: absolute; display: none; left: 6px; top: 1px; width: 6px; height: 12px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
         .form-group-tos input:checked + .tos-checkmark:after { display: block; }
         .form-group-tos .tos-text { font-weight: 400; }
-        #messages-view .container { max-width: 900px; padding: 20px 0 0 0; }
-        .messages-container { border: 1px solid var(--border-color); border-radius: 12px; height: calc(100vh - 120px); max-height: 700px; background-color: var(--secondary-bg-color); position: relative; overflow: hidden; }
+        
+        #messages-view .container {
+            max-width: 100%;
+            padding: 0;
+            height: 100%;
+        }
+        #messages-view {
+            height: calc(100vh - (50px + env(safe-area-inset-top) + 20px + var(--banner-height)));
+        }
+        .messages-container {
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            height: 100%;
+            max-height: none;
+            background-color: var(--secondary-bg-color);
+            position: relative;
+            overflow: hidden;
+        }
+
         #conversations-list, #conversation-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: transform 0.3s ease-in-out, opacity 0.3s; background-color: var(--secondary-bg-color); }
         #conversations-list.is-loading { opacity: 0.6; pointer-events: none; }
         #conversations-list { transform: translateX(0); overflow-y: auto; z-index: 2; }
         #conversation-view { transform: translateX(100%); display: flex; flex-direction: column; z-index: 1; }
         .messages-container.show-chat-view #conversations-list { transform: translateX(-100%); }
         .messages-container.show-chat-view #conversation-view { transform: translateX(0); }
-        @media (min-width: 768px) { #messages-view .container { padding: 20px 16px 0 16px; } .messages-container { display: flex; position: static; } #conversations-list, #conversation-view { position: static; transform: none !important; height: auto; } #conversations-list { width: 35%; min-width: 280px; border-right: 1px solid var(--border-color); } #conversation-view { flex-grow: 1; } #back-to-convos-btn { display: none !important; } }
+        @media (min-width: 768px) { 
+            #messages-view .container { padding: 0; } 
+            .messages-container { display: flex; position: static; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); } 
+            #conversations-list, #conversation-view { position: static; transform: none !important; height: auto; } 
+            #conversations-list { width: 35%; min-width: 280px; border-right: 1px solid var(--border-color); } 
+            #conversation-view { flex-grow: 1; } 
+            #back-to-convos-btn { display: none !important; } 
+        }
         .conversation-item { display: flex; align-items: center; padding: 12px; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-color); position: relative; }
         .conversation-item:last-child { border-bottom: none; }
         .conversation-item:hover { background-color: var(--border-color); }
@@ -337,38 +362,40 @@
             align-items: unset;
             padding-top: 0;
         }
+        
         .modal#profile-shortcut-modal .modal-content {
             position: absolute;
             padding: 0;
             max-width: 250px;
-        }
-        #profile-shortcut-modal .profile-link {
+            min-width: 180px;
+            background-color: var(--secondary-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            text-decoration: none;
-            color: var(--primary-text-color);
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
+            flex-direction: column;
         }
-        #profile-shortcut-modal .profile-link:hover {
-            background-color: var(--border-color);
-        }
-        #profile-shortcut-modal .settings-shortcut-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
+        #profile-shortcut-modal .modal-content button {
             background: none;
-            border-top: 1px solid var(--border-color);
-            font-size: 16px;
+            border: none;
+            box-shadow: none;
+            text-align: left;
+            padding: 12px 16px;
+            width: 100%;
+            border-radius: 0;
+            font-size: 15px;
+            color: var(--primary-text-color);
             font-weight: 600;
             cursor: pointer;
-            color: var(--primary-text-color);
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        #profile-shortcut-modal .settings-shortcut-btn:hover {
+        #profile-shortcut-modal .modal-content button:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+        #profile-shortcut-modal .modal-content button:hover {
             background-color: var(--border-color);
         }
 
@@ -394,6 +421,17 @@
                 padding-top: calc(20px + var(--banner-height) + env(safe-area-inset-top));
                 padding-bottom: calc(65px + env(safe-area-inset-bottom));
             }
+            
+            /* MODIFICATION START: Mobile messages layout fix */
+            #messages-view {
+                height: auto; /* Let the container define the height */
+            }
+            .messages-container {
+                border: none;
+                /* Calculate height to fit screen between top padding and bottom nav bar */
+                height: calc(100vh - (20px + var(--banner-height) + env(safe-area-inset-top)) - (65px + env(safe-area-inset-bottom)));
+            }
+            /* MODIFICATION END */
         }
     </style>
 </head>
@@ -882,18 +920,13 @@
                     const user = state.currentUser;
                     if (!user) return;
                     const modalContent = modals.profileShortcut.querySelector('.modal-content');
-                    const pfpUrl = sanitizeHTML(user.profilePictureUrl) || `https://api.dicebear.com/8.x/thumbs/svg?seed=${user.username}`;
-                    const isVerified = String(user.isVerified).toUpperCase() === 'TRUE';
                     modalContent.innerHTML = `
-                        <a href="#" class="profile-link" data-user-id="${user.userId}">
-                            <img src="${pfpUrl}" class="pfp pfp-sm">
-                            <div class="user-info">
-                                <div class="display-name">${sanitizeHTML(user.displayName)} ${isVerified ? VERIFIED_SVG : ''}</div>
-                                <div class="username">@${sanitizeHTML(user.username)}</div>
-                            </div>
-                        </a>
-                        <button class="settings-shortcut-btn">
-                            <span class="material-symbols-rounded" style="vertical-align: -5px; margin-right: 5px;">settings</span>
+                        <button data-action="go-to-profile" data-user-id="${user.userId}">
+                             <span class="material-symbols-rounded">account_circle</span>
+                             View Profile
+                        </button>
+                        <button data-action="go-to-settings">
+                            <span class="material-symbols-rounded">settings</span>
                             Settings
                         </button>
                     `;
@@ -978,7 +1011,15 @@
                 async showProfile(userId, scrollToPostId = null) {
                     if (state.currentView !== 'profile') { state.feedScrollPosition = window.scrollY; }
                     state.scrollToPostId = scrollToPostId;
-                    core.navigateTo('profile'); ui.showProfileSkeleton();
+                    core.navigateTo('profile');
+                    
+                    if (userId === state.currentUser.userId) {
+                        state.profileUser = state.currentUser;
+                        ui.renderProfilePage();
+                        return; 
+                    }
+
+                    ui.showProfileSkeleton();
                     try {
                         const { user } = await api.call('getUserProfile', { userId, currentUserId: state.currentUser.userId }, 'GET');
                         if (state.currentView === 'profile') { state.profileUser = user; ui.renderProfilePage(); }
@@ -1255,7 +1296,13 @@
                     document.getElementById('search-btn').addEventListener('click', () => ui.toggleModal('search', true));
                     document.getElementById('notifications-btn').addEventListener('click', handlers.showNotifications);
                     document.getElementById('messages-btn').addEventListener('click', () => handlers.loadMessagesView());
-                    document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', (e) => { const modal = e.target.closest('.modal'); if(modal) ui.toggleModal(modal.id.replace('-modal', ''), false); }));
+                    document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', (e) => { 
+                        const modal = e.target.closest('.modal'); 
+                        if(modal) {
+                            const modalName = modal.id.replace('-modal', '').replace(/-(\w)/g, (match, p1) => p1.toUpperCase());
+                            ui.toggleModal(modalName, false); 
+                        }
+                    }));
                     document.getElementById('logout-btn').addEventListener('click', core.logout);
                     document.getElementById('suspended-logout-btn').addEventListener('click', core.logout);
                     document.getElementById('outage-logout-btn').addEventListener('click', core.logout);
@@ -1288,6 +1335,22 @@
                         if (!target.closest('.options-menu')) { document.querySelectorAll('.options-menu').forEach(m => m.classList.add('hidden')); }
                         const actionButton = target.closest('[data-action]');
                         if (actionButton) {
+                            const profileShortcutModal = target.closest('#profile-shortcut-modal');
+                            if (profileShortcutModal) {
+                                const action = actionButton.dataset.action;
+                                if (action === 'go-to-profile') {
+                                    e.preventDefault();
+                                    const userId = actionButton.dataset.userId;
+                                    ui.toggleModal('profileShortcut', false);
+                                    handlers.showProfile(userId);
+                                } else if (action === 'go-to-settings') {
+                                    e.preventDefault();
+                                    ui.toggleModal('profileShortcut', false);
+                                    core.navigateTo('settings');
+                                }
+                                return;
+                            }
+
                             const action = actionButton.dataset.action;
                             const postEl = actionButton.closest('.post');
                             const commentEl = actionButton.closest('.comment');
@@ -1301,22 +1364,7 @@
                             else if (action === 'report-user') handlers.openReportModal(actionButton.dataset.userId);
                             return;
                         }
-                        const profileShortcutModal = target.closest('#profile-shortcut-modal');
-                        if (profileShortcutModal) {
-                            if (target.closest('.profile-link')) {
-                                e.preventDefault();
-                                const userId = target.closest('.profile-link').dataset.userId;
-                                ui.toggleModal('profileShortcut', false);
-                                handlers.showProfile(userId);
-                                return;
-                            }
-                            if (target.closest('.settings-shortcut-btn')) {
-                                e.preventDefault();
-                                ui.toggleModal('profileShortcut', false);
-                                core.navigateTo('settings');
-                                return;
-                            }
-                        }
+                        
                         if (target.closest('[data-nav="feed"]')) { e.preventDefault(); return core.navigateTo('feed'); }
                         const hashtagLink = target.closest('.hashtag-link');
                         if (hashtagLink) { e.preventDefault(); handlers.showHashtagFeed(hashtagLink.dataset.hashtag); return; }
