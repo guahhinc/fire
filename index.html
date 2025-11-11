@@ -379,6 +379,9 @@
                 border-bottom: none;
                 border-top: 1px solid var(--border-color);
                 padding-bottom: env(safe-area-inset-bottom);
+                min-height: 65px; 
+                align-items: flex-start;
+                padding-top: 8px;
             }
             header .logo {
                 display: none;
@@ -389,7 +392,7 @@
             }
             body.logged-in {
                 padding-top: calc(20px + var(--banner-height) + env(safe-area-inset-top));
-                padding-bottom: calc(50px + env(safe-area-inset-bottom));
+                padding-bottom: calc(65px + env(safe-area-inset-bottom));
             }
         }
     </style>
