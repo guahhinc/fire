@@ -707,7 +707,35 @@
 
             const handlers = {
                 async login() { ui.hideError('login-error'); const [username, password] = [document.getElementById('login-username').value.trim(), document.getElementById('login-password').value.trim()]; if (!username || !password) return ui.showError('login-error', 'All fields required.'); ui.setButtonState('login-btn', 'Logging In...', true); try { const { user } = await api.call('login', { username, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { if (e.message === 'ACCOUNT_BANNED') { core.logout(false); ui.renderBanPage(e.banDetails); core.navigateTo('suspended'); } else if (e.message === 'SERVER_OUTAGE') { core.logout(false); core.navigateTo('outage'); } else { ui.showError('login-error', e.message); } } finally { ui.setButtonState('login-btn', 'Log In', false); } },
-                async register() { ui.hideError('register-error'); const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()]; const tosChecked = document.getElementById('register-tos').checked; if (!tosChecked) return ui.showError('register-error', 'You must agree to the Terms of Service.'); if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.'); if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.'); ui.setButtonState('register-btn', 'Signing Up...', true); try { const { user } = await api.call('register', { username, displayName, password }); state.currentUser = user; localStorage.setItem('currentUser', JSON.stringify(user)); await core.initializeApp(); } catch (e) { ui.showError('register-error', e.message); } finally { ui.setButtonState('register-btn', 'Sign Up', false); } },
+                async register() {
+                    ui.hideError('register-error');
+                    const [username, displayName, password] = [document.getElementById('register-username').value.trim(), document.getElementById('register-displayname').value.trim(), document.getElementById('register-password').value.trim()];
+                    const tosChecked = document.getElementById('register-tos').checked;
+
+                    if (!tosChecked) return ui.showError('register-error', 'You must agree to the Terms of Service.');
+                    if (!username || !displayName || !password) return ui.showError('register-error', 'All fields required.');
+                    if (password.length < 4) return ui.showError('register-error', 'Password must be at least 4 characters long.');
+                    
+                    // --- MODIFICATION START ---
+                    // Regular expression to check for valid characters (letters, numbers, underscores, dots)
+                    const usernameRegex = /^[a-zA-Z0-9_.]+$/;
+                    if (!usernameRegex.test(username)) {
+                        return ui.showError('register-error', 'Username can only contain letters, numbers, dots, and underscores.');
+                    }
+                    // --- MODIFICATION END ---
+
+                    ui.setButtonState('register-btn', 'Signing Up...', true);
+                    try {
+                        const { user } = await api.call('register', { username, displayName, password });
+                        state.currentUser = user;
+                        localStorage.setItem('currentUser', JSON.stringify(user));
+                        await core.initializeApp();
+                    } catch (e) {
+                        ui.showError('register-error', e.message);
+                    } finally {
+                        ui.setButtonState('register-btn', 'Sign Up', false);
+                    }
+                },
                 async createPost() { const contentInput = document.getElementById('post-content-input'); let postContent = sanitizeHTML(contentInput.value.trim()); const imageUrl = state.postImageUrl; if (!postContent && !imageUrl && !state.editingPostId) return; if (imageUrl) { postContent += `<br><img src="${sanitizeHTML(imageUrl)}" alt="user image">`; } const isUpdating = !!state.editingPostId; const button = document.getElementById('submit-post-btn'); const originalButtonText = isUpdating ? 'Save Changes' : 'Post'; ui.setButtonState(button.id, 'Saving...', true); try { if (isUpdating) { await api.call('updatePost', { userId: state.currentUser.userId, postId: state.editingPostId, postContent: postContent }); } else { const postType = document.getElementById('post-type-select').value; const isStory = postType.startsWith('story'); const storyDuration = isStory ? parseInt(postType.split('-')[1]) : 0; await api.call('createPost', { userId: state.currentUser.userId, postContent, isStory, storyDuration }); } contentInput.value = ''; state.postImageUrl = null; state.editingPostId = null; ui.renderImagePreview(); button.textContent = 'Post'; document.getElementById('post-type-select').value = 'regular'; await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); } finally { ui.setButtonState(button.id, originalButtonText, false); if (isUpdating) { button.textContent = 'Post'; state.editingPostId = null; } } },
                 enterEditMode(postId) { const post = state.posts.find(p => p.postId === postId); if (!post) return; const textContent = post.postContent.replace(/<br><img src=".*?" alt=".*?">/g, '').trim(); document.getElementById('post-content-input').value = textContent; document.getElementById('submit-post-btn').textContent = 'Save Changes'; state.editingPostId = postId; window.scrollTo({ top: 0, behavior: 'smooth' }); document.getElementById('post-content-input').focus(); },
                 async addComment(postId, commentText) { if (!commentText.trim()) return; const tempComment = { commentId: `temp_${Date.now()}`, userId: state.currentUser.userId, displayName: state.currentUser.displayName, isVerified: state.currentUser.isVerified, commentText: commentText }; const postIndex = state.posts.findIndex(p => p.postId === postId); if (postIndex > -1) { state.posts[postIndex].comments.push(tempComment); ui.render(); } try { await api.call('addComment', { postId, userId: state.currentUser.userId, commentText }); await core.refreshFeed(false); } catch (e) { alert(`Error: ${e.message}`); const pIndex = state.posts.findIndex(p => p.postId === postId); if(pIndex > -1) { state.posts[pIndex].comments = state.posts[pIndex].comments.filter(c => c.commentId !== tempComment.commentId); ui.render(); }}},
