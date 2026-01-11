@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Guahh Account</title>
+
+    <!-- Google Fonts: Inter Tight -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Google Material Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 60px;
+            margin-bottom: 20px;
+            filter: invert(1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1d1d1f;
+        }
+
+        .service-name {
+            color: #5f6368;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* Account Selection */
+        .account-select-view {
+            display: none;
+        }
+
+        .account-card {
+            border: 1px solid #dadce0;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .account-card:hover {
+            background: #f8f9fa;
+            border-color: #5f6368;
+        }
+
+        .account-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 16px;
+            border: 2px solid #e8eaed;
+        }
+
+        .account-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .account-email {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 20px;
+        }
+
+        .continue-btn {
+            background: var(--accent-color, #0071e3);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .continue-btn:hover {
+            background: var(--accent-hover, #0077ed);
+        }
+
+        .switch-account-btn {
+            background: transparent;
+            color: var(--accent-color, #0071e3);
+            border: 1px solid #dadce0;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .switch-account-btn:hover {
+            background: #f8f9fa;
+        }
+
+        /* Auth Forms */
+        .auth-view {
+            display: none;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 24px;
+            background: #f1f3f4;
+            padding: 4px;
+            border-radius: 100px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #5f6368;
+        }
+
+        .auth-tab.active {
+            background: #fff;
+            color: #1d1d1f;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .auth-input:focus {
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .auth-btn {
+            background: #0071e3;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .auth-btn:hover {
+            background: #0077ed;
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .auth-msg {
+            margin-top: 16px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .auth-msg.error {
+            color: #d93025;
+        }
+
+        .auth-msg.success {
+            color: #1e8e3e;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .divider::before {
+            margin-right: 16px;
+        }
+
+        .divider::after {
+            margin-left: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="https://raw.githubusercontent.com/guahhinc/kangaroo/main/guahh_white.png" alt="Guahh" class="logo">
+        <h1>Sign in with Guahh</h1>
+        <p class="service-name">to continue to <span id="service-display-name">this service</span></p>
+
+        <!-- Account Selection View (shown if logged in) -->
+        <div id="account-select-view" class="account-select-view">
+            <div class="account-card" onclick="handleContinue()">
+                <img id="account-avatar" src="" alt="Profile" class="account-avatar">
+                <div id="account-name" class="account-name"></div>
+                <div id="account-email" class="account-email"></div>
+                <button class="continue-btn">Continue as <span id="continue-name"></span></button>
+            </div>
+            <button class="switch-account-btn" onclick="switchToAuthView()">Use another account</button>
+        </div>
+
+        <!-- Auth Forms View (login/register) -->
+        <div id="auth-view" class="auth-view">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                <input type="text" id="login-username" class="auth-input" placeholder="Username" required>
+                <input type="password" id="login-password" class="auth-input" placeholder="Password" required>
+                <button type="submit" id="login-btn" class="auth-btn">Sign In</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form" style="display: none;" onsubmit="handleRegister(event)">
+                <input type="text" id="reg-username" class="auth-input" placeholder="Username" required>
+                <input type="text" id="reg-displayname" class="auth-input" placeholder="Display Name" required>
+                <input type="password" id="reg-password" class="auth-input" placeholder="Password (min 4 chars)"
+                    required>
+                <button type="submit" id="reg-btn" class="auth-btn">Create Account</button>
+            </form>
+
+            <div id="auth-message" class="auth-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLwJH_xV8cTa0B5R75fNRSmohCWWTe2gbx6v9ihPYd_ED0GO1rqjNi_G3aNzY5dg86/exec';
+        const STORAGE_KEY = 'guahh_user';
+
+        let serviceInfo = {};
+        let currentUser = null;
+
+        // Parse URL params
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                serviceName: params.get('service') || 'this service',
+                serviceUrl: params.get('url') || window.location.origin
+            };
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            serviceInfo = getUrlParams();
+            document.getElementById('service-display-name').textContent = serviceInfo.serviceName;
+
+            // Check if user is already logged in
+            const storedUser = localStorage.getItem(STORAGE_KEY);
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                showAccountSelect(currentUser);
+            } else {
+                showAuthView();
+            }
+        });
+
+        function showAccountSelect(user) {
+            const pfp = user.profilePictureUrl || `https://api.dicebear.com/8.x/thumbs/svg?seed=${user.username}`;
+            const isVerified = (user.isVerified === true || String(user.isVerified) === 'TRUE');
+            const verifiedBadge = isVerified ? '<span class="material-symbols-rounded" style="color:#1DA1F2; font-size:20px; vertical-align:-4px; margin-left:5px; font-variation-settings: \'FILL\' 1;">verified</span>' : '';
+
+            document.getElementById('account-avatar').src = pfp;
+            document.getElementById('account-name').innerHTML = user.displayName + verifiedBadge;
+            document.getElementById('account-email').textContent = '@' + user.username;
+            document.getElementById('continue-name').textContent = user.displayName;
+
+            document.getElementById('account-select-view').style.display = 'block';
+            document.getElementById('auth-view').style.display = 'none';
+        }
+
+        function showAuthView() {
+            document.getElementById('account-select-view').style.display = 'none';
+            document.getElementById('auth-view').style.display = 'block';
+        }
+
+        function switchToAuthView() {
+            // User wants to use a different account - show login form
+            currentUser = null;
+            localStorage.removeItem(STORAGE_KEY);
+            showAuthView();
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('tab-login');
+            const tabReg = document.getElementById('tab-register');
+            const msg = document.getElementById('auth-message');
+
+            msg.textContent = '';
+            msg.className = 'auth-msg';
+
+            if (tab === 'login') {
+                loginForm.style.display = 'flex';
+                regForm.style.display = 'none';
+                tabLogin.classList.add('active');
+                tabReg.classList.remove('active');
+            } else {
+                loginForm.style.display = 'none';
+                regForm.style.display = 'flex';
+                tabLogin.classList.remove('active');
+                tabReg.classList.add('active');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const msg = document.getElementById('auth-message');
+
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            btn.disabled = true;
+            btn.textContent = 'Signing In...';
+            msg.textContent = '';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'login', username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
+                    sendAuthSuccess(data.user);
+                } else if (data.message === 'ACCOUNT_BANNED') {
+                    const ban = data.banDetails;
+                    let banMsg = `Account Suspended.\nReason: ${ban.reason}`;
+                    if (ban.endDate && ban.endDate !== 'permanent') {
+                        const date = new Date(ban.endDate).toLocaleString();
+                        banMsg += `\nLifted: ${date}`;
+                    } else {
+                        banMsg += `\nDuration: Permanent`;
+                    }
+                    msg.textContent = banMsg;
+                    msg.className = 'auth-msg error';
+                    msg.style.whiteSpace = 'pre-wrap';
+                } else if (data.message === 'SERVER_OUTAGE') {
+                    msg.textContent = 'Login unavailable due to server outage.';
+                    msg.className = 'auth-msg error';
+                } else {
+                    msg.textContent = data.message || 'Login failed.';
+                    msg.className = 'auth-msg error';
+                }
+            } catch (error) {
+                console.error(error);
+                msg.textContent = 'Connection error. Please try again.';
+                msg.className = 'auth-msg error';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('reg-btn');
+            const msg = document.getElementById('auth-message');
+
+            const username = document.getElementById('reg-username').value.trim();
+            const displayName = document.getElementById('reg-displayname').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+
+            if (password.length < 4) {
+                msg.textContent = "Password must be at least 4 characters long.";
+                msg.className = 'auth-msg error';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Creating Account...';
+            msg.textContent = '';
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'register', username, displayName, password })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
+                    sendAuthSuccess(data.user);
+                } else {
+                    msg.textContent = data.message || 'Registration failed.';
+                    msg.className = 'auth-msg error';
+                }
+            } catch (error) {
+                console.error(error);
+                msg.textContent = 'Connection error. Please try again.';
+                msg.className = 'auth-msg error';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        function handleContinue() {
+            if (currentUser) {
+                sendAuthSuccess(currentUser);
+            }
+        }
+
+        function sendAuthSuccess(user) {
+            if (window.opener) {
+                // Track this service in the backend
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'trackConnectedService',
+                        userId: user.userId,
+                        serviceName: serviceInfo.serviceName,
+                        serviceUrl: serviceInfo.serviceUrl
+                    })
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success' && data.connectedServices) {
+                            // Update user object with connected services
+                            user.connectedServices = data.connectedServices;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+                        }
+                    })
+                    .catch(err => console.error('Failed to track service:', err));
+
+                // Send success to parent window
+                window.opener.postMessage({
+                    type: 'GUAHH_AUTH_SUCCESS',
+                    user: user,
+                    service: serviceInfo
+                }, '*');
+                window.close();
+            }
+        }
+    </script>
+</body>
+
+</html>
