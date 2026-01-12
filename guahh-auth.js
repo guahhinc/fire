@@ -7,7 +7,7 @@
 (function (window) {
     'use strict';
 
-    const AUTH_PAGE_URL = 'guahh-auth-page.html';
+    const AUTH_PAGE_URL = 'https://guahhinc.github.io/fire/guahh-auth-page.html';
     const STORAGE_KEY = 'guahh_user';
 
     let callbacks = {
