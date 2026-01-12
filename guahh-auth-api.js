@@ -30,7 +30,7 @@
 
             // Initialize GuahhAuth
             GuahhAuth.init({
-                authPageUrl: 'guahh-auth-page.html'
+                authPageUrl: 'https://guahhinc.github.io/fire/guahh-auth-page.html'
             });
 
             // Fire all ready callbacks

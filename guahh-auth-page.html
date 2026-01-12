@@ -287,6 +287,16 @@
                 <input type="text" id="reg-displayname" class="auth-input" placeholder="Display Name" required>
                 <input type="password" id="reg-password" class="auth-input" placeholder="Password (min 4 chars)"
                     required>
+                <input type="password" id="reg-password-confirm" class="auth-input" placeholder="Confirm Password"
+                    required>
+
+                <div
+                    style="display:flex; align-items:flex-start; gap:10px; font-size:13px; color:#5f6368; padding:0 5px;">
+                    <input type="checkbox" id="reg-tos" style="margin-top:2px;" required>
+                    <label for="reg-tos">I agree to the <a href="https://guahh.net/#terms" target="_blank"
+                            style="color:#0071e3; text-decoration:none;">Terms of Service & Privacy Policy</a></label>
+                </div>
+
                 <button type="submit" id="reg-btn" class="auth-btn">Create Account</button>
             </form>
 
@@ -434,6 +444,20 @@
             const username = document.getElementById('reg-username').value.trim();
             const displayName = document.getElementById('reg-displayname').value.trim();
             const password = document.getElementById('reg-password').value.trim();
+            const confirmPassword = document.getElementById('reg-password-confirm').value.trim();
+            const tosAccepted = document.getElementById('reg-tos').checked;
+
+            if (!tosAccepted) {
+                msg.textContent = "You must agree to the Terms of Service.";
+                msg.className = 'auth-msg error';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                msg.textContent = "Passwords do not match.";
+                msg.className = 'auth-msg error';
+                return;
+            }
 
             if (password.length < 4) {
                 msg.textContent = "Password must be at least 4 characters long.";
