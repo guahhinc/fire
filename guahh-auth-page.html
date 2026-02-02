@@ -406,9 +406,12 @@
             msg.textContent = '';
 
             try {
+                // Encode username for Auth Service
+                const encodedUsername = btoa(username);
+
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'login', username, password })
+                    body: JSON.stringify({ action: 'login', username: encodedUsername, password })
                 });
 
                 const data = await response.json();
@@ -481,9 +484,12 @@
             msg.textContent = '';
 
             try {
+                // Encode for Auth Service
+                const encodedUsername = btoa(username);
+
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'register', username, displayName, password })
+                    body: JSON.stringify({ action: 'register', username: encodedUsername, displayName, password })
                 });
 
                 const data = await response.json();
