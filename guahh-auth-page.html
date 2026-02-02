@@ -329,7 +329,16 @@
             const storedUser = localStorage.getItem(STORAGE_KEY);
             if (storedUser) {
                 currentUser = JSON.parse(storedUser);
-                showAccountSelect(currentUser);
+
+                // MIGRATION FIX: Force re-login if no session token
+                if (!currentUser.sessionToken) {
+                    console.log("Legacy session detected. Forcing re-login.");
+                    localStorage.removeItem(STORAGE_KEY);
+                    currentUser = null;
+                    showAuthView();
+                } else {
+                    showAccountSelect(currentUser);
+                }
             } else {
                 showAuthView();
             }
