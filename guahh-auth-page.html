@@ -305,7 +305,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLwJH_xV8cTa0B5R75fNRSmohCWWTe2gbx6v9ihPYd_ED0GO1rqjNi_G3aNzY5dg86/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7ckNN0-ogTMIBadIxoqF930sqBrQtYBXktHfivv929nOzDn9XG_jilsC-lsvDexiT/exec';
         const STORAGE_KEY = 'guahh_user';
 
         let serviceInfo = {};
@@ -405,8 +405,10 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
-                    sendAuthSuccess(data.user);
+                    // Attach session token to user object so it persists
+                    const userWithToken = { ...data.user, sessionToken: data.sessionToken };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(userWithToken));
+                    sendAuthSuccess(userWithToken);
                 } else if (data.message === 'ACCOUNT_BANNED') {
                     const ban = data.banDetails;
                     let banMsg = `Account Suspended.\nReason: ${ban.reason}`;
@@ -478,8 +480,10 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
-                    sendAuthSuccess(data.user);
+                    // Attach session token to user object so it persists
+                    const userWithToken = { ...data.user, sessionToken: data.sessionToken };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(userWithToken));
+                    sendAuthSuccess(userWithToken);
                 } else {
                     msg.textContent = data.message || 'Registration failed.';
                     msg.className = 'auth-msg error';
