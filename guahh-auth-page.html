@@ -305,7 +305,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzW6_sRHzSLS_M3AzhEfHH5_iKwS1GvXWWAQaXVjhtKMD3HHigqxaPg2Fyvxv6r3Zg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVN08XTMkKqq9NpHANDEU7BRTBeXB656gb6F-5mT6COOJzFfoZE4g0YWQJnYQXbUE/exec';
         const STORAGE_KEY = 'guahh_user';
 
         let serviceInfo = {};
@@ -324,6 +324,9 @@
         window.addEventListener('load', () => {
             serviceInfo = getUrlParams();
             document.getElementById('service-display-name').textContent = serviceInfo.serviceName;
+
+            // Check Server Version
+            checkServerVersion();
 
             // Check if user is already logged in
             const storedUser = localStorage.getItem(STORAGE_KEY);
@@ -549,6 +552,27 @@
                 window.close();
             }
         }
+        async function checkServerVersion() {
+            const footer = document.createElement('div');
+            footer.style.cssText = "position:fixed; bottom:10px; width:100%; text-align:center; font-size:11px; color:#9aa0a6;";
+            document.body.appendChild(footer);
+
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+                if (data.version === 'v2.1-debug') {
+                    footer.innerHTML = "Server Status: Connected (v2.1-debug) ✅";
+                    footer.style.color = "#1e8e3e";
+                } else {
+                    footer.innerHTML = `Server Status: OUTDATED CODE DETECTED (${data.version || 'v1.0'}). Please Redeploy. ⚠️`;
+                    footer.style.color = "#d93025";
+                }
+            } catch (e) {
+                footer.innerHTML = "Server Status: Disconnected ❌";
+            }
+        }
+
+        // ... (rest of functions)
     </script>
 </body>
 
